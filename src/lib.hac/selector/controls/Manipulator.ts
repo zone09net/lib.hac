@@ -49,13 +49,19 @@ export class Manipulator
 	public disableItems(): void
 	{
 		for(let item of this.selector.items)
+		{
 			item.enabled = false;
+			item.drawable.hoverable = false;
+		}
 	}
 
 	public enableItems(): void
 	{
 		for(let item of this.selector.items)
+		{
 			item.enabled = true;
+			item.drawable.hoverable = true;
+		}
 	}
 
 

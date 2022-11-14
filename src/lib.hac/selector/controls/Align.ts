@@ -100,6 +100,7 @@ export class Align extends Manipulator
 						window.requestAnimationFrame(() => {
 							this.enableItems();
 							item.enabled = false;
+							item.drawable.hoverable = false;
 							item.onAfterSelection();
 						});
 					}
