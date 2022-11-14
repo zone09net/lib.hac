@@ -18,7 +18,7 @@
 		"watch": true,
 		"declaration": true,
 		"declarationMap": true,
-		"outDir": "./.dist",
+		"outDir": "../www.zone09.net/public/js/dev",
 		"baseUrl": "../",
 		"paths": {
 			"@zone09.net/foundation": ["lib.foundation/src/lib.foundation.ts"],
@@ -33,7 +33,7 @@
 	 },
 
 	"include": [
-		"./src/lib.hac.ts"
+		"./src/demo.*"
 	],
 
 	"exclude": [
