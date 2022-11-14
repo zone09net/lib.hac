@@ -18,6 +18,7 @@ export class Sizer extends Paperless.Drawable
 		this._angleEnd = angleEnd;
 		this._puzzled = puzzled;
 		this.sticky = puzzled.sticky;
+		this.size = new Paperless.Size(9, 9);
 
 		this.generate();
 	}
