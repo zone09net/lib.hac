@@ -132,6 +132,11 @@ export class Fuzzynotes extends Paperless.Component
 			this._guids.push(control.guid);
 		}
 	}
+	
+	public toTop(): void
+	{
+		this._resetter.onLeftClick();
+	}
 
 	public new(entities: Array<{point?: Paperless.Point, size?: Paperless.Size, control: typeof EntityCoreControl, drawable: typeof EntityCoreDrawable, header?: boolean, attributes?: any, backdoor?: any, transpose?: boolean}>): void
 	{
