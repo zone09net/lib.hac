@@ -279,7 +279,7 @@ export class EntityCoreControl extends Paperless.Control
 			newicon = Icon
 
 		if(typeof object == 'string' || object instanceof HTMLImageElement)
-			drawable = this.context.attach(new Paperless.Drawables.Artwork(point, size, {content: object}));
+			drawable = this.context.attach(new Paperless.Drawables.Artwork(point, size, {content: object, hoverable: true}));
 		else
 			drawable = object;
 

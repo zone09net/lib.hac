@@ -35,8 +35,8 @@ export class Fuzzynotes extends Paperless.Component
 			puzzled: {...{hop: 64, strokecolor: '#666666', fillcolor: '#000000'}, ...puzzled, ...{sticky: sticky, expandable: true}},
 			background: {...{fillcolor: '#151515', visible: false}, ...background, ...{sticky: sticky, nostroke: true}},
 			borders: {...{strokecolor: '#ffffff', linewidth: 2, visible: false}, ...borders, ...{sticky: sticky}},
-			resetter: {...{fillcolor: '#ffffff', shadowcolor: '#ffffff', visible: false}, ...resetter, ...{sticky: true, nostroke: true, scale: {x: 0.07, y: 1}}},
-			shade: {...{fillcolor: '#151515', alpha: 0.85, top: 200, bottom: 30, overflow: 0, visible: false}, ...shade, ...{sticky: true, nostroke: true}},
+			resetter: {...{fillcolor: '#ffffff', shadowcolor: '#ffffff', visible: false, hoverable: true}, ...resetter, ...{sticky: true, nostroke: true, scale: {x: 0.07, y: 1}}},
+			shade: {...{fillcolor: '#151515', alpha: 0.85, top: 200, bottom: 30, overflow: 0, visible: false, hoverable: false}, ...shade, ...{sticky: true, nostroke: true}},
 			padding: {...{top: 0, bottom: 0, left: 0, right: 0}, ...padding},
 		};
 
