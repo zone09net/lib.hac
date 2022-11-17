@@ -61,7 +61,7 @@ export class EntityCoreControl extends Paperless.Control
 
 	public onDrag(): void
 	{
-		let context2D: CanvasRenderingContext2D = this.context.context2D;
+		let context2D: OffscreenCanvasRenderingContext2D = this.context.context2D;
 
 		this._pointCurrent = this.context.getStates().pointCurrent;
 		this._pointCurrent = new Paperless.Point(

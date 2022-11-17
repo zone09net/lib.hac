@@ -105,7 +105,7 @@ export class EntityCoreDrawable extends Paperless.Drawable
 		this.points = points;
 	}
 
-	public draw(context2D: CanvasRenderingContext2D): void
+	public draw(context2D: OffscreenCanvasRenderingContext2D): void
 	{
 		let ismarked: boolean = false;
 
@@ -157,7 +157,7 @@ export class EntityCoreDrawable extends Paperless.Drawable
 		context2D.restore();
 	}
 
-	public onDraw(context2D: CanvasRenderingContext2D): void {}
+	public onDraw(context2D: OffscreenCanvasRenderingContext2D): void {}
 
 
 

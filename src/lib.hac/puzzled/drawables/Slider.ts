@@ -44,7 +44,7 @@ export class Slider extends Paperless.Drawable
 		}
 	}
 
-	public draw(context2D: CanvasRenderingContext2D): void
+	public draw(context2D: OffscreenCanvasRenderingContext2D): void
 	{
 		context2D.save();
 		context2D.translate(this.point.x, this.point.y);

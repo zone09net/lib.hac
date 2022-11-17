@@ -29,7 +29,7 @@ export class Sizer extends Paperless.Drawable
 		this.path.arc(this._puzzled.spacing, this._puzzled.spacing, 9, (this._angleEnd / 180) * Math.PI, (this._angleStart / 180) * Math.PI, true);
 	}
 
-	public draw(context2D: CanvasRenderingContext2D): void
+	public draw(context2D: OffscreenCanvasRenderingContext2D): void
 	{
 		context2D.save();
 		context2D.translate(this.point.x, this.point.y);

@@ -32,7 +32,7 @@ export class Highlight extends Paperless.Drawable
 		this.path.rect(points[0].x, points[0].y, points[2].x, points[2].y);
 	}
 
-	public draw(context2D: CanvasRenderingContext2D): void
+	public draw(context2D: OffscreenCanvasRenderingContext2D): void
 	{
 		context2D.save();
 		context2D.translate(this.point.x, this.point.y);

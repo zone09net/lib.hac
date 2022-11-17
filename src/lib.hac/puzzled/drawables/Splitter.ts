@@ -31,7 +31,7 @@ export class Splitter extends Paperless.Drawable
 			this.path.rect(point.x + this._puzzled.spacing, point.y + this._puzzled.spacing, this.size.width, this.size.height);
 	}
 
-	public draw(context2D: CanvasRenderingContext2D): void
+	public draw(context2D: OffscreenCanvasRenderingContext2D): void
 	{
 		context2D.save();
 		context2D.translate(this.point.x , this.point.y);
