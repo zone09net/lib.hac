@@ -3,7 +3,7 @@ import {Editable} from '../components/Editable.js';
 
 
 
-export class Interaction extends Paperless.Interfaces.MouseActions
+export class Interaction extends Paperless.MouseActions
 {
 	private _editable: Editable;
 	//---
@@ -17,16 +17,16 @@ export class Interaction extends Paperless.Interfaces.MouseActions
 
 	public onMouseUp(): void 
 	{
-		if(this._editable.childs.control.guid == this.context.getStates().currentControl && !this.context.getStates().isDragging)
+		if(this._editable.childs.control.guid == this.context.states.pointer.control && !this.context.states.drag)
 			this.context.setFocus(this._editable.childs.control.guid);
 	}
 
 	public onMouseDown(): void
 	{
-		if(this._editable.childs.control.guid == this.context.getStates().currentControl && this.context.getStates().focussed == this._editable.childs.control.guid)
+		if(this._editable.childs.control.guid == this.context.states.pointer.control && this.context.states.focussed == this._editable.childs.control.guid)
 		{
-			let x: number = this.context.getStates().pointClicked.x - this._editable.childs.label.point.x - this._editable.childs.label.padding.left - this._editable.childs.label.offset.x;
-			let y: number = this.context.getStates().pointClicked.y - this._editable.childs.label.point.y - this._editable.childs.label.padding.top - this._editable.childs.label.offset.y;
+			let x: number = this.context.states.pointer.clicked.x - this._editable.childs.label.x - this._editable.childs.label.padding.left - this._editable.childs.label.offset.x;
+			let y: number = this.context.states.pointer.clicked.y - this._editable.childs.label.y - this._editable.childs.label.padding.top - this._editable.childs.label.offset.y;
 			let boundingbox: {width: number, height: number} = this._editable.childs.label.boundingbox('j');
 			let row: number = Math.floor(y / (boundingbox.height + this._editable.childs.label.spacing));
 

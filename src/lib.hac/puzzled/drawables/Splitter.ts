@@ -8,9 +8,9 @@ export class Splitter extends Paperless.Drawable
 	private _puzzled: Puzzled;
 	//---
 
-	public constructor(point: Paperless.Point, rotation: number, puzzled: Puzzled)
+	public constructor(point: Paperless.Point, angle: number, puzzled: Puzzled)
 	{
-		super(point, {linewidth: 2, fillcolor: puzzled.color.marked, strokecolor: puzzled.color.faked, rotation: rotation});
+		super(point, {linewidth: 2, fillcolor: puzzled.color.marked, strokecolor: puzzled.color.faked, angle: angle});
 
 		this.size = new Paperless.Size(5, 20);
 		this._puzzled = puzzled;
@@ -25,23 +25,20 @@ export class Splitter extends Paperless.Drawable
 
 		this.clearPath();
 		
-		if(this.rotation == 90)
+		if(this.angle == 90)
 			this.path.rect(point.x + this._puzzled.spacing, point.y - this._puzzled.spacing, this.size.width, this.size.height);
 		else
 			this.path.rect(point.x + this._puzzled.spacing, point.y + this._puzzled.spacing, this.size.width, this.size.height);
+
+		this.path.closePath();
 	}
 
 	public draw(context2D: OffscreenCanvasRenderingContext2D): void
 	{
 		context2D.save();
-		context2D.translate(this.point.x , this.point.y);
-		context2D.rotate((Math.PI / 180) * this.rotation);
-		context2D.scale(this.scale.x, this.scale.y);
+		context2D.setTransform(this.matrix.a, this.matrix.b, this.matrix.c, this.matrix.d, this.matrix.e + this.offset.x, this.matrix.f + this.offset.y);
 
-		context2D.strokeStyle = this.strokecolor;
 		context2D.fillStyle = this.fillcolor;
-		context2D.lineWidth = this.linewidth;
-		context2D.stroke(this.path);
 		context2D.fill(this.path);
 
 		context2D.restore();

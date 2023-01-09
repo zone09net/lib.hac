@@ -13,6 +13,7 @@ export class Slider extends Paperless.Drawable
 		super(point, {linewidth: puzzled.linewidth, strokecolor: puzzled.color.sizer});
 
 		this.size = size;
+		this.hoverable = false;
 		this._puzzled = puzzled;
 
 		this.generate();
@@ -24,7 +25,7 @@ export class Slider extends Paperless.Drawable
 
 		this.clearPath();
 
-		if(this.rotation == 90)
+		if(this.angle == 90)
 		{
 			this.path.moveTo(point.x - (this.size.height / 2), point.y);
 			this.path.lineTo(point.x + (this.size.height / 2), point.y);
@@ -47,9 +48,7 @@ export class Slider extends Paperless.Drawable
 	public draw(context2D: OffscreenCanvasRenderingContext2D): void
 	{
 		context2D.save();
-		context2D.translate(this.point.x, this.point.y);
-		context2D.rotate((Math.PI / 180) * this.rotation);
-		context2D.scale(this.scale.x, this.scale.y);
+		context2D.setTransform(this.matrix.a, this.matrix.b, this.matrix.c, this.matrix.d, this.matrix.e + this.offset.x, this.matrix.f + this.offset.y);
 
 		context2D.strokeStyle = this.strokecolor;
 		context2D.lineWidth = this.linewidth;

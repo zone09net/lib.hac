@@ -4,6 +4,9 @@ import {Close} from '../controls/Close.js';
 import {Header} from '../controls/Header.js';
 import {Background} from '../controls/Background.js';
 import {Assets} from '../../puzzled/drawables/Assets.js';
+import {Puzzled} from '../../puzzled/components/Puzzled.js';
+import {EntityCoreControl} from '../../puzzled/controls/EntityCoreControl.js';
+import {EntityCoreDrawable} from '../../puzzled/drawables/EntityCoreDrawable.js';
 
 
 
@@ -11,9 +14,10 @@ export class Window extends Paperless.Component
 {
 	private _background: Paperless.Controls.Blank;
 	private _header: Paperless.Controls.Blank;
-	private _caption: Paperless.Drawables.Label;
+	private _puzzled: Puzzled;
 	private _close: Close;
 	private _attributes: IComponentWindowAttributes;
+	private _entities: Paperless.Group;
 	//---
 
 	public constructor(point: Paperless.Point, size: Paperless.Size, attributes: IComponentWindowAttributes = {})
@@ -21,65 +25,133 @@ export class Window extends Paperless.Component
 		super(point, size, attributes);
 
 		const {
-			padding = 10,
-			label = {},
+			padding = 5,
+			header = {},
 			rectangle = {},
-			artwork = {},
+			close = {},
 			puzzled = {},
 			sticky= true,
 		} = attributes;
 
 		this.sticky = sticky;
 		this._attributes = {
-			rectangle: {...{fillcolor: '#151515', strokecolor: '#815556', linewidth: 7}, ...rectangle, ...{sticky: sticky}},
-			label: {...{padding: {top: 6, left: 5}, fillcolor: '#151515', font: '16px SegoeUI-Bold'}, ...label, ...{sticky: sticky}},
-			artwork: {...{content: Assets.delete, shadowcolor: '#151515'}, ...artwork, ...{sticky: sticky}},
-			puzzled: {...{}, ...puzzled}
+			padding: padding,
+			rectangle: {...{fillcolor: '#151515', strokecolor: '#815556', linewidth: 2}, ...rectangle, ...{sticky: sticky}},
+			header: {...{visible: true, padding: {top: 4, left: 5}, fillcolor: '#151515'}, ...header, ...{sticky: sticky, nostroke: true}},
+			close: {...{visible: true, content: Assets.delete, shadowcolor: '#151515', hoverable: true, offset: {x: 0, y: 1}}, ...close, ...{sticky: sticky, autosize: true}},
+			puzzled: {...{}, ...puzzled, ...{sticky: sticky}}
 		}
 	}
 	
 	public onAttach(): void
 	{
-		let group: Paperless.Group = this.context.attach(new Paperless.Group());
 		let drawable: Paperless.Drawable;
 
+		this._entities = this.context.attach(new Paperless.Group());
 		this._background = this.context.attach(new Background());
-		this._header  = this.context.attach(new Header());
-		this._close = this.context.attach(new Close(() => { this.context.detach(this.guid); }));
 
-		drawable = this.context.attach(new Paperless.Drawables.Rectangle(this.point, this.size, this._attributes.rectangle));
+		drawable = this.context.attach(new Paperless.Drawables.Rectangle(this.point, new Paperless.Size(this.size.width + this._attributes.puzzled.spacing, this.size.height + this._attributes.puzzled.spacing), this._attributes.rectangle));
 		this._background.attach(drawable);
-		drawable = this.context.attach(new Paperless.Drawables.Rectangle(new Paperless.Point(this.point.x, this.point.y - (this.size.height / 2) + 16), new Paperless.Size(this.size.width - 2, 30), {fillcolor: this._attributes.rectangle.strokecolor, nostroke: true, sticky: this.sticky}));
-		this._header.attach(drawable);
-		drawable = this.context.attach(new Paperless.Drawables.Artwork(new Paperless.Point(this.point.x + (this.size.width / 2) - 11, this.point.y - (this.size.height / 2) + 15), new Paperless.Size(22, 22), this._attributes.artwork));
-		this._close.attach(drawable);
+		this._entities.attach(this._background.drawable);
 
-		this._caption = this.context.attach(new Paperless.Drawables.Label(new Paperless.Point(this.point.x, this.point.y - (this.size.height / 2) + 16), new Paperless.Size(this.size.width, 32), this._attributes.label));
+		if(this._attributes.header.visible)
+		{
+			this._puzzled = this.context.attach(new Puzzled(new Paperless.Point(this.point.x - ((this.size.width + this._attributes.puzzled.spacing) / 2) + this._attributes.padding, this.point.y - ((this.size.height + this._attributes.puzzled.spacing) / 2) + 26 + this._attributes.padding), this.size, this._attributes.puzzled));
+			this._header  = this.context.attach(new Header());
 
-		group.attach([
-			this._background.drawable, 
-			this._header.drawable, 
-			this._caption, 
-			this._close.drawable
-		]);
+			//drawable = this.context.attach(new Paperless.Drawables.Label(new Paperless.Point(this.point.x, this.point.y - (this.size.height / 2) + 14), new Paperless.Size(this.size.width - 2, 26), this._attributes.header));
+			drawable = this.context.attach(new Paperless.Drawables.Label(this.point, new Paperless.Size(this.size.width - 3 + this._attributes.puzzled.spacing, 26), {...this._attributes.header, ...{offset: {x: 0, y: (-this.size.height / 2) + 12}}}));
+			this._header.attach(drawable);
+			this._entities.attach(this._header.drawable);
+
+
+			if(this._attributes.close.visible)
+			{
+				this._close = this.context.attach(new Close(() => { this.context.detach(this.guid); }));
+	
+				//drawable = this.context.attach(new Paperless.Drawables.Artwork(new Paperless.Point(this.point.x + (this.size.width / 2) - 13, this.point.y - (this.size.height / 2) + 13), new Paperless.Size(0, 0), this._attributes.close));
+				drawable = this.context.attach(new Paperless.Drawables.Artwork(this.point, new Paperless.Size(0, 0), {...this._attributes.close, ...{offset: {x: (this.size.width / 2) - 11 + this._attributes.close.offset.x, y: (-this.size.height / 2) + 11 + this._attributes.close.offset.y}}}));
+				this._close.attach(drawable);
+				this._entities.attach(this._close.drawable);
+			}
+		}
+		else
+			this._puzzled = this.context.attach(new Puzzled(new Paperless.Point(this.point.x - ((this.size.width + this._attributes.puzzled.spacing) / 2) + this._attributes.padding, this.point.y - ((this.size.height + this._attributes.puzzled.spacing) / 2) + this._attributes.padding), this.size, this._attributes.puzzled));		
 	}
 		
 	public onDetach(): void
 	{
 		this.context.detach([
+			this._entities.guid,
 			this._background.drawable.guid, 
 			this._background.guid, 
-			this._caption.guid,
-			this._header.drawable.guid,
-			this._close.drawable.guid,
-			this._header.guid,
-			this._close.guid
+			this._puzzled.guid
 		]);
+
+		if(this._attributes.header.visible)
+		{
+			this.context.detach([
+				this._header.drawable.guid,
+				this._header.guid,
+			]);
+		}
+
+		if(this._attributes.close.visible)
+		{
+			this.context.detach([
+				this._close.drawable.guid,
+				this._close.guid,
+			]);
+		}
 	}
+
+	public open(): Promise<void>
+	{
+		return new Promise((resolve, reject) => {
+			resolve();
+		});
+	}
+
+	public close(): void
+	{
+		this.context.detach(this.guid);
+		this.context.refresh();
+	}
+
+	public new(entities: Array<{point?: Paperless.Point, size?: Paperless.Size, control: typeof EntityCoreControl, drawable: typeof EntityCoreDrawable, attributes?: any, backdoor?: any, transpose?: boolean}>): Paperless.Control
+	{
+		let control: Paperless.Control;
+
+		for(let entity of entities)
+		{
+			const {
+				attributes = {},
+			} = entity;
+			entity.attributes = attributes;
+
+			control = this._puzzled.new([{
+				point: entity.point,
+				size: entity.size,
+				control: entity.control,
+				drawable: entity.drawable,
+				transpose: entity.transpose,
+				attributes: { ...attributes, ...{sticky: this.sticky} },
+				backdoor: entity.backdoor
+			}]);
+
+			this._entities.attach(control.drawable);
+		}
+
+		return control;
+	}
+
 
 
 	// Accessors
 	// --------------------------------------------------------------------------
 	
-
+	public get puzzled(): Puzzled
+	{
+		return this._puzzled;
+	}
 }

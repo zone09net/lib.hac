@@ -4,13 +4,13 @@ import * as Paperless from '@zone09.net/paperless';
 
 export interface IComponentSelectorAttributes 
 {
-	padding?: {top?: number, bottom?: number, left?: number, right?: number},
+	padding?: Paperless.Interfaces.IPadding,
 	spacing?: number,
 }
 
 export interface IComponentSelectorAlignAttributes
 {
-	align?: Paperless.Enums.Align.Horizontal | Paperless.Enums.Align.Vertical,
+	restrict?: Paperless.Enums.Restrict.horizontal | Paperless.Enums.Restrict.vertical,
 	isolated?: number,
 	bypass?: boolean,
 	disableisolated?: boolean,

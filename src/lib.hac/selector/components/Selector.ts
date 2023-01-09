@@ -22,7 +22,7 @@ export class Selector extends Paperless.Component
 		} = attributes;
 
 		this._attributes = {
-			padding: {...{top: 0, bottom: 0, left: 0, right: 0}, ...padding},
+			padding: {...{top: 0, down: 0, left: 0, right: 0}, ...padding},
 			spacing: spacing,
 		};
 
@@ -90,11 +90,11 @@ export class Selector extends Paperless.Component
 		return this._manipulator;
 	}
 
-	get padding(): {top?: number, bottom?: number, left?: number, right?: number}
+	get padding(): Paperless.Interfaces.IPadding
 	{
 		return this._attributes.padding;
 	}
-	set padding(padding: {top?: number, bottom?: number, left?: number, right?: number})
+	set padding(padding: Paperless.Interfaces.IPadding)
 	{
 		this._attributes.padding = padding;
 	}

@@ -8,7 +8,7 @@
          "type": "pwa-chrome",
          "request": "launch",
          "name": "Launch Chrome against localhost",
-         "url": "https://dev.zone09.net",
+         "url": "https://dev.zone09.net/demo/hac/puzzled",
          //"webRoot": "${workspaceFolder}"
       }
    ]

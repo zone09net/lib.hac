@@ -7,6 +7,8 @@ import {Sizer as CSizer} from './Sizer.js';
 import {Sizer as DSizer} from '../drawables/Sizer.js';
 import {Splitter as CSplitter} from './Splitter.js';
 import {Splitter as DSplitter} from '../drawables/Splitter.js';
+import {EntityCoreDrawable} from '../drawables/EntityCoreDrawable.js';
+import {Restrict} from '../enums/Restrict.js';
 
 
 
@@ -56,17 +58,17 @@ export class EntityCoreControl extends Paperless.Control
 		this._highlightOrigin.size = new Paperless.Size(this.drawable.size.width, this.drawable.size.height);
 		this._highlightOrigin.generate();
 
-		this._origin = new Paperless.Point(this.drawable.point.x, this.drawable.point.y);
+		this._origin = new Paperless.Point(this.drawable.matrix.e, this.drawable.matrix.f);
 	}
 
 	public onDrag(): void
 	{
 		let context2D: OffscreenCanvasRenderingContext2D = this.context.context2D;
 
-		this._pointCurrent = this.context.getStates().pointCurrent;
+		this._pointCurrent = this.context.states.pointer.current;
 		this._pointCurrent = new Paperless.Point(
-			(Math.round((this._pointCurrent.x - this.context.getStates().pointDragMouseOffset.x - this.puzzled.point.x) / this.puzzled.hop) * this.puzzled.hop) + this._offsets.hopx - this._offsets.x,
-			(Math.round((this._pointCurrent.y - this.context.getStates().pointDragMouseOffset.y - this.puzzled.point.y) / this.puzzled.hop) * this.puzzled.hop) + this._offsets.hopy - this._offsets.y,
+			(Math.round((this._pointCurrent.x - this.context.smuggler.dragdiff.x - this.puzzled.point.x) / this.puzzled.hop) * this.puzzled.hop) + this._offsets.hopx - this._offsets.x,
+			(Math.round((this._pointCurrent.y - this.context.smuggler.dragdiff.y - this.puzzled.point.y) / this.puzzled.hop) * this.puzzled.hop) + this._offsets.hopy - this._offsets.y,
 		);
 
 		let guid: string = this.puzzled.getGuid(new Paperless.Point(this._pointCurrent.x, this._pointCurrent.y + this.puzzled.point.y), new Array(this.guid));
@@ -76,29 +78,31 @@ export class EntityCoreControl extends Paperless.Control
 
 			if(this._swappable)
 			{
-				
 				this._isSwappable = true;
-				this._highlightOrigin.point = new Paperless.Point(this._origin.x, this._origin.y);
+				this._highlightOrigin.matrix.e = this._origin.x;
+				this._highlightOrigin.matrix.f = this._origin.y;
 				this._highlightOrigin.draw(context2D);
 			}
 
-			this._highlightMoving.point = control.drawable.point;
+			this._highlightMoving.matrix.e = control.drawable.matrix.e;
+			this._highlightMoving.matrix.f = control.drawable.matrix.f;
 		}
 		else
 		{
 			this._isSwappable = false;
-			this._highlightMoving.point = new Paperless.Point(this._pointCurrent.x, this._pointCurrent.y + this.puzzled.point.y + this._offsets.y);
+			this._highlightMoving.matrix.e = this._pointCurrent.x;
+			this._highlightMoving.matrix.f = this._pointCurrent.y + this.puzzled.point.y + this._offsets.y;
 		}
-		
+
 		this._highlightMoving.draw(context2D);
 
 		context2D.shadowBlur = this.puzzled.shadow;
 		context2D.shadowColor = this.puzzled.color.move;
-		if(!this.puzzled.isMovable(this.guid, this._pointCurrent) && !this._isSwappable)
+		if(!this.puzzled.isMovable(this.guid, new Paperless.Point(this._pointCurrent.x, this._pointCurrent.y + this.puzzled.point.y + this._offsets.y)) && !this._isSwappable)
 		{
-			this._isMovable = false;
 			context2D.shadowColor = this.puzzled.color.nomove;
 			context2D.strokeStyle = this.puzzled.color.nomove;
+			this._isMovable = false;
 		}
 		else
 			this._isMovable = true;
@@ -108,44 +112,42 @@ export class EntityCoreControl extends Paperless.Control
 	{
 		if(!this._isMovable && !this._isSwappable)
 		{
-			//this.drawable.point = new Paperless.Point(this._origin.x, this._origin.y);
-			this.drawable.point.x = this._origin.x;
-			this.drawable.point.y = this._origin.y;
+			this.drawable.matrix.e = this._origin.x;
+			this.drawable.matrix.f = this._origin.y;
 			this.onCancel();
 		}
 
 		else if(this._isSwappable)
 		{
-			let promise = this.onSwapping(this.drawable.point);
+			let promise = this.onSwapping(new Paperless.Point(this.drawable.matrix.e, this.drawable.matrix.f));
 
 			promise.then(
 				success => {
 					let guid: string = this.puzzled.getGuid(this._pointCurrent, new Array(this.guid));
 					let control: EntityCoreControl = this.puzzled.extractGuid(guid);
 					
-					this.drawable.point.x = this._highlightMoving.point.x;
-					this.drawable.point.y = this._highlightMoving.point.y;
+					this.drawable.matrix.e = this._highlightMoving.matrix.e;
+					this.drawable.matrix.f = this._highlightMoving.matrix.f;
  
-					//control.drawable.point = new Paperless.Point(this._origin.x, this._origin.y);
-					control.drawable.point.x = this._origin.x;
-					control.drawable.point.y = this._origin.y;
+					control.drawable.matrix.e = this._origin.x;
+					control.drawable.matrix.f = this._origin.y;
 
-					control.onSwapped(this._highlightMoving.point);
+					control.onSwapped(new Paperless.Point(this._highlightMoving.matrix.e, this._highlightMoving.matrix.f));
 					this.onSwapped(this._origin);
 				},
 				error => {
-					this.drawable.point = new Paperless.Point(this._origin.x, this._origin.y);
+					this.drawable.matrix.e = this._origin.x;
+					this.drawable.matrix.f = this._origin.y;
 				}
 			);
 		}
 
 		else if(this._isMovable)
 		{
-			//this.drawable.point = new Paperless.Point(this._highlightMoving.point.x, this._highlightMoving.point.y);
-			this.drawable.point.x = this._highlightMoving.point.x;
-			this.drawable.point.y = this._highlightMoving.point.y;
+			this.drawable.matrix.e = this._highlightMoving.matrix.e;
+			this.drawable.matrix.f = this._highlightMoving.matrix.f;
 
-			let promise: Promise<unknown> = this.onMoving(this.drawable.point);
+			let promise: Promise<unknown> = this.onMoving(new Paperless.Point(this.drawable.matrix.e, this.drawable.matrix.f));
 
 			promise.then(
 				success => {
@@ -155,9 +157,8 @@ export class EntityCoreControl extends Paperless.Control
 					this.onMoved(this._origin);
 				},
 				error => {
-					//this.drawable.point = new Paperless.Point(this._origin.x, this._origin.y);
-					this.drawable.point.x = this._origin.x;
-					this.drawable.point.y = this._origin.y;
+					this.drawable.matrix.e = this._origin.x;
+					this.drawable.matrix.f = this._origin.y;
 				}
 			);
 		}
@@ -224,7 +225,7 @@ export class EntityCoreControl extends Paperless.Control
 
 	public onIconsDefault(): void
 	{
-		let pointBottomRight: Paperless.Point = new Paperless.Point(this.drawable.point.x + this.drawable.size.width - 9, this.drawable.point.y + this.drawable.size.height);
+		let pointBottomRight: Paperless.Point = new Paperless.Point(this.drawable.matrix.e + this.drawable.size.width - 9, this.drawable.matrix.f + this.drawable.size.height);
 
 		this.attachIcon(pointBottomRight, new Paperless.Size(22, 22), Assets.delete, () => {
 			this.toggleMarker();
@@ -234,38 +235,42 @@ export class EntityCoreControl extends Paperless.Control
 
 	public onIconsRefresh(): void {}
 
-	public toggleMarker(ignoregroup: boolean = false): void
+	public toggleMarker(restrict: Restrict = Restrict.none): void
 	{
 		if(this.puzzled.getMarker() == this.guid)
 		{
-			if(this.puzzled.group != undefined && ignoregroup == false)
+			/*
+			if(this.puzzled.group != undefined && restrict == Restrict.none)
 			{
 				let group: Paperless.Group = this.context.get(this.puzzled.group);
 
-				group.map.forEach((value: any, key: number) => {
-					if(value[1].object.constructor.name == 'Puzzled')
-						value[1].object.detach(value[1].object.getIcons());
+				group.map.forEach((entry: any) => {
+					if(entry.object.constructor.name == 'Puzzled')
+						entry.object.detach(entry.object.getIcons());
 				});
 			}
 			else
+			*/
 				this.puzzled.detach(this.puzzled.getIcons());
 
 			this.puzzled.removeMarker();
 		}
 		else
 		{
-			if(this.puzzled.group != undefined && ignoregroup == false)
+			/*
+			if(this.puzzled.group != undefined && restrict == Restrict.none)
 			{
 				let group: Paperless.Group = this.context.get(this.puzzled.group);
 
-				group.map.forEach((value: any, key: number) => {
-					if(value[1].object.constructor.name == 'Puzzled')
-						value[1].object.detach(value[1].object.getIcons());
+				group.map.forEach((entry: any) => {
+					if(entry.object.constructor.name == 'Puzzled')
+						entry.object.detach(entry.object.getIcons());
 				});
 			}
-			
+			*/
+
 			this.puzzled.removeMarker();
-			this.puzzled.setMarker(this.drawable.point);
+			this.puzzled.setMarker(new Paperless.Point(this.drawable.matrix.e, this.drawable.matrix.f));
 			this.refreshIcons();
 		}
 	}
@@ -300,37 +305,38 @@ export class EntityCoreControl extends Paperless.Control
 	{
 		let expandable: {left: boolean, right: boolean, top: boolean, bottom: boolean} = this.puzzled.isExpandable(this.guid);
 		let shrinkable: {width: boolean, height: boolean} = this.puzzled.isShrinkable(this.guid);
-		let pointLeft: Paperless.Point = new Paperless.Point(this.drawable.point.x, this.drawable.point.y + ((this.drawable.size.height - this.puzzled.spacing) / 2));
-		let pointRight: Paperless.Point = new Paperless.Point(this.drawable.point.x + this.drawable.size.width - this.puzzled.spacing, this.drawable.point.y + ((this.drawable.size.height - this.puzzled.spacing) / 2));
-		let pointTop: Paperless.Point = new Paperless.Point(this.drawable.point.x + ((this.drawable.size.width - this.puzzled.spacing) / 2), this.drawable.point.y);
-		let pointBottom: Paperless.Point = new Paperless.Point(this.drawable.point.x + ((this.drawable.size.width - this.puzzled.spacing) / 2), this.drawable.point.y + this.drawable.size.height - this.puzzled.spacing);
-		
+		let pointLeft: Paperless.Point = new Paperless.Point(this.drawable.matrix.e, this.drawable.matrix.f + ((this.drawable.size.height - this.puzzled.spacing) / 2));
+		let pointRight: Paperless.Point = new Paperless.Point(this.drawable.matrix.e + this.drawable.size.width - this.puzzled.spacing, this.drawable.matrix.f + ((this.drawable.size.height - this.puzzled.spacing) / 2));
+		let pointTop: Paperless.Point = new Paperless.Point(this.drawable.matrix.e + ((this.drawable.size.width - this.puzzled.spacing) / 2), this.drawable.matrix.f);
+		let pointBottom: Paperless.Point = new Paperless.Point(this.drawable.matrix.e + ((this.drawable.size.width - this.puzzled.spacing) / 2), this.drawable.matrix.f + this.drawable.size.height - this.puzzled.spacing);
+		let redraw: boolean = expandable.left || expandable.right || expandable.top || expandable.bottom;
+
 		this.puzzled.detach(this.puzzled.getIcons());
 
 		if(this._shrinkable)
 		{
 			if(shrinkable.width)
 			{
-				this.addSizer(pointLeft, 270, 90, 'shrinkFromLeft', 'shrinkFromLeftMin');
-				this.addSizer(pointRight, 90, 270, 'shrinkFromRight', 'shrinkFromRightMin');
+				this.addSizer(pointLeft, 270, 90, 'shrinkFromLeft', 'shrinkFromLeftMin', redraw);
+				this.addSizer(pointRight, 90, 270, 'shrinkFromRight', 'shrinkFromRightMin', redraw);
 			}
 			if(shrinkable.height)
 			{
-				this.addSizer(pointTop, 0, 180, 'shrinkFromTop', 'shrinkFromTopMin');
-				this.addSizer(pointBottom, 180, 0, 'shrinkFromBottom', 'shrinkFromBottomMin');
+				this.addSizer(pointTop, 0, 180, 'shrinkFromTop', 'shrinkFromTopMin', redraw);
+				this.addSizer(pointBottom, 180, 0, 'shrinkFromBottom', 'shrinkFromBottomMin', redraw);
 			}
 		}
 
 		if(this._expandable)
 		{
 			if(expandable.left)
-				this.addSizer(pointLeft, 90, 270, 'expandFromLeft', 'expandFromLeftMax');
+				this.addSizer(pointLeft, 90, 270, 'expandFromLeft', 'expandFromLeftMax', redraw);
 			if(expandable.right)
-				this.addSizer(pointRight, 270, 90, 'expandFromRight', 'expandFromRightMax');
+				this.addSizer(pointRight, 270, 90, 'expandFromRight', 'expandFromRightMax', redraw);
 			if(expandable.top)
-				this.addSizer(pointTop, 180, 0, 'expandFromTop', 'expandFromTopMax');
+				this.addSizer(pointTop, 180, 0, 'expandFromTop', 'expandFromTopMax', redraw);
 			if(expandable.bottom)
-				this.addSizer(pointBottom, 0, 180, 'expandFromBottom', 'expandFromBottomMax');
+				this.addSizer(pointBottom, 0, 180, 'expandFromBottom', 'expandFromBottomMax', redraw);
 		}
 
 		if(this._splittable)
@@ -340,28 +346,24 @@ export class EntityCoreControl extends Paperless.Control
 				pointLeft.x += 17;
 				pointRight.x -= 17;
 
-				this.addSplitter(pointLeft, 0, 'splitFromLeft', undefined);
-				this.addSplitter(pointRight, 0, 'splitFromRight', undefined);
+				this.addSplitter(pointLeft, 0, 'splitFromLeft', undefined, redraw);
+				this.addSplitter(pointRight, 0, 'splitFromRight', undefined, redraw);
 			}
 			if(shrinkable.height)
 			{
 				pointTop.y += 17;
 				pointBottom.y -= 17;
 
-				this.addSplitter(pointTop, 90, 'splitFromTop', undefined);
-				this.addSplitter(pointBottom, 90, 'splitFromBottom', undefined);
+				this.addSplitter(pointTop, 90, 'splitFromTop', undefined, redraw);
+				this.addSplitter(pointBottom, 90, 'splitFromBottom', undefined, redraw);
 			}
 		}
 
 		this.onIconsDefault();
 		this.onIconsRefresh();
-
-		this.context.getDrawables().sort();
-		this.context.getControls().reverse();
-		//this.context.canvas.dispatchEvent(new MouseEvent('mousemove', {clientX: this.context.getStates().pointClicked.x, clientY: this.context.getStates().pointClicked.y}));
 	}
 
-	private addSizer(point: Paperless.Point, angle1: number, angle2: number, leftClickCallback: string, rightClickCallback: string): void
+	private addSizer(point: Paperless.Point, angle1: number, angle2: number, leftClickCallback: string, rightClickCallback: string, redraw: boolean): void
 	{
 		point = new Paperless.Point(point.x, point.y);
 
@@ -369,27 +371,39 @@ export class EntityCoreControl extends Paperless.Control
 		let icon: CSizer = this.context.attach(new CSizer(
 			this.puzzled,
 			this,
-			() => { this.puzzled[leftClickCallback](this.guid); this.refreshIcons(); },
-			() => { this.puzzled[rightClickCallback](this.guid); this.refreshIcons(); }
+			() => {
+				this.puzzled[leftClickCallback](this.guid); 
+				(<EntityCoreDrawable>this.drawable).generate(redraw); 
+				this.refreshIcons(); 
+			},
+			() => { 
+				this.puzzled[rightClickCallback](this.guid); 
+				(<EntityCoreDrawable>this.drawable).generate(redraw); 
+				this.refreshIcons(); 
+			}
 		));
 		icon.attach(drawable);
 
 		if(leftClickCallback == 'shrinkFromLeft' || leftClickCallback == 'shrinkFromRight' || leftClickCallback == 'expandFromLeft' || leftClickCallback == 'expandFromRight')
-			icon.movement = 'horizontal';
+			icon.restrict = Paperless.Enums.Restrict.horizontal;
 		else if(leftClickCallback == 'shrinkFromTop' || leftClickCallback == 'shrinkFromBottom' || leftClickCallback == 'expandFromTop' || leftClickCallback == 'expandFromBottom')
-			icon.movement = 'vertical';
+			icon.restrict = Paperless.Enums.Restrict.vertical;
 
 		this.puzzled.attach(icon);
 	}
 
-	private addSplitter(point: Paperless.Point, angle: number, leftClickCallback: string, rightClickCallback: string): void
+	private addSplitter(point: Paperless.Point, angle: number, leftClickCallback: string, rightClickCallback: string, redraw: boolean): void
 	{
 		point = new Paperless.Point(point.x, point.y);
 
 		let drawable: Paperless.Drawable = this.context.attach(new DSplitter(point, angle, this.puzzled));
 		let icon: CSplitter = this.context.attach(new CSplitter(
 			this.puzzled,
-			() => { this.puzzled[leftClickCallback](this.guid); this.drawable.generate(); this.refreshIcons(); },
+			() => { 
+				this.puzzled[leftClickCallback](this.guid); 
+				(<EntityCoreDrawable>this.drawable).generate(redraw); 
+				this.refreshIcons(); 
+			},
 			() => { }
 		));
 		icon.attach(drawable);

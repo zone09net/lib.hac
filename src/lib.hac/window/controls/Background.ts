@@ -10,9 +10,4 @@ export class Background extends Paperless.Controls.Button
 
 		this.movable = false;
 	}
-
-	public onFocus(): void
-	{
-		this.drawable.toFront();
-	}
 }

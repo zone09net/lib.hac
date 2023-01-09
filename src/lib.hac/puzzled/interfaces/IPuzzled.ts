@@ -4,7 +4,7 @@ import {EntityCoreDrawable} from '../drawables/EntityCoreDrawable.js';
 
 
 
-export interface IComponentPuzzledAttributes extends Paperless.IComponentAttributes {
+export interface IComponentPuzzledAttributes extends Paperless.Interfaces.IComponentAttributes {
 	hop?: number,
 	expandable?: boolean,
 	nostroke?: boolean,

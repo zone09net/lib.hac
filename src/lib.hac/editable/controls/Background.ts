@@ -30,7 +30,7 @@ export class Background extends Paperless.Controls.Blank
 	public onFocus()
 	{
 		this._colorsave = this.drawable.strokecolor;
-		this.drawable.strokecolor = this._editable.focus;
+		this.drawable.strokecolor = this._editable.focuscolor;
 
 		if(this._editable.childs.cursor)
 			this.context.attach(this._editable.childs.cursor);

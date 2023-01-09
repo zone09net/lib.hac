@@ -14,7 +14,7 @@ export class EntityCoreControl extends Control
 
 	public attachPalette(): void
 	{
-		let palette: Palette = new Palette(this.drawable.point, (fillcolor: string, strokecolor: string) => {
+		let palette: Palette = new Palette(new Paperless.Point(this.drawable.x, this.drawable.y), (fillcolor: string, strokecolor: string) => {
 			this._fillcolor2 = fillcolor;
 			this._strokecolor2 = strokecolor;
 		

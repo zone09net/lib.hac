@@ -2,7 +2,7 @@ import * as Paperless from '@zone09.net/paperless';
 
 
 
-export interface IComponentPaletteAttributes extends Paperless.IComponentAttributes 
+export interface IComponentPaletteAttributes extends Paperless.Interfaces.IComponentAttributes 
 {
 	fillcolor?: string,
 	strokecolor?: string,

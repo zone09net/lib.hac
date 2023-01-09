@@ -36,12 +36,15 @@ export class EntityCoreDrawable extends Paperless.Drawable
 		let points: Array<Paperless.Point> = [];
 		let point: Paperless.Point = new Paperless.Point(0, 0);
 
+		if((<any>this.points)['origin'])
+			(<any>points)['origin'] = (<any>this.points)['origin'];
+			
 		points[0] = new Paperless.Point(point.x + this.puzzled.spacing, point.y + this.puzzled.spacing);																				// top left
 		points[1] = new Paperless.Point(point.x + this.size.width - this.puzzled.spacing, point.y + this.size.height - this.puzzled.spacing);								// bottom right
 		
 		if(this.puzzled.getMarker() && expandable)
 		{
-			let guid: string = this.puzzled.getGuid(this.point);
+			let guid: string = this.puzzled.getGuid(new Paperless.Point(this.x, this.y));
 			let expandable: {left: boolean, right: boolean, top: boolean, bottom: boolean} = this.puzzled.isExpandable(guid);
 			//let shrinkable: {width: boolean, height: boolean} = this.puzzled.isShrinkable(guid);
 
@@ -107,22 +110,20 @@ export class EntityCoreDrawable extends Paperless.Drawable
 
 	public draw(context2D: OffscreenCanvasRenderingContext2D): void
 	{
-		let ismarked: boolean = false;
+		//let ismarked: boolean = false;
 
 		context2D.save();
-		context2D.translate(this.point.x, this.point.y);
-		context2D.rotate((Math.PI / 180) * this.rotation);
-		context2D.scale(this.scale.x, this.scale.y);
+		context2D.setTransform(this.matrix.a, this.matrix.b, this.matrix.c, this.matrix.d, this.matrix.e + this.offset.x, this.matrix.f + this.offset.y);
 
 		context2D.strokeStyle = this.strokecolor;
 
-		if(this.puzzled.getMarker() && !this.context.getStates().isDragging)
+		if(this.puzzled.getMarker() && !this.context.states.drag)
 		{
 			let control: Paperless.Control = this.puzzled.extractGuid(this.puzzled.getMarker());
 
 			if(control.drawable.guid == this.guid)
 			{
-				ismarked = true;
+				//ismarked = true;
 				context2D.shadowBlur = this.puzzled.shadow;
 				context2D.shadowColor = this.puzzled.color.marked;
 				context2D.strokeStyle = this.puzzled.color.marked;
@@ -143,13 +144,14 @@ export class EntityCoreDrawable extends Paperless.Drawable
 		context2D.shadowBlur = 0;
 		
 		this.onDraw(context2D);
+		
 		/*
 		if(!this.nostroke && ismarked)
 		{
 			context2D.translate(this.point.x, this.point.y);
-			context2D.rotate((Math.PI / 180) * this.rotation);
+			context2D.rotate((Math.PI / 180) * this.angle);
 			context2D.scale(this.scale.x, this.scale.y);
-			context2D.strokeStyle = this.puzzled.color.faked;
+			context2D.strokeStyle = 'this.puzzled.color.faked';
 			context2D.stroke(this._contour);
 		}
 		*/

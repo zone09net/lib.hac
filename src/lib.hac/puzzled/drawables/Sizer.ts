@@ -32,14 +32,9 @@ export class Sizer extends Paperless.Drawable
 	public draw(context2D: OffscreenCanvasRenderingContext2D): void
 	{
 		context2D.save();
-		context2D.translate(this.point.x, this.point.y);
-		context2D.rotate((Math.PI / 180) * this.rotation);
-		context2D.scale(this.scale.x, this.scale.y);
+		context2D.setTransform(this.matrix.a, this.matrix.b, this.matrix.c, this.matrix.d, this.matrix.e + this.offset.x, this.matrix.f + this.offset.y);
 
-		context2D.strokeStyle = this.strokecolor;
 		context2D.fillStyle = this.fillcolor;
-		context2D.lineWidth = this.linewidth;
-		context2D.stroke(this.path);
 		context2D.fill(this.path);
 
 		context2D.restore();

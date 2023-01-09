@@ -2,11 +2,11 @@ import * as Paperless from '@zone09.net/paperless';
 import * as HaC from '../../../lib.hac.js';
 
 
-export interface IComponentWindowAttributes extends Paperless.IComponentAttributes
+export interface IComponentWindowAttributes extends Paperless.Interfaces.IComponentAttributes
 {
 	padding?: number,
-	label?: Paperless.IDrawableLabelAttributes,
-	rectangle?: Paperless.IDrawableAttributes,
-	artwork?: Paperless.IDrawableArtworkAttributes,
+	header?: Paperless.Interfaces.IDrawableLabelAttributes,
+	rectangle?: Paperless.Interfaces.IDrawableAttributes,
+	close?: Paperless.Interfaces.IDrawableArtworkAttributes,
 	puzzled?: HaC.Interfaces.Puzzled.IComponentPuzzledAttributes
 }

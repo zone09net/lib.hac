@@ -3,30 +3,30 @@ import * as HaC from '@zone09.net/hac';
 
 
 
-let context: Paperless.Context = new Paperless.Context({stageOffset: 0, autosize: true});
+let context: Paperless.Context = new Paperless.Context({autosize: true});
 context.attach(document.body);
 
+let colors: Array<string> = ["#815556", "#436665", "#9a6c27", "#769050", "#c8af55"];
 
-/*
+
+
 // palette
-let palette: HaC.Components.Palette = new HaC.Components.Palette(new Paperless.Point(window.innerWidth / 2, window.innerHeight / 2), (fillcolor: string, strokecolor: string) => {
+let palette: HaC.Components.Palette = new HaC.Components.Palette(new Paperless.Point(600, 175), (fillcolor: string, strokecolor: string) => {
 	console.log('fillcolor', fillcolor, 'strokecolor', strokecolor);
-
 });
 context.attach(palette);
-*/
 
 
-/*
+
 // editable
-context.attach(new HaC.Components.Editable(new Paperless.Point(16, 16), new Paperless.Size(500, 500), {
+context.attach(new HaC.Components.Editable(new Paperless.Point(0, 100), new Paperless.Size(240, 150), {
+	focuscolor: colors[1],
 	label: {
 		content: '',
 		font: '14px CPMono-v07-Light',
 		padding: {top: 5, left: 5},
-		//fillcolor: '#ff9999',
 		fillbackground: '#000000',
-		strokecolor: '#666666',
+		strokecolor: colors[0],
 		wrapping: true,
 		spacing: 3,
 		multiline: true,
@@ -39,33 +39,45 @@ context.attach(new HaC.Components.Editable(new Paperless.Point(16, 16), new Pape
 				0: {fillcolor: '#999999'},
 			},
 		},
-		offset: {x: 15, y: 15}
+		offset: {x: 10, y: 0}
 	},
 	cursor: {
+		fillcolor: colors[1],
 		blink: false,
 		alpha: 0.5,
 		width: 9
 	}
-
 }));
-context.attach(new HaC.Components.Editable(new Paperless.Point(532, 16), new Paperless.Size(500, 500), {
+
+context.attach(new HaC.Components.Editable(new Paperless.Point(250, 100), new Paperless.Size(240, 150), {
+	focuscolor: colors[1],
 	label: {
 		content: '',
-		font: '16px CPMono-v07-Light',
+		font: '14px CPMono-v07-Light',
 		padding: {top: 5, left: 5},
-		fillcolor: '#999999',
 		fillbackground: '#000000',
-		strokecolor: '#666666',
+		strokecolor: colors[0],
 		wrapping: true,
 		spacing: 3,
 		multiline: true,
 		nostroke: false,
-		
+		filter: {
+			0: {
+				0: {fillcolor: '#ffffff'},
+			},
+			1: {
+				0: {fillcolor: '#999999'},
+			},
+		},
+		offset: {x: 10, y: 0}
 	},
-	//color: { cursor: '#ff0000'},
-
+	cursor: {
+		fillcolor: colors[1],
+		blink: false,
+		alpha: 0.5,
+		width: 9
+	}
 }));
-*/
 
 
 // selector
@@ -74,26 +86,22 @@ let item2: HaC.Controls.Selector.Item = context.attach(new HaC.Controls.Selector
 let item3: HaC.Controls.Selector.Item = context.attach(new HaC.Controls.Selector.Item());
 let item4: HaC.Controls.Selector.Item = context.attach(new HaC.Controls.Selector.Item());
 let item5: HaC.Controls.Selector.Item = context.attach(new HaC.Controls.Selector.Item());
-let item6: HaC.Controls.Selector.Item = context.attach(new HaC.Controls.Selector.Item());
-let item7: HaC.Controls.Selector.Item = context.attach(new HaC.Controls.Selector.Item());
 
-item1.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {fillcolor: '#87172f'})));
-item2.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {fillcolor: '#87aa2f'})));
-item3.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {fillcolor: '#b9aab5'})));
-item4.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {fillcolor: '#6bea75'})));
-item5.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {fillcolor: '#87aa2f'})));
-item6.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {fillcolor: '#b9aab5'})));
-item7.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {fillcolor: '#6bea75'})));
+item1.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {nostroke: true, fillcolor: colors[0]})));
+item2.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {nostroke: true, fillcolor: colors[1]})));
+item3.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {nostroke: true, fillcolor: colors[2]})));
+item4.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {nostroke: true, fillcolor: colors[3]})));
+item5.attach(context.attach(new Paperless.Drawables.Circle(new Paperless.Point(0, 0), 15, 0, {nostroke: true, fillcolor: colors[4]})));
 
 let manipulator: HaC.Controls.Selector.Align = new HaC.Controls.Selector.Align({
-	//align: Paperless.Enums.Align.Vertical,
-	//direction: {
-	//	fadeout: Paperless.Enums.Direction.Right,
-	//	fadein: Paperless.Enums.Direction.Left,
-	//	shift: Paperless.Enums.Direction.Down
-	//}
+	restrict: Paperless.Enums.Restrict.horizontal,
+	direction: {
+		fadeout: Paperless.Enums.Direction.down,
+		fadein: Paperless.Enums.Direction.top,
+		shift: Paperless.Enums.Direction.right
+	}
 });
-let selector: HaC.Components.Selector = new HaC.Components.Selector(new Paperless.Point(0, 0), new Paperless.Size(500, 500), manipulator, {padding: {top: 10, left: 10}});
+let selector: HaC.Components.Selector = new HaC.Components.Selector(new Paperless.Point(0, 0), new Paperless.Size(500, 300), manipulator, {padding: {top: 10, left: 10}});
 
 selector.attach([
 	item1, 
@@ -101,21 +109,10 @@ selector.attach([
 	item3, 
 	item4,
 	item5,
-	item6,
-	item7
 ]);
 
 context.attach(selector);
 
-console.log(context.getControls())
-console.log(context.getDrawables())
-
-console.log('***');
-
-context.detach(selector.guid)
-
-console.log(context.getControls())
-console.log(context.getDrawables())
 
 
 /*
@@ -141,9 +138,9 @@ popup.show().then(() => {
 */
 
 
+
+
 /*
-
-
 // label & editor
 // ----------
 
@@ -188,8 +185,8 @@ context.attach(new HaC.Components.Editable(new Paperless.Point(486, 50), new Pap
 		},
 	}
 }));
-
 */
+
 
 
 

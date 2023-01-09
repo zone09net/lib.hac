@@ -2,17 +2,11 @@ import * as Paperless from '@zone09.net/paperless';
 
 
 
-export interface IComponentPopopAttributes extends Paperless.IComponentAttributes
+export interface IComponentPopopAttributes extends Paperless.Interfaces.IComponentAttributes
 {
-	topic?: string,
-	topicColor?: string,
-	topicFont?: string,
-	subtopic?: string,
-	subtopicColor?: string,
-	subtopicFont?: string,
-	detail?: string,
-	detailColor?: string,
-	detailFont?: string,
-	detailWidth?: number,
-	noClick?: boolean
+	title?: Paperless.Interfaces.IDrawableLabelAttributes,
+	detail?: Paperless.Interfaces.IDrawableLabelAttributes,
+	dark?: Paperless.Interfaces.IDrawableAttributes,
+	width?: number,
+	noclick?: boolean,
 }

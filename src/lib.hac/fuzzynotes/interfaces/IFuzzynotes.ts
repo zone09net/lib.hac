@@ -3,19 +3,19 @@ import {IComponentPuzzledAttributes} from '../../puzzled/interfaces/IPuzzled.js'
 
 
 
-interface IDrawableShadeAttributes extends Paperless.IDrawableAttributes
+interface IDrawableShadeAttributes extends Paperless.Interfaces.IDrawableAttributes
 {
 	top?: number,
 	bottom?: number,
 	overflow?: number
 }
 
-export interface IComponentFuzzynotesAttributes extends Paperless.IComponentAttributes 
+export interface IComponentFuzzynotesAttributes extends Paperless.Interfaces.IComponentAttributes 
 {
 	puzzled?: IComponentPuzzledAttributes,
-	background?: Paperless.IDrawableAttributes,
-	borders?: Paperless.IDrawableAttributes,
-	resetter?: Paperless.IDrawableAttributes,
+	background?: Paperless.Interfaces.IDrawableAttributes,
+	borders?: Paperless.Interfaces.IDrawableAttributes,
+	resetter?: Paperless.Interfaces.IDrawableAttributes,
 	shade?: IDrawableShadeAttributes,
-	padding?: {top?: number, bottom?: number, left?: number, right?: number},
+	padding?: Paperless.Interfaces.IPadding,
 }

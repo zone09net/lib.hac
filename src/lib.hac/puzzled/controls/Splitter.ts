@@ -14,7 +14,6 @@ export class Splitter extends Paperless.Controls.Button
 
 		this.movable = false;
 		this.focusable = false;
-
 		this._puzzled = puzzled;
 	}
 

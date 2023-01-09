@@ -5,6 +5,7 @@ import {Sizer} from '../controls/Sizer.js';
 import {Splitter} from '../controls/Splitter.js';
 import {EntityCoreControl} from '../controls/EntityCoreControl.js';
 import {EntityCoreDrawable} from '../drawables/EntityCoreDrawable.js';
+import {Restrict} from '../enums/Restrict.js';
 
 
 
@@ -12,7 +13,7 @@ export class Puzzled extends Paperless.Component
 {
 	[key: string]: any;
 	
-	private _entities: {[index:string] : EntityCoreControl} = {};
+	private _entities: {[index: string] : EntityCoreControl} = {};
 	private _attributes: IComponentPuzzledAttributes;
 	private _marker: string = null;
 	private _icons: Array<Icon | Sizer | Splitter> = [];
@@ -82,9 +83,9 @@ export class Puzzled extends Paperless.Component
 
 		for(let control of this.getControls())
 		{
+			delete this._entities[control.guid];
 			this.context.detach(control.drawable.guid);
 			this.context.detach(control.guid);
-			delete this._entities[control.guid];
 		}
 	}
 
@@ -106,9 +107,9 @@ export class Puzzled extends Paperless.Component
 
 		else if(object instanceof EntityCoreControl)
 		{
+			delete this._entities[object.guid];
 			this.context.detach(object.drawable.guid);
 			this.context.detach(object.guid);
-			delete this._entities[object.guid];
 		}
 
 		else if(object instanceof Array)
@@ -130,17 +131,17 @@ export class Puzzled extends Paperless.Component
 		}
 	}
 
-	public getIcons(ignoregroup: boolean = false): Array<Icon | Sizer | Splitter>
+	public getIcons(restrict: Restrict = Restrict.none): Array<Icon | Sizer | Splitter>
 	{
 		let icons: (Icon | Sizer | Splitter)[] = [];
 
-		if(this.group != undefined && ignoregroup == false)
+		if(this.group != undefined && restrict == Restrict.none)
 		{
 			let group: Paperless.Group = this.context.get(this.group);
 
-			group.map.forEach((value: any, key: number) => {
-				if(value[1].object.constructor.name == 'Puzzled')
-					icons = [...icons, ...value[1].object._icons];
+			group.map.forEach((entry: any) => {
+				if(entry.object.constructor.name == 'Puzzled')
+					icons = [...icons, ...entry.object._icons];
 			});
 		}
 		else
@@ -149,17 +150,17 @@ export class Puzzled extends Paperless.Component
 		return icons;
 	}
 
-	public getEntities(ignoregroup: boolean = false): {[index: string] : EntityCoreControl}
+	public getEntities(restrict: Restrict = Restrict.none): {[index: string] : EntityCoreControl}
 	{
 		let entities: {[index:string] : EntityCoreControl} = {};
 
-		if(this.group != undefined && ignoregroup == false)
+		if(this.group != undefined && restrict == Restrict.none)
 		{
 			let group: Paperless.Group = this.context.get(this.group);
 
-			group.map.forEach((value: any, key: number) => {
-				if(value[1].object.constructor.name == 'Puzzled')
-					entities = {...entities, ...value[1].object._entities};
+			group.map.forEach((entry: any) => {
+				if(entry.object.constructor.name == 'Puzzled')
+					entities = {...entities, ...entry.object._entities};
 			});
 		}
 		else
@@ -168,19 +169,19 @@ export class Puzzled extends Paperless.Component
 		return entities;
 	}
 
-	public getControls(ignoregroup: boolean = false): Array<EntityCoreControl>
+	public getControls(restrict: Restrict = Restrict.none): Array<EntityCoreControl>
 	{
 		let controls: Array<EntityCoreControl> = [];
 
-		if(this.group != undefined && ignoregroup == false)
+		if(this.group != undefined && restrict == Restrict.none)
 		{
 			let group: Paperless.Group = this.context.get(this.group);
 
-			group.map.forEach((value: any, key: number) => {
-				if(value[1].object.constructor.name == 'Puzzled')
+			group.map.forEach((entry: any) => {
+				if(entry.object.constructor.name == 'Puzzled')
 				{
-					for(let guid in value[1].object._entities)
-						controls.push(value[1].object._entities[guid]);
+					for(let guid in entry.object._entities)
+						controls.push(entry.object._entities[guid]);
 				}
 			});
 		}
@@ -193,19 +194,19 @@ export class Puzzled extends Paperless.Component
 		return controls;
 	}
 
-	public getDrawables(ignoregroup: boolean = false): Array<EntityCoreDrawable>
+	public getDrawables(restrict: Restrict = Restrict.none): Array<EntityCoreDrawable>
 	{
 		let drawables: Array<EntityCoreDrawable> = [];
 
-		if(this.group != undefined && ignoregroup == false)
+		if(this.group != undefined && restrict == Restrict.none)
 		{
 			let group: Paperless.Group = this.context.get(this.group);
 
-			group.map.forEach((value: any, key: number) => {
-				if(value[1].object.constructor.name == 'Puzzled')
+			group.map.forEach((entry: any) => {
+				if(entry.object.constructor.name == 'Puzzled')
 				{
-					for(let guid in value[1].object._entities)
-						drawables.push(value[1].object._entities[guid].drawable);
+					for(let guid in entry.object._entities)
+						drawables.push(entry.object._entities[guid].drawable);
 				}
 			});
 		}
@@ -222,10 +223,10 @@ export class Puzzled extends Paperless.Component
 	{
 		for(let guid in this._entities)
 		{
-			if(point.x >= this._entities[guid].drawable.point.x &&
-				point.x < this._entities[guid].drawable.point.x + this._entities[guid].drawable.size.width &&
-				point.y >= this._entities[guid].drawable.point.y &&
-				point.y < this._entities[guid].drawable.point.y + this._entities[guid].drawable.size.height &&
+			if(point.x >= this._entities[guid].drawable.matrix.e &&
+				point.x < this._entities[guid].drawable.matrix.e + this._entities[guid].drawable.size.width &&
+				point.y >= this._entities[guid].drawable.matrix.f &&
+				point.y < this._entities[guid].drawable.matrix.f + this._entities[guid].drawable.size.height &&
 				!excluded.includes(guid))
 				return guid;
 		}
@@ -283,22 +284,22 @@ export class Puzzled extends Paperless.Component
 		return this._marker;
 	}
 
-	public removeMarker(ignoregroup: boolean = false): void
+	public removeMarker(restrict: Restrict = Restrict.none): void
 	{
-		if(this.group != undefined && ignoregroup == false)
+		if(this.group != undefined && restrict == Restrict.none)
 		{
 			let group: Paperless.Group = this.context.get(this.group);
 
-			group.map.forEach((value: any, key: number) => {
-				if(value[1].object.constructor.name == 'Puzzled')
+			group.map.forEach((entry: any) => {
+				if(entry.object.constructor.name == 'Puzzled')
 				{
-					let control: EntityCoreControl = value[1].object.extractGuid(value[1].object._marker);
+					let control: EntityCoreControl = entry.object.extractGuid(entry.object._marker);
 
-					value[1].object._marker = null;
+					entry.object._marker = null;
 
 					if(control)
 					{
-						if(this.context.getStates().focussed == control.guid)
+						if(this.context.states.focussed == control.guid)
 							this.context.removeFocus();
 
 						control.drawable.generate();
@@ -315,9 +316,10 @@ export class Puzzled extends Paperless.Component
 
 			if(control)
 			{
-				if(this.context.getStates().focussed == control.guid)
+				if(this.context.states.focussed == control.guid)
 					this.context.removeFocus();
 
+				control.drawable.generate();
 				control.onUnmarked();
 			}
 		}
@@ -382,12 +384,11 @@ export class Puzzled extends Paperless.Component
 
 	public resize(): void
 	{
-		let offset: number = this.context.getStage().offset;
 		let height: number = 0;
 
 		for(let guid in this._entities)
 		{
-			let current: number = this._entities[guid].drawable.point.y + this._entities[guid].drawable.size.height;
+			let current: number = this._entities[guid].drawable.matrix.f + this._entities[guid].drawable.size.height;
 
 			if(current > height)
 				height = current;
@@ -465,9 +466,9 @@ export class Puzzled extends Paperless.Component
 						while(properties.length > 1)
 							target = target[properties.shift()];
 
-						if(typeof target[properties[0]] === 'function')
-							target[properties[0]](entity.backdoor[key]);
-						else
+						//if(typeof target[properties[0]] === 'function')
+						//	target[properties[0]](entity.backdoor[key]);
+						//else
 							target[properties[0]] = entity.backdoor[key];
 					}
 					catch(error)
@@ -488,10 +489,12 @@ export class Puzzled extends Paperless.Component
 			this._entities[control.guid] = control;
 			returned = control;
 
+			/*
 			if(this._attributes.expandable)
 				this.resize();
 			else
 				this.context.refresh();
+			*/
 		}
 
 		return returned;
@@ -556,13 +559,13 @@ export class Puzzled extends Paperless.Component
 			return null;
 
 		let data = {
-			point: new Paperless.Point(this._entities[guid].drawable.point.x, this._entities[guid].drawable.point.y),
+			point: new Paperless.Point(this._entities[guid].drawable.matrix.e, this._entities[guid].drawable.matrix.f),
 			size: new Paperless.Size(this._attributes.hop, this._entities[guid].drawable.size.height),
 			control: this._attributes.control,
 			transpose: false
 		};
 
-		this._entities[guid].drawable.point.x += this._attributes.hop;
+		this._entities[guid].drawable.matrix.e += this._attributes.hop;
 		this._entities[guid].drawable.size.width -= this._attributes.hop;
 		this._entities[guid].drawable.generate();
 		this._entities[guid].onSplitted();
@@ -576,7 +579,7 @@ export class Puzzled extends Paperless.Component
 			return null;
 
 		let data = {
-			point: new Paperless.Point(this._entities[guid].drawable.point.x + this._entities[guid].drawable.size.width - this._attributes.hop, this._entities[guid].drawable.point.y),
+			point: new Paperless.Point(this._entities[guid].drawable.matrix.e + this._entities[guid].drawable.size.width - this._attributes.hop, this._entities[guid].drawable.matrix.f),
 			size: new Paperless.Size(this._attributes.hop, this._entities[guid].drawable.size.height),
 			control: this._attributes.control,
 			transpose: false
@@ -595,13 +598,13 @@ export class Puzzled extends Paperless.Component
 			return null;
 
 		let data = {
-			point: new Paperless.Point(this._entities[guid].drawable.point.x, this._entities[guid].drawable.point.y),
+			point: new Paperless.Point(this._entities[guid].drawable.matrix.e, this._entities[guid].drawable.matrix.f),
 			size: new Paperless.Size(this._entities[guid].drawable.size.width, this._attributes.hop),
 			control: this._attributes.control,
 			transpose: false
 		};
 
-		this._entities[guid].drawable.point.y += this._attributes.hop;
+		this._entities[guid].drawable.matrix.f += this._attributes.hop;
 		this._entities[guid].drawable.size.height -= this._attributes.hop;
 		this._entities[guid].drawable.generate();
 		this._entities[guid].onSplitted();
@@ -615,7 +618,7 @@ export class Puzzled extends Paperless.Component
 			return null;
 
 		let data = {
-			point: new Paperless.Point(this._entities[guid].drawable.point.x, this._entities[guid].drawable.point.y + this._entities[guid].drawable.size.height - this._attributes.hop),
+			point: new Paperless.Point(this._entities[guid].drawable.matrix.e, this._entities[guid].drawable.matrix.f + this._entities[guid].drawable.size.height - this._attributes.hop),
 			size: new Paperless.Size(this._entities[guid].drawable.size.width, this._attributes.hop),
 			control: this._attributes.control,
 			transpose: false
@@ -633,13 +636,13 @@ export class Puzzled extends Paperless.Component
 
 	public isExpandableToLeft(guid: string): boolean
 	{
-		if(!this._entities[guid] ||
-			this._entities[guid].drawable.point.x - this._attributes.hop < this.point.x)
+		if(!this._entities[guid] || !this._entities[guid].expandable || 
+			this._entities[guid].drawable.matrix.e - this._attributes.hop < this.point.x)
 			return false;
 
-		for(let y: number = this._entities[guid].drawable.point.y; y < this._entities[guid].drawable.point.y + this._entities[guid].drawable.size.height - 1; y += this._attributes.hop)
+		for(let y: number = this._entities[guid].drawable.matrix.f; y < this._entities[guid].drawable.matrix.f + this._entities[guid].drawable.size.height - 1; y += this._attributes.hop)
 		{
-			if(this.getGuid(new Paperless.Point(this._entities[guid].drawable.point.x - this._attributes.hop, y)))
+			if(this.getGuid(new Paperless.Point(this._entities[guid].drawable.matrix.e - this._attributes.hop, y)))
 				return false;
 		}
 
@@ -648,13 +651,13 @@ export class Puzzled extends Paperless.Component
 
 	public isExpandableToRight(guid: string): boolean
 	{
-		if(!this._entities[guid] ||
-			this._entities[guid].drawable.point.x + this._entities[guid].drawable.size.width + this._attributes.hop > this.point.x + this.size.width)
+		if(!this._entities[guid] || !this._entities[guid].expandable || 
+			this._entities[guid].drawable.matrix.e + this._entities[guid].drawable.size.width + this._attributes.hop > this.point.x + this.size.width)
 			return false;
 
-		for(let y: number = this._entities[guid].drawable.point.y; y < this._entities[guid].drawable.point.y + this._entities[guid].drawable.size.height - 1; y += this._attributes.hop)
+		for(let y: number = this._entities[guid].drawable.matrix.f; y < this._entities[guid].drawable.matrix.f + this._entities[guid].drawable.size.height - 1; y += this._attributes.hop)
 		{
-			if(this.getGuid(new Paperless.Point(this._entities[guid].drawable.point.x + this._entities[guid].drawable.size.width, y)))
+			if(this.getGuid(new Paperless.Point(this._entities[guid].drawable.matrix.e + this._entities[guid].drawable.size.width, y)))
 				return false;
 		}
 
@@ -663,13 +666,13 @@ export class Puzzled extends Paperless.Component
 
 	public isExpandableToTop(guid: string): boolean
 	{
-		if(!this._entities[guid] ||
-			this._entities[guid].drawable.point.y - this._attributes.hop < this.point.y)
+		if(!this._entities[guid] || !this._entities[guid].expandable || 
+			this._entities[guid].drawable.matrix.f - this._attributes.hop < this.point.y)
 			return false;
 
-		for(let x: number = this._entities[guid].drawable.point.x; x < this._entities[guid].drawable.point.x + this._entities[guid].drawable.size.width - 1; x += this._attributes.hop)
+		for(let x: number = this._entities[guid].drawable.matrix.e; x < this._entities[guid].drawable.matrix.e + this._entities[guid].drawable.size.width - 1; x += this._attributes.hop)
 		{
-			if(this.getGuid(new Paperless.Point(x, this._entities[guid].drawable.point.y - this._attributes.hop)))
+			if(this.getGuid(new Paperless.Point(x, this._entities[guid].drawable.matrix.f - this._attributes.hop)))
 				return false;
 		}
 
@@ -678,13 +681,13 @@ export class Puzzled extends Paperless.Component
 
 	public isExpandableToBottom(guid: string): boolean
 	{
-		if(!this._entities[guid] ||
-			(this._entities[guid].drawable.point.y + this._entities[guid].drawable.size.height + this._attributes.hop > this.point.y + this.size.height && !this._attributes.expandable))
+		if(!this._entities[guid] || !this._entities[guid].expandable || 
+			(this._entities[guid].drawable.matrix.f + this._entities[guid].drawable.size.height + this._attributes.hop > this.point.y + this.size.height && !this._attributes.expandable))
 			return false;
 
-		for(let x: number = this._entities[guid].drawable.point.x; x < this._entities[guid].drawable.point.x + this._entities[guid].drawable.size.width - 1; x += this._attributes.hop)
+		for(let x: number = this._entities[guid].drawable.matrix.e; x < this._entities[guid].drawable.matrix.e + this._entities[guid].drawable.size.width - 1; x += this._attributes.hop)
 		{
-			if(this.getGuid(new Paperless.Point(x, this._entities[guid].drawable.point.y + this._entities[guid].drawable.size.height)))
+			if(this.getGuid(new Paperless.Point(x, this._entities[guid].drawable.matrix.f + this._entities[guid].drawable.size.height)))
 				return false;
 		}
 
@@ -700,7 +703,7 @@ export class Puzzled extends Paperless.Component
 	{
 		if(this.isExpandableToLeft(guid))
 		{
-			this._entities[guid].drawable.point.x -= this._attributes.hop;
+			this._entities[guid].drawable.matrix.e -= this._attributes.hop;
 			this._entities[guid].drawable.size.width += this._attributes.hop;
 			this._entities[guid].drawable.generate();
 			this._entities[guid].onExpanded();
@@ -713,7 +716,7 @@ export class Puzzled extends Paperless.Component
 
 		while(this.isExpandableToLeft(guid))
 		{
-			this._entities[guid].drawable.point.x -= this._attributes.hop;
+			this._entities[guid].drawable.matrix.e -= this._attributes.hop;
 			this._entities[guid].drawable.size.width += this._attributes.hop;
 		}
 
@@ -752,7 +755,7 @@ export class Puzzled extends Paperless.Component
 	{
 		if(this.isExpandableToTop(guid))
 		{
-			this._entities[guid].drawable.point.y -= this._attributes.hop;
+			this._entities[guid].drawable.matrix.f -= this._attributes.hop;
 			this._entities[guid].drawable.size.height += this._attributes.hop;
 			this._entities[guid].drawable.generate();
 			this._entities[guid].onExpanded();
@@ -765,7 +768,7 @@ export class Puzzled extends Paperless.Component
 
 		while(this.isExpandableToTop(guid))
 		{
-			this._entities[guid].drawable.point.y -= this._attributes.hop;
+			this._entities[guid].drawable.matrix.f -= this._attributes.hop;
 			this._entities[guid].drawable.size.height += this._attributes.hop;
 		}
 
@@ -810,7 +813,7 @@ export class Puzzled extends Paperless.Component
 		{
 			let stage: Paperless.Size = new Paperless.Size(this.context.size.width, this.context.size.height);
 
-			while(this.isExpandableToBottom(guid) && (this._entities[guid].drawable.point.y + this._entities[guid].drawable.size.height < stage.height - this._attributes.hop))
+			while(this.isExpandableToBottom(guid) && (this._entities[guid].drawable.matrix.f + this._entities[guid].drawable.size.height < stage.height - this._attributes.hop))
 				this._entities[guid].drawable.size.height += this._attributes.hop;
 
 			this._entities[guid].drawable.generate();
@@ -848,7 +851,7 @@ export class Puzzled extends Paperless.Component
 	{
 		if(this.isShrinkableWidth(guid))
 		{
-			this._entities[guid].drawable.point.x += this._attributes.hop;
+			this._entities[guid].drawable.matrix.e += this._attributes.hop;
 			this._entities[guid].drawable.size.width -= this._attributes.hop;
 			this._entities[guid].drawable.generate();
 			this._entities[guid].onShrinked();
@@ -861,7 +864,7 @@ export class Puzzled extends Paperless.Component
 
 		while(this.isShrinkableWidth(guid))
 		{
-			this._entities[guid].drawable.point.x += this._attributes.hop;
+			this._entities[guid].drawable.matrix.e += this._attributes.hop;
 			this._entities[guid].drawable.size.width -= this._attributes.hop;
 		}
 
@@ -900,7 +903,7 @@ export class Puzzled extends Paperless.Component
 	{
 		if(this.isShrinkableHeight(guid))
 		{
-			this._entities[guid].drawable.point.y += this._attributes.hop;
+			this._entities[guid].drawable.matrix.f += this._attributes.hop;
 			this._entities[guid].drawable.size.height -= this._attributes.hop;
 			this._entities[guid].drawable.generate();
 			this._entities[guid].onShrinked();
@@ -913,7 +916,7 @@ export class Puzzled extends Paperless.Component
 
 		while(this.isShrinkableHeight(guid))
 		{
-			this._entities[guid].drawable.point.y += this._attributes.hop;
+			this._entities[guid].drawable.matrix.f += this._attributes.hop;
 			this._entities[guid].drawable.size.height -= this._attributes.hop;
 		}
 
@@ -965,7 +968,7 @@ export class Puzzled extends Paperless.Component
 	{
 		if(this.isExpandableToLeft(guid))
 		{
-			this._entities[guid].drawable.point.x -= this._attributes.hop;
+			this._entities[guid].drawable.matrix.e -= this._attributes.hop;
 			this._entities[guid].drawable.generate();
 		}
 
@@ -975,7 +978,7 @@ export class Puzzled extends Paperless.Component
 	{
 		if(this.isExpandableToRight(guid))
 		{
-			this._entities[guid].drawable.point.x += this._attributes.hop;
+			this._entities[guid].drawable.matrix.e += this._attributes.hop;
 			this._entities[guid].drawable.generate();
 		}
 	}
@@ -984,7 +987,7 @@ export class Puzzled extends Paperless.Component
 	{
 		if(this.isExpandableToTop(guid))
 		{
-			this._entities[guid].drawable.point.y -= this._attributes.hop;
+			this._entities[guid].drawable.matrix.f -= this._attributes.hop;
 			this._entities[guid].drawable.generate();
 
 			if(this._attributes.expandable)
@@ -996,7 +999,7 @@ export class Puzzled extends Paperless.Component
 	{
 		if(this.isExpandableToBottom(guid))
 		{
-			this._entities[guid].drawable.point.y += this._attributes.hop;
+			this._entities[guid].drawable.matrix.f += this._attributes.hop;
 			this._entities[guid].drawable.generate();
 
 			if(this._attributes.expandable)

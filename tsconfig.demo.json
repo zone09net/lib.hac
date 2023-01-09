@@ -25,6 +25,8 @@
 			"@zone09.net/paperless": ["lib.paperless/src/lib.paperless.ts"],
 			"@zone09.net/hac": ["lib.hac/src/lib.hac.ts"],
 		},
+		"typeRoots": ["./types"],
+		"types": ["OffscreenCanvas"],
 	},
 
 	"tsc-alias": {
@@ -32,9 +34,11 @@
 		"resolveFullPaths": true,
 	 },
 
+	/*
 	"include": [
 		"./src/demo.*"
 	],
+	*/
 
 	"exclude": [
 		"./node_modules",

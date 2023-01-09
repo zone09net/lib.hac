@@ -27,7 +27,7 @@ export class Editable extends Paperless.Component
 		const {
 			maxchar = 0,
 			maxline = 0,
-			focus = '#ddbb44',
+			focuscolor = '#ddbb44',
 			sticky = false,
 			label = {},
 			cursor = {}
@@ -47,7 +47,7 @@ export class Editable extends Paperless.Component
 		this._attributes = {
 			maxchar: maxchar,
 			maxline: maxline,
-			focus: focus,
+			focuscolor: focuscolor,
 			label: {
 				...{ multiline: true, fillbackground: '#000000', strokecolor: '#666666' }, 
 				...label, 
@@ -107,7 +107,7 @@ export class Editable extends Paperless.Component
 	{
 		let cursorHeight = this._label.boundingbox('j').height + 2;
 
-		this._cursor = new Cursor(this._label.point, new Paperless.Size(this._attributes.cursor.width, cursorHeight), {
+		this._cursor = new Cursor(new Paperless.Point(this._label.matrix.e, this._label.matrix.f), new Paperless.Size(this._attributes.cursor.width, cursorHeight), {
 			...this._attributes.cursor,
 			...{
 				offset: {x: this._label.offset.x + this._label.padding.left + Math.ceil(this._attributes.cursor.width / 2), y: this._label.offset.y + (cursorHeight / 2) + this._label.padding.top - 1},
@@ -165,7 +165,7 @@ export class Editable extends Paperless.Component
 		if(this._interaction)
 			this.context.detach(this._interaction.guid);
 
-		if(this._cursor)
+		if(this._cursor.guid)
 			this.context.detach(this._cursor.guid);
 
 		if(this._Cbackground)
@@ -563,12 +563,12 @@ export class Editable extends Paperless.Component
 		this._attributes.maxline = maxline;
 	}
 
-	get focus(): string
+	get focuscolor(): string
 	{
-		return this._attributes.focus;
+		return this._attributes.focuscolor;
 	}
-	set focus(focus: string)
+	set focuscolor(focuscolor: string)
 	{
-		this._attributes.focus = focus;
+		this._attributes.focuscolor = focuscolor;
 	}
 }
