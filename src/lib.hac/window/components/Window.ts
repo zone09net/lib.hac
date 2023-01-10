@@ -114,8 +114,7 @@ export class Window extends Paperless.Component
 
 	public close(): void
 	{
-		this.context.detach(this.guid);
-		this.context.refresh();
+		this.context.detach(this.guid, Paperless.Enums.Restrict.none);
 	}
 
 	public new(entities: Array<{point?: Paperless.Point, size?: Paperless.Size, control: typeof EntityCoreControl, drawable: typeof EntityCoreDrawable, attributes?: any, backdoor?: any, transpose?: boolean}>): Paperless.Control
