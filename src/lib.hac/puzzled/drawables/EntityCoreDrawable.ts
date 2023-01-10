@@ -116,6 +116,8 @@ export class EntityCoreDrawable extends Paperless.Drawable
 		context2D.setTransform(this.matrix.a, this.matrix.b, this.matrix.c, this.matrix.d, this.matrix.e + this.offset.x, this.matrix.f + this.offset.y);
 
 		context2D.strokeStyle = this.strokecolor;
+		context2D.shadowBlur = this.shadow;
+		context2D.shadowColor = this.shadowcolor;
 
 		if(this.puzzled.getMarker() && !this.context.states.drag)
 		{
