@@ -1,5 +1,4 @@
 import * as Paperless from '@zone09.net/paperless';
-import {Window} from '../components/Window.js';
 
 
 
@@ -22,17 +21,5 @@ export class Header extends Paperless.Controls.Button
 	public onOutside(): void
 	{
 		this.context.dragging.delay = this._delay;
-	}
-	
-	public onDragBegin(): void
-	{
-		this.context.getComponents().map.forEach((entry: any) => {
-				
-			if(entry.object instanceof Window)
-			{
-				entry.object.puzzled.removeGuid(entry.object.puzzled.getIcons());
-				entry.object.puzzled.removeMarker();
-			}
-		});
 	}
 }
