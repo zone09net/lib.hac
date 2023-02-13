@@ -9,4 +9,5 @@ export interface IComponentPopopAttributes extends Paperless.Interfaces.ICompone
 	dark?: Paperless.Interfaces.IDrawableAttributes,
 	width?: number,
 	noclick?: boolean,
+	passthrough?: boolean,
 }

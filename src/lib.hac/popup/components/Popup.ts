@@ -21,7 +21,8 @@ export class Popup extends Paperless.Component
 			detail = {},
 			dark = {},
 			width = 300,
-			noclick = false
+			noclick = false,
+			passthrough = false,
 		} = attributes;
 
 		this._attributes = {
@@ -40,6 +41,7 @@ export class Popup extends Paperless.Component
 			},
 			width: width,
 			noclick: noclick,
+			passthrough: passthrough
 		};
 	}
 
@@ -48,7 +50,7 @@ export class Popup extends Paperless.Component
 		this.size = this.context.size;
 		this.point = new Paperless.Point(this.size.width / 2, this.size.height / 2);
 
-		this._dark = new Paperless.Drawables.Rectangle(this.point, this.size, this._attributes.dark);
+		this._dark = new Paperless.Drawables.Rectangle(this.point, this.context.size, this._attributes.dark);
 		this._title = new Paperless.Drawables.Label(new Paperless.Point(this.point.x, this.point.y), new Paperless.Size(1, 1), this._attributes.title);
 		this._detail = new Paperless.Drawables.Label(new Paperless.Point(this.point.x, this.point.y), new Paperless.Size(1, 1), this._attributes.detail);	
 
@@ -110,36 +112,41 @@ export class Popup extends Paperless.Component
 		let height = this.generate();
 
 		return new Promise((resolve, reject) => {
-			this._control.smugglerLeftClick = resolve;
-			
-			if(this._title.content && this._detail.content)
-			{
-				this.fx.add({
-					duration: 400,
-					drawable: this._title,
-					effect: this.fx.translate,
-					smuggler: { ease: Paperless.Fx.easeInOutExpo, angle: 270, distance: this._title.y - (this.point.y - (height / 2)) },
-					complete: () => {
-						this.fx.add({
-							duration: 400,
-							drawable: this._detail,
-							effect: this.fx.fadeIn,
-							smuggler: { ease: Paperless.Fx.easeInOutExpo },
-							complete: () => {
-								if(!this._attributes.noclick)
-								{
-									this._control.enabled = true;
-									this.context.refresh();
-								}
-							}
-						});
-					}
-				});
-			}
+			if(this._attributes.passthrough)
+				resolve(true);
 			else
 			{
-				if(!this._attributes.noclick)
-					this._control.enabled = true;
+				this._control.smugglerLeftClick = resolve;
+				
+				if(this._title.content && this._detail.content)
+				{
+					this.fx.add({
+						duration: 400,
+						drawable: this._title,
+						effect: this.fx.translate,
+						smuggler: { ease: Paperless.Fx.easeInOutExpo, angle: 270, distance: this._title.y - (this.point.y - (height / 2)) },
+						complete: () => {
+							this.fx.add({
+								duration: 400,
+								drawable: this._detail,
+								effect: this.fx.fadeIn,
+								smuggler: { ease: Paperless.Fx.easeInOutExpo },
+								complete: () => {
+									if(!this._attributes.noclick)
+									{
+										this._control.enabled = true;
+										this.context.refresh();
+									}
+								}
+							});
+						}
+					});
+				}
+				else
+				{
+					if(!this._attributes.noclick)
+						this._control.enabled = true;
+				}
 			}
 		});
 	}
@@ -147,6 +154,7 @@ export class Popup extends Paperless.Component
 	public close()
 	{
 		this._control.callbackLeftClick(this._control.smugglerLeftClick);
+		this.context.refresh();
 	}
 
 
