@@ -6,8 +6,8 @@ import {Puzzled} from '../components/Puzzled.js';
 export class EntityCoreDrawable extends Paperless.Drawable
 {
 	private _puzzled: Puzzled;
-	private _contour: Path2D;
-	private _mocksize: Paperless.Size;
+	//private _contour: Path2D;
+	//private _mocksize: Paperless.Size;
 	//---
 
 	public constructor(point: Paperless.Point, size: Paperless.Size, puzzled: Puzzled, attributes: {} = {})
@@ -24,7 +24,7 @@ export class EntityCoreDrawable extends Paperless.Drawable
 		});
 
 		this._puzzled = puzzled;
-		this._contour = new Path2D();
+		//this._contour = new Path2D();
 		this.context = puzzled.context;
 		this.size = new Paperless.Size(size.width, size.height);
 
@@ -101,9 +101,11 @@ export class EntityCoreDrawable extends Paperless.Drawable
 			this.path.rect(points[0].x, points[0].y, points[1].x, points[1].y);
 		}
 
+		/*
 		this._contour = new Path2D();
 		this._contour.rect(points[0].x + 1, points[0].y + 1, points[1].x - 2, points[1].y - 2);
 		this._contour.closePath();
+		*/
 
 		this.points = points;
 	}
@@ -173,6 +175,7 @@ export class EntityCoreDrawable extends Paperless.Drawable
 		return this._puzzled;
 	}
 
+	/*
 	public get mocksize(): Paperless.Size
 	{
 		return this._mocksize;
@@ -181,4 +184,5 @@ export class EntityCoreDrawable extends Paperless.Drawable
 	{
 		this._mocksize = mocksize;
 	}
+	*/
 }

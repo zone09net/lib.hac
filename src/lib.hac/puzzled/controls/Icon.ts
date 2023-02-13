@@ -21,7 +21,7 @@ export class Icon extends Paperless.Controls.Button
 	public onInside(): void
 	{
 		this.drawable.shadow = this._puzzled.shadow;
-		this.drawable.shadowcolor = this._puzzled.color.marked;
+		this.drawable.shadowcolor = this._puzzled.color.iconshadow;
 	}
 
 	public onOutside(): void

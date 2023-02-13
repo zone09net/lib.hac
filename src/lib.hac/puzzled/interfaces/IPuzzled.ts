@@ -19,6 +19,7 @@ export interface IComponentPuzzledAttributes extends Paperless.Interfaces.ICompo
 		fill?: string,
 		stroke?: string,
 		marked?: string,
+		iconshadow?: string, 
 		move?: string,
 		nomove?: string,
 		sizer?: string,

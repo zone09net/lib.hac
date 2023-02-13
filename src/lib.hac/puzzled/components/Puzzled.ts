@@ -58,6 +58,7 @@ export class Puzzled extends Paperless.Component
 					fill: '#000000',
 					stroke: '#666666',
 					marked: '#c8af55',
+					iconshadow: '#ffffff',
 					move: '#ffffff',
 					nomove: '#c22a1f',
 					sizer: '#666666',
@@ -426,10 +427,13 @@ export class Puzzled extends Paperless.Component
 					free = this.nextFreePosition(new Paperless.Size(this._attributes.hop, this._attributes.hop));
 
 				if(!free)
+				{
+					console.log('Puzzled entity out of boundaries')
 					return null;
+				}
 
-					entity.point = free.point;
-					entity.size = free.size;
+				entity.point = free.point;
+				entity.size = free.size;
 			}
 			else
 			{
@@ -1086,11 +1090,11 @@ export class Puzzled extends Paperless.Component
 		this._attributes.alpha = alpha;
 	}
 
-	public get color(): { fill?: string, stroke?: string, marked?: string, move?: string, nomove?: string, sizer?: string, splitter?: string, highlight?: string, faked?: string }
+	public get color(): { fill?: string, stroke?: string, marked?: string, iconshadow?: string, move?: string, nomove?: string, sizer?: string, splitter?: string, highlight?: string, faked?: string }
 	{
 		return this._attributes.color;
 	}
-	public set color(color: { fill?: string, stroke?: string, marked?: string, move?: string, nomove?: string, sizer?: string, splitter?: string, highlight?: string, faked?: string })
+	public set color(color: { fill?: string, stroke?: string, marked?: string, iconshadow?: string, move?: string, nomove?: string, sizer?: string, splitter?: string, highlight?: string, faked?: string })
 	{
 		this._attributes.color = color;
 	}
