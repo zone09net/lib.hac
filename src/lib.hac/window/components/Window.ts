@@ -105,10 +105,10 @@ export class Window extends Paperless.Component
 		}
 	}
 
-	public open(): Promise<void>
+	public open(): Promise<any>
 	{
 		return new Promise((resolve, reject) => {
-			resolve();
+			resolve(null);
 		});
 	}
 
