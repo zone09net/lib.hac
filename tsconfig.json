@@ -24,6 +24,7 @@
 			"@zone09.net/foundation": ["lib.foundation/src/lib.foundation.ts"],
 			"@zone09.net/paperless": ["lib.paperless/src/lib.paperless.ts"],
 			"@zone09.net/hac": ["lib.hac/src/lib.hac.ts"],
+			"@extlib/codemirror": ["extlib/CodeMirror.js"],
 		},
 		"typeRoots": ["./types"],
 		"types": ["OffscreenCanvas"],
