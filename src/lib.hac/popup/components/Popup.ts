@@ -66,6 +66,36 @@ export class Popup extends Paperless.Component
 		}, null, null, null, {movable: false});
 	}
 
+	public onResize(): void
+	{
+		let height: number = 0;
+		
+		this.size = this.context.size;
+		this.point = new Paperless.Point(this.size.width / 2, this.size.height / 2);
+
+		this._detail.x = this.point.x - (this._title.size.width / 2);
+		this._detail.y = this.point.y - (this._detail.size.height / 2);
+
+		let top = this._title.size.height + 20;
+
+		if(this._title.content && this._detail.content)
+		{
+			height = top + this._detail.size.height;
+			this._detail.y = this.point.y + ((height / 2) - this._detail.size.height);
+		}
+		else
+			height = top;
+
+		this._title.x = this.point.x - (this._title.size.width / 2);
+		this._title.y = this.point.y -  (height / 2);
+
+		this._dark.x = this.point.x;
+		this._dark.y = this.point.y;
+		this._dark.size = this.context.size;
+		this._dark.generate();
+
+	}
+
 	private generate(): number
 	{
 		this._title.generate();
