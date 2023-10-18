@@ -47,9 +47,9 @@ export class Align extends Manipulator
 		let fadeDistance: number;
 
 		if(this._attributes.restrict == Paperless.Enums.Restrict.vertical)
-			fadeDistance = this.selector.size.width;
+			fadeDistance = this.selector.width;
 		else
-			fadeDistance = this.selector.size.height;
+			fadeDistance = this.selector.height;
 
 		this.disableItems();
 
@@ -74,9 +74,9 @@ export class Align extends Manipulator
 
 				this.selector.items.splice(index, 1);
 				if(this._attributes.restrict == Paperless.Enums.Restrict.vertical)
-					item.drawable.matrix.f = this.selector.point.y + (item.drawable.size.height / 2) + this.selector.padding.top;
+					item.drawable.matrix.f = this.selector.y + (item.drawable.height / 2) + this.selector.padding.top;
 				else
-					item.drawable.matrix.e = this.selector.point.x + (item.drawable.size.width / 2) + this.selector.padding.left;
+					item.drawable.matrix.e = this.selector.x + (item.drawable.width / 2) + this.selector.padding.left;
 
 				this.realign();
 	
@@ -120,19 +120,19 @@ export class Align extends Manipulator
 			let drawable: Paperless.Drawable;
 
 			if(this._attributes.restrict == Paperless.Enums.Restrict.vertical)
-				point = this.selector.point.y + this.selector.size.height
+				point = this.selector.y + this.selector.height
 			else
-				point = this.selector.point.x + this.selector.size.width;
+				point = this.selector.x + this.selector.width;
 
 			for(let i: number = this.selector.items.length - 1; i >= 0; i--)
 			{
 				drawable = this.selector.items[i].drawable;
-				point -= (this._attributes.restrict == Paperless.Enums.Restrict.vertical) ? drawable.size.height : drawable.size.width;
+				point -= (this._attributes.restrict == Paperless.Enums.Restrict.vertical) ? drawable.height : drawable.width;
 	
 				if(this._attributes.restrict == Paperless.Enums.Restrict.vertical)
-					distance = point - drawable.matrix.f + (drawable.size.height / 2) - this.selector.padding.down;
+					distance = point - drawable.matrix.f + (drawable.height / 2) - this.selector.padding.bottom;
 				else
-					distance = point - drawable.matrix.e + (drawable.size.width / 2) - this.selector.padding.right;
+					distance = point - drawable.matrix.e + (drawable.width / 2) - this.selector.padding.right;
 
 				this.selector.fx.add({
 					duration: this._attributes.duration.shift,
@@ -149,31 +149,31 @@ export class Align extends Manipulator
 
 	private alignHorizontal(): void
 	{
-		this.selector.size.height = this.maxItemHeight();
+		this.selector.height = this.maxItemHeight();
 
 		if(this.selector.items.length > 0)
 		{
-			let x: number = this.selector.point.x + this.selector.size.width - this.selector.padding.right;
+			let x: number = this.selector.x + this.selector.width - this.selector.padding.right;
 
 			for(let i: number = this.selector.items.length - 1; i >= 0; i--)
 			{
 				if(i > this._attributes.isolated - 1)
 				{
 					// Right menu
-					x -= (this.selector.items[i].drawable.size.width / 2);
+					x -= (this.selector.items[i].drawable.width / 2);
 					this.selector.items[i].drawable.matrix.e = x ;
-					x -= (this.selector.items[i].drawable.size.width / 2) + this.selector.spacing;
+					x -= (this.selector.items[i].drawable.width / 2) + this.selector.spacing;
 				}
 				else
 				{
 					// Left menu
-					this.selector.items[i].drawable.matrix.e = (i * ((this.selector.items[i].drawable.size.width) + this.selector.spacing)) + this.selector.point.x + this.selector.padding.left + (this.selector.items[0].drawable.size.width / 2);
+					this.selector.items[i].drawable.matrix.e = (i * ((this.selector.items[i].drawable.width) + this.selector.spacing)) + this.selector.x + this.selector.padding.left + (this.selector.items[0].drawable.width / 2);
 
 					if(!this._attributes.bypass)
 						this.selector.items[i].enabled = false;
 				}
 
-				this.selector.items[i].drawable.matrix.f = this.selector.point.y + (this.selector.size.height / 2) + this.selector.padding.top - this.selector.padding.down;
+				this.selector.items[i].drawable.matrix.f = this.selector.y + (this.selector.height / 2) + this.selector.padding.top - this.selector.padding.bottom;
 			}
 		}
 
@@ -182,31 +182,31 @@ export class Align extends Manipulator
 
 	private alignVertical(): void
 	{
-		this.selector.size.width = this.maxItemWidth();
+		this.selector.width = this.maxItemWidth();
 
 		if(this.selector.items.length > 0)
 		{
-			let y: number = this.selector.point.y + this.selector.size.height - this.selector.padding.down;
+			let y: number = this.selector.y + this.selector.height - this.selector.padding.bottom;
 
 			for(let i: number = this.selector.items.length - 1; i >= 0; i--)
 			{
 				if(i > this._attributes.isolated - 1)
 				{
 					// Bottom menu
-					y -= (this.selector.items[i].drawable.size.height / 2);
+					y -= (this.selector.items[i].drawable.height / 2);
 					this.selector.items[i].drawable.matrix.f = y ;
-					y -= (this.selector.items[i].drawable.size.height / 2) + this.selector.spacing;
+					y -= (this.selector.items[i].drawable.height / 2) + this.selector.spacing;
 				}
 				else
 				{
 					// Top menu
-					this.selector.items[i].drawable.matrix.f = (i * ((this.selector.items[i].drawable.size.height) + this.selector.spacing)) + this.selector.point.y + this.selector.padding.top + (this.selector.items[0].drawable.size.height / 2);
+					this.selector.items[i].drawable.matrix.f = (i * ((this.selector.items[i].drawable.height) + this.selector.spacing)) + this.selector.y + this.selector.padding.top + (this.selector.items[0].drawable.height / 2);
 					
 					if(!this._attributes.bypass)
 						this.selector.items[i].enabled = false;
 				}
 
-				this.selector.items[i].drawable.matrix.e = this.selector.point.x + (this.selector.size.width / 2) + this.selector.padding.left - this.selector.padding.right;
+				this.selector.items[i].drawable.matrix.e = this.selector.x + (this.selector.width / 2) + this.selector.padding.left - this.selector.padding.right;
 			}
 		}
 

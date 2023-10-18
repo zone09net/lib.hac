@@ -16,9 +16,9 @@ export class Palette extends Paperless.Component
 	private _callback: (fillcolor: string, strokecolor: string) => void;
 	//---
 
-	public constructor(point: Paperless.Point, callback: (fillcolor: string, strokecolor: string) => void = null, attributes: IComponentPaletteAttributes = {})
+	public constructor(attributes: IComponentPaletteAttributes = {})
 	{
-		super(point, null);
+		super(attributes);
 
 		const {
 			fillcolor = '#666666',
@@ -30,8 +30,8 @@ export class Palette extends Paperless.Component
 				['#999999', '#815277', '#3979b0', '#a92317', '#bb4c11', '#ba9018', '#68491a', '#438b35', '#829228', '#151515'],
 				['#666666', '#4c2d46', '#21435c', '#8b180e', '#a7380a', '#856815', '#453011', '#2c6221', '#5a6b00', '#333333'],
 			],
-
-			sticky = false
+			sticky = false,
+			callback = () => {}
 		} = attributes;
 
 		this._callback = callback;
@@ -43,37 +43,54 @@ export class Palette extends Paperless.Component
 			colors: colors,
 		};
 
-		this.size = new Paperless.Size(radius * 2, radius * 2);
+		this.width = radius * 2;
+		this.height = radius * 2;
 		this.sticky = sticky;
 	}
 
 	public onAttach(): void
 	{
 		let selector: Paperless.Controls.Button;
-		let stroke: Paperless.Drawables.Circle = this.context.attach(new Paperless.Drawables.Circle(new Paperless.Point(this.point.x - 5, this.point.y - 5), 15, 10, {sticky: this.sticky, fillcolor:  this._attributes.fillcolor, strokecolor: '#111111', linewidth: 2}));
-		let fill: Paperless.Drawables.Circle = this.context.attach(new Paperless.Drawables.Circle(new Paperless.Point(this.point.x + 5, this.point.y + 5), 15, 0,  {sticky: this.sticky, fillcolor:  this._attributes.strokecolor, strokecolor: '#111111', linewidth: 2}));
+
+		const stroke: Paperless.Drawables.Circle = this.context.attach(new Paperless.Drawables.Circle({
+			point: {x: this.x - 5, y: this.point.y - 5}, 
+			outerRadius: 15,
+			innerRadius: 10,
+			sticky: this.sticky, 
+			fillcolor:  this._attributes.fillcolor, 
+			strokecolor: '#111111', 
+			linewidth: 2
+		}));
+		const fill: Paperless.Drawables.Circle = this.context.attach(new Paperless.Drawables.Circle({
+			point: {x: this.x + 5, y: this.point.y + 5}, 
+			outerRadius: 15,
+			sticky: this.sticky, 
+			fillcolor:  this._attributes.strokecolor, 
+			strokecolor: '#111111', 
+			linewidth: 2
+		}));
 		//let stroke: Paperless.Drawables.Circle = this.context.attach(new Paperless.Drawables.Circle(new Paperless.Point(this.point.x , this.point.y - 10), 15, 10, {fillcolor: this._fillcolor, strokecolor: '#111111', linewidth: 2}));
 		//let fill: Paperless.Drawables.Circle = this.context.attach(new Paperless.Drawables.Circle(new Paperless.Point(this.point.x + 10, this.point.y ), 15, 0,  {fillcolor: this._strokecolor, strokecolor: '#111111', linewidth: 2}));
 		//let close: Paperless.Drawables.Circle = this.context.attach(new Paperless.Drawables.Circle(new Paperless.Point(this.point.x - 13, this.point.y + 13), 7, 0,  {fillcolor: this._strokecolor, strokecolor: '#111111', linewidth: 2}));
 		//let cancel: Paperless.Drawables.Circle = this.context.attach(new Paperless.Drawables.Circle(new Paperless.Point(this.point.x - 10, this.point.y + 10), 7, 0,  {fillcolor: this._strokecolor, strokecolor: '#111111', linewidth: 2}));
 		//let ok: Paperless.Drawables.Circle = this.context.attach(new Paperless.Drawables.Circle(new Paperless.Point(this.point.x + 10, this.point.y - 10), 7, 0,  {fillcolor: this._strokecolor, strokecolor: '#111111', linewidth: 2}));
 
-		selector = this.context.attach(new Paperless.Controls.Button(
-			() => {
+		selector = this.context.attach(new Paperless.Controls.Button({
+			callbackLeftClick: () => {
 				this._selected = 'strokecolor';
 				stroke.toFront();
 			},
-		));
+		}));
 		selector.attach(stroke);
 		this._controls.push(selector);
 		this._drawables.push(stroke);
 		
-		selector = this.context.attach(new Paperless.Controls.Button(
-			() => {
+		selector = this.context.attach(new Paperless.Controls.Button({
+			callbackLeftClick: () => {
 				this._selected = 'fillcolor';
 				fill.toFront();
 			},
-		));
+		}));
 		selector.attach(fill);
 		this._controls.push(selector);
 		this._drawables.push(stroke);
@@ -86,7 +103,10 @@ export class Palette extends Paperless.Component
 		{
 			for(let angle: number = 0, column: number = 0; angle < 360; angle += 360 / this._attributes.colors[0].length, column++)
 			{
-				let drawable: Paperless.Drawables.Circle = this.context.attach(new Paperless.Drawables.Circle(this.point, radius - 1, radius - this._attributes.spacing, {
+				let drawable: Paperless.Drawables.Circle = this.context.attach(new Paperless.Drawables.Circle({
+					point: this.point,
+					outerRadius: radius - 1,
+					innerRadius: radius - this._attributes.spacing,
 					angleStart: angle, 
 					angleEnd: angle + ((360 / this._attributes.colors[0].length) - 1),
 					fillcolor: this._attributes.colors[row][column],
@@ -94,8 +114,8 @@ export class Palette extends Paperless.Component
 					sticky: this.sticky, 
 				}));
 
-				let color: Color = this.context.attach(new Color(
-					() => {
+				let color: Color = this.context.attach(new Color({
+					callbackLeftClick: () => {
 						if(this._selected == 'fillcolor')
 						{
 							fill.fillcolor = this._attributes.colors[row][column];
@@ -110,7 +130,7 @@ export class Palette extends Paperless.Component
 						if(this._callback)
 							this._callback( this._attributes.fillcolor,  this._attributes.strokecolor);
 					},
-				));
+				}));
 				color.attach(drawable);
 
 				this._controls.push(color);

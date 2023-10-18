@@ -22,8 +22,8 @@ export class Manipulator
 		{
 			if(selector.drawable)
 			{
-				if(selector.drawable.size.width > width)
-					width = selector.drawable.size.width;
+				if(selector.drawable.width > width)
+					width = selector.drawable.width;
 			}
 		}
 
@@ -38,8 +38,8 @@ export class Manipulator
 		{
 			if(selector.drawable)
 			{
-				if(selector.drawable.size.height > height)
-					height = selector.drawable.size.height;
+				if(selector.drawable.height > height)
+					height = selector.drawable.height;
 			}
 		}
 

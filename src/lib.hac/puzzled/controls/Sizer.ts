@@ -13,14 +13,14 @@ export class Sizer extends Paperless.Controls.Button
 	private _ghost: Slider;
 	//---
 
-	public constructor(puzzled: Puzzled, entity: EntityCoreControl, callbackLeftClick: (smuggler: any) => void = null, callbackRightClick: (smuggler: any) => void = null, smugglerLeftClick: any = null, smugglerRightClick: any = null)
+	public constructor(puzzled: Puzzled, entity: EntityCoreControl, attributes: Paperless.Interfaces.IControlButtonAttributes = {})
 	{
-		super(callbackLeftClick, callbackRightClick, smugglerLeftClick, smugglerRightClick);
+		super(attributes);
 
 		this.focusable = false;
 		this._puzzled = puzzled;
 		this._entity = entity;
-		this._ghost = new Slider(new Paperless.Point(0, 0), new Paperless.Size(0, 0), puzzled);
+		this._ghost = new Slider(puzzled);
 	}
 
 	public onInside(): void
@@ -44,14 +44,14 @@ export class Sizer extends Paperless.Controls.Button
 			this._side = 'left';
 			this._ghost.angle = 90;
 		}
-		else if(this.drawable.x == this._entity.drawable.x + this._entity.drawable.size.width - this._puzzled.spacing)
+		else if(this.drawable.x == this._entity.drawable.x + this._entity.drawable.width - this._puzzled.spacing)
 		{
 			this._side = 'right';
 			this._ghost.angle = 90;
 		}
 		else if(this.drawable.y == this._entity.drawable.y)
 			this._side = 'top';
-		else if(this.drawable.y == this._entity.drawable.y + this._entity.drawable.size.height - this._puzzled.spacing)
+		else if(this.drawable.y == this._entity.drawable.y + this._entity.drawable.height - this._puzzled.spacing)
 			this._side = 'bottom';
 
 		(<Paperless.Drawables.Circle>this.drawable).angleStart = 0;
@@ -63,7 +63,8 @@ export class Sizer extends Paperless.Controls.Button
 			(icon.constructor.name == 'Sizer' || icon.constructor.name == 'Splitter' || icon.constructor.name == 'Icon')
 		));
 
-		this._ghost.size = new Paperless.Size(this._entity.drawable.size.width - this._puzzled.spacing, this._entity.drawable.size.height - this._puzzled.spacing);
+		this._ghost.width = this._entity.drawable.width - this._puzzled.spacing;
+		this._ghost.height = this._entity.drawable.height - this._puzzled.spacing;
 		this._ghost.generate();
 	}
 
@@ -83,9 +84,9 @@ export class Sizer extends Paperless.Controls.Button
 				break;
 
 			case 'right':
-				if(this._ghost.x > this._entity.drawable.x + this._entity.drawable.size.width + this._puzzled.hop)
+				if(this._ghost.x > this._entity.drawable.x + this._entity.drawable.width + this._puzzled.hop)
 					this._puzzled.expandFromRight(this._entity.guid);
-				else if(this._ghost.x < this._entity.drawable.x + this._entity.drawable.size.width - this._puzzled.hop)
+				else if(this._ghost.x < this._entity.drawable.x + this._entity.drawable.width - this._puzzled.hop)
 					this._puzzled.shrinkFromRight(this._entity.guid);
 
 				break;
@@ -98,9 +99,9 @@ export class Sizer extends Paperless.Controls.Button
 				break;
 
 			case 'bottom':
-				if(this._ghost.y > this._entity.drawable.y + this._entity.drawable.size.height + this._puzzled.hop)
+				if(this._ghost.y > this._entity.drawable.y + this._entity.drawable.height + this._puzzled.hop)
 					this._puzzled.expandFromBottom(this._entity.guid);
-				else if(this._ghost.y < this._entity.drawable.y + this._entity.drawable.size.height - this._puzzled.hop)
+				else if(this._ghost.y < this._entity.drawable.y + this._entity.drawable.height - this._puzzled.hop)
 					this._puzzled.shrinkFromBottom(this._entity.guid);
 
 				break;

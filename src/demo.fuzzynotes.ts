@@ -1,17 +1,19 @@
 import * as Paperless from '@zone09.net/paperless';
 import * as HaC from '@zone09.net/hac';
-import * as Addons from '../../app.brained/src/app.brained/ui/UI.js'
+//import * as Addons from '../../app.brained/src/app.brained/ui/UI.js'
 
 
 
 let context: Paperless.Context = new Paperless.Context({autosize: true});
-let fuzzynotes: HaC.Components.Fuzzynotes = new HaC.Components.Fuzzynotes((window.innerWidth - 788) / 2, 788, {
+let fuzzynotes: HaC.Components.Fuzzynotes = new HaC.Components.Fuzzynotes({
+	x: (window.innerWidth - 788) / 2,
+	width: 788,
 	puzzled: {hop: 64, spacing: 5, linewidth: 2, shadow: 5, alpha: 0.05, color: { fill: '#000000', stroke: '#815556', marked: '#815556', move: '#436665', sizer: '#436665', splitter: '#436665', highlight: '#ffffff', faked: '#151515' } },
 	background: {visible: true},
 	borders: {visible: true, strokecolor: '#815556', linewidth: 7},
 	resetter: {visible: true, fillcolor: '#436665', shadowcolor: '#436665'},
 	shade: {visible: false, bottom: 200, top: 64, overflow: 10},
-	padding: {top: 10, down: 20, left: 10, right: 10},
+	padding: {top: 10, bottom: 20, left: 10, right: 10},
 });
 
 context.attach(document.body);
@@ -25,6 +27,7 @@ fuzzynotes.new([
 		drawable: HaC.Drawables.Puzzled.EntityCoreDrawable,
 	},
 
+	/*
 	// static/void
 	{
 		size: new Paperless.Size(128, 128),
@@ -180,6 +183,7 @@ fuzzynotes.new([
 			movable: true
 		}
 	},
+	*/
 ]);
 
 

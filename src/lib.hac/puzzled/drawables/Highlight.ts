@@ -8,11 +8,17 @@ export class Highlight extends Paperless.Drawable
 	private _puzzled: Puzzled;
 	//---
 
-	public constructor(point: Paperless.Point, size: Paperless.Size, puzzled: Puzzled)
+	public constructor(puzzled: Puzzled, attributes: Paperless.Interfaces.IDrawableAttributes = {})
 	{
-		super(point, {nostroke: true, alpha: puzzled.alpha, fillcolor: puzzled.color.highlight});
+		super({
+			...attributes,
+			...{
+				nostroke: true, 
+				alpha: puzzled.alpha, 
+				fillcolor: puzzled.color.highlight
+			}
+		});
 
-		this.size = size;
 		this.hoverable = false;
 		this._puzzled = puzzled;
 
@@ -29,7 +35,7 @@ export class Highlight extends Paperless.Drawable
 			new Paperless.Point(point.x + this._puzzled.spacing, point.y + this.size.height - this._puzzled.spacing)
 		];
 
-		this.clearPath();
+		this.path = new Path2D();
 		this.path.rect(points[0].x, points[0].y, points[2].x, points[2].y);
 		this.path.closePath();
 	}

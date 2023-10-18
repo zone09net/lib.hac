@@ -4,14 +4,17 @@ import * as Paperless from '@zone09.net/paperless';
 
 export class Color extends Paperless.Controls.Button
 {
-	public constructor(callbackLeftClick: (smuggler: any) => void = null, callbackRightClick: (smuggler: any) => void = null, smugglerLeftClick: any = null, smugglerRightClick: any = null)
+	/*
+	public constructor(attributes: Paperless.Interfaces.IControlButtonAttributes = {})
+	//public constructor(callbackLeftClick: (smuggler: any) => void = null, callbackRightClick: (smuggler: any) => void = null, smugglerLeftClick: any = null, smugglerRightClick: any = null)
 	{
-		super(callbackLeftClick, callbackRightClick, smugglerLeftClick, smugglerRightClick);
+		super(attributes);
+		//super(callbackLeftClick, callbackRightClick, smugglerLeftClick, smugglerRightClick);
 	}
+	*/
 
 	public onInside(): void
 	{
-		//this.drawable.toFront();
 		this.drawable.strokecolor = '#ffffff';
 		this.drawable.shadow = 5;
 		this.drawable.linewidth = 1;

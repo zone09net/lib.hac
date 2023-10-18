@@ -9,16 +9,23 @@ export class Cursor extends Paperless.Drawables.Rectangle
 	private _blink: boolean;
 	//---
 
-	public constructor(point: Paperless.Point, size: Paperless.Size, attributes: IDrawableCursorAttributes)
+	public constructor(attributes: IDrawableCursorAttributes)
 	{
-		super(point, size, attributes);
+		super(attributes);
 
+		this.visible = false;
 		this.nostroke = true;
 		this._blink = attributes.blink;
 	}
 
 	public onAttach(): void
 	{
+	}
+
+	public on(): void
+	{
+		this.visible = true;
+		
 		if(this._blink)
 		{
 			this._id = setInterval(() => { 
@@ -32,9 +39,14 @@ export class Cursor extends Paperless.Drawables.Rectangle
 		}
 	}
 
+	public off(): void
+	{
+		this.visible = false;
+		clearInterval(this._id);
+	}
+
 	public onDetach(): void 
 	{
 		clearInterval(this._id);
-		this.visible = true;
 	}
 }

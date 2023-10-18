@@ -21,11 +21,13 @@ export class Fuzzynotes extends Paperless.Component
 	private _eventWheel: any = null;
 	//---
 
-	public constructor(x: number, width: number, attributes: IComponentFuzzynotesAttributes = {})
+	public constructor(attributes: IComponentFuzzynotesAttributes = {})
 	{
-		super(new Paperless.Point(x, 0), new Paperless.Size(width, window.innerHeight));
+		super();
 
 		const {
+			x = 0,
+			width = window.innerWidth,
 			puzzled = {},
 			background = {},
 			borders = {},
@@ -41,10 +43,13 @@ export class Fuzzynotes extends Paperless.Component
 			borders: {...{strokecolor: '#ffffff', linewidth: 2, visible: false}, ...borders, ...{sticky: sticky}},
 			resetter: {...{fillcolor: '#ffffff', shadowcolor: '#ffffff', visible: false, hoverable: true}, ...resetter, ...{sticky: true, nostroke: true, scale: {x: 0.07, y: 1}}},
 			shade: {...{fillcolor: '#151515', alpha: 0.85, top: 200, bottom: 30, overflow: 0, visible: false, hoverable: false}, ...shade, ...{sticky: true, nostroke: true}},
-			padding: {...{top: 0, down: 0, left: 0, right: 0}, ...padding},
+			padding: {...{top: 0, bottom: 0, left: 0, right: 0}, ...padding},
 		};
 
-		this.point.y = this._attributes.padding.top
+		this.x = 0;
+		this.y = this._attributes.padding.top;
+		this.width = width;
+		this.height = window.innerHeight;
 		this.sticky = sticky;
 	}
 
@@ -61,8 +66,33 @@ export class Fuzzynotes extends Paperless.Component
 	{
 		let group: Paperless.Group = new Paperless.Group();
 
-		this._puzzled = new Puzzled(new Paperless.Point(this.point.x + this.attributes.padding.left - (this._attributes.puzzled.spacing / 2), this.attributes.padding.top), new Paperless.Size(this.size.width - (this.attributes.padding.left + this.attributes.padding.right), this.size.height - (this.attributes.padding.top + this.attributes.padding.down)), this._attributes.puzzled);
-		this._header = new Puzzled(new Paperless.Point(this.point.x + this.attributes.padding.left - (this._attributes.puzzled.spacing / 2), this.attributes.padding.top), new Paperless.Size(this.size.width - (this.attributes.padding.left + this.attributes.padding.right), this.size.height - (this.attributes.padding.top + this.attributes.padding.down)), {...this._attributes.puzzled, ...{sticky: true}});
+		this._puzzled = new Puzzled({
+			...this._attributes.puzzled,
+			...{
+				point: {
+					x: this.x + this.attributes.padding.left - (this._attributes.puzzled.spacing / 2),
+					y: this.attributes.padding.top
+				},
+				size: {
+					width: this.width - (this.attributes.padding.left + this.attributes.padding.right),
+					height: this.height - (this.attributes.padding.top + this.attributes.padding.bottom)
+				}
+			}
+		});
+		this._header = new Puzzled({
+			...this._attributes.puzzled,
+			...{
+				point: {
+					x: this.x + this.attributes.padding.left - (this._attributes.puzzled.spacing / 2),
+					y: this.attributes.padding.top
+				},
+				size: {
+					width: this.width - (this.attributes.padding.left + this.attributes.padding.right),
+					height: this.height - (this.attributes.padding.top + this.attributes.padding.bottom)
+				},
+				sticky: true
+			}
+		});
 
 		this.context.attach(this._puzzled);
 		this.context.attach(this._header);
@@ -82,7 +112,19 @@ export class Fuzzynotes extends Paperless.Component
 	{
 		let drawable: Paperless.Drawable;
 
-		drawable = this.context.attach(new Paperless.Drawables.Rectangle(new Paperless.Point(this.point.x + (this.size.width / 2), window.innerHeight /2), new Paperless.Size(this.size.width, window.innerHeight), this._attributes.background));
+		drawable = this.context.attach(new Paperless.Drawables.Rectangle({
+			...this._attributes.background,
+			...{
+				point: {
+					x: this.x + (this.width / 2),
+					y: window.innerHeight / 2
+				},
+				size: {
+					width: this.width,
+					height: window.innerHeight
+				}
+			}
+		}));
 		this._drawables.push(drawable.guid);
 	}
 
@@ -90,10 +132,10 @@ export class Fuzzynotes extends Paperless.Component
 	{
 		let drawable: Paperless.Drawable;
 
-		drawable = this.context.attach(new Paperless.Drawables.Line(new Paperless.Point(this.point.x, 0), new Paperless.Point(this.point.x, window.innerHeight), this._attributes.borders));
+		drawable = this.context.attach(new Paperless.Drawables.Line({...this._attributes.borders, ...{point1: {x: this.x, y: 0}, point2: {x: this.x, y: window.innerHeight}}}));
 		this._drawables.push(drawable.guid);
 
-		drawable = this.context.attach(new Paperless.Drawables.Line(new Paperless.Point(this.point.x + this.size.width, 0), new Paperless.Point(this.point.x + this.size.width, window.innerHeight), this._attributes.borders));
+		drawable = this.context.attach(new Paperless.Drawables.Line({...this._attributes.borders, ...{point1: {x: this.x + this.width, y: 0}, point2: {x: this.x + this.width, y: window.innerHeight}}}));
 		this._drawables.push(drawable.guid);
 	}
 
@@ -101,8 +143,19 @@ export class Fuzzynotes extends Paperless.Component
 	{
 		let drawable: Paperless.Drawable;
 
-		drawable = this.context.attach(new Paperless.Drawables.Triangle(new Paperless.Point(this.point.x + (this.size.width / 2), window.innerHeight - 5 - this._attributes.padding.down), 100, {...this._attributes.resetter, ...{visible: false}}));
-		drawable.angle = -90;
+		drawable = this.context.attach(new Paperless.Drawables.Triangle({
+			...this._attributes.resetter, 
+			...{
+				point: {
+					x: this.x + (this.width / 2),
+					y: window.innerHeight - 5 - this._attributes.padding.bottom
+				},
+				radius: 100,
+				visible: false,
+				angle: -90
+			}
+		}));
+		//drawable.angle = -90;
 		
 		this._resetter = this.context.attach(new Resetter(this));
 		this._resetter.attach(drawable);
@@ -117,7 +170,20 @@ export class Fuzzynotes extends Paperless.Component
 		
 		if(this._attributes.shade.top > 0)
 		{
-			drawable = this.context.attach(new Paperless.Drawables.Rectangle(new Paperless.Point(this.point.x + (this.size.width / 2), this._attributes.shade.top / 2), new Paperless.Size(this._puzzled.size.width + (this._attributes.shade.overflow * 2) - this._puzzled.spacing - this._attributes.borders.linewidth, this._attributes.shade.top), this._attributes.shade));
+			drawable = this.context.attach(new Paperless.Drawables.Rectangle({
+				...this._attributes.shade,
+				...{
+					point: {
+						x: this.x + (this.width / 2),
+						y: this._attributes.shade.top / 2
+					},
+					size: {
+						width: this._puzzled.width + (this._attributes.shade.overflow * 2) - this._puzzled.spacing - this._attributes.borders.linewidth,
+						height: this._attributes.shade.top
+					}
+				}
+			}));
+
 			this._topshade = this.context.attach(new Paperless.Controls.Blank({enabled: false}));
 			this._topshade.attach(drawable);
 
@@ -127,7 +193,20 @@ export class Fuzzynotes extends Paperless.Component
 		
 		if(this._attributes.shade.bottom > 0)
 		{
-			drawable = this.context.attach(new Paperless.Drawables.Rectangle(new Paperless.Point(this.point.x + (this.size.width / 2), window.innerHeight - (this._attributes.shade.bottom / 2)), new Paperless.Size(this._puzzled.size.width + (this._attributes.shade.overflow * 2) - this._puzzled.spacing - this._attributes.borders.linewidth, this._attributes.shade.bottom), this._attributes.shade));
+			drawable = this.context.attach(new Paperless.Drawables.Rectangle({
+				...this._attributes.shade,
+				...{
+					point: {
+						x: this.x + (this.width / 2),
+						y: window.innerHeight - (this._attributes.shade.bottom / 2)
+					},
+					size: {
+						width: this._puzzled.width + (this._attributes.shade.overflow * 2) - this._puzzled.spacing - this._attributes.borders.linewidth,
+						height: this._attributes.shade.bottom
+					}
+				}
+			}));
+
 			this._bottomshade = this.context.attach(new Paperless.Controls.Blank({enabled: false}));
 			this._bottomshade.attach(drawable);
 
@@ -205,42 +284,42 @@ export class Fuzzynotes extends Paperless.Component
 	/*
 	onResize()
 	{
-		let x: number = this._childs.controls.puzzled.point.x;
+		let x: number = this._childs.controls.puzzled.x;
 
 		this.point = new Paperless.Point((window.innerWidth - 800) / 2, 16);
 		this.size = new Paperless.Size(800, window.innerHeight);
 
-		this._childs.drawables.leftline1.point1 = new Paperless.Point(this.point.x, 0);
-		this._childs.drawables.leftline1.point2 = new Paperless.Point(this.point.x, window.outerHeight);
-		this._childs.drawables.leftline1.point = Paperless.Point.middle(this._childs.drawables.leftline1.point1, this._childs.drawables.leftline1.point2)
+		this._childs.drawables.leftline1.point1 = new Paperless.Point(this.x, 0);
+		this._childs.drawables.leftline1.point2 = new Paperless.Point(this.x, window.outerHeight);
+		this._childs.drawables.leftline1.point = Paperless.middle(this._childs.drawables.leftline1.point1, this._childs.drawables.leftline1.point2)
 		this._childs.drawables.leftline1.generate();
 
-		this._childs.drawables.leftline2.point1 = new Paperless.Point(this.point.x + 2, 0);
-		this._childs.drawables.leftline2.point2 = new Paperless.Point(this.point.x + 2, window.outerHeight)
+		this._childs.drawables.leftline2.point1 = new Paperless.Point(this.x + 2, 0);
+		this._childs.drawables.leftline2.point2 = new Paperless.Point(this.x + 2, window.outerHeight)
 		this._childs.drawables.leftline2.point = Paperless.Point.middle(this._childs.drawables.leftline2.point1, this._childs.drawables.leftline2.point2)
 		this._childs.drawables.leftline2.generate();
 
-		this._childs.drawables.rightline1.point1 = new Paperless.Point(this.point.x + this.size.width, 0);
-		this._childs.drawables.rightline1.point2 = new Paperless.Point(this.point.x + this.size.width, window.outerHeight);
+		this._childs.drawables.rightline1.point1 = new Paperless.Point(this.x + this.width, 0);
+		this._childs.drawables.rightline1.point2 = new Paperless.Point(this.x + this.width, window.outerHeight);
 		this._childs.drawables.rightline1.point = Paperless.Point.middle(this._childs.drawables.rightline1.point1, this._childs.drawables.rightline1.point2)
 		this._childs.drawables.rightline1.generate();
 
-		this._childs.drawables.rightline2.point1 = new Paperless.Point(this.point.x + this.size.width - 2, 0);
-		this._childs.drawables.rightline2.point2 = new Paperless.Point(this.point.x + this.size.width - 2, window.outerHeight);
+		this._childs.drawables.rightline2.point1 = new Paperless.Point(this.x + this.width - 2, 0);
+		this._childs.drawables.rightline2.point2 = new Paperless.Point(this.x + this.width - 2, window.outerHeight);
 		this._childs.drawables.rightline2.point = Paperless.Point.middle(this._childs.drawables.rightline2.point1, this._childs.drawables.rightline2.point2)
 		this._childs.drawables.rightline2.generate();
 
-		this._childs.controls.puzzled.point.x = this.point.x + 16;
+		this._childs.controls.puzzled.x = this.x + 16;
 		this._childs.controls.puzzled.removeMarker();
 		this._childs.controls.puzzled.detach(this._childs.controls.puzzled.getIcons());
 
 		for(let guid in this._childs.controls.puzzled.getEntities())
-			this._childs.controls.puzzled.extractGuid(guid).drawable.point.x -= x - this._childs.controls.puzzled.point.x;
+			this._childs.controls.puzzled.extractGuid(guid).drawable.x -= x - this._childs.controls.puzzled.x;
 
-		this._childs.controls.lock.drawable.point.x -= x - this._childs.controls.puzzled.point.x;
-		this._childs.controls.cross.drawable.point.x -= x - this._childs.controls.puzzled.point.x;
-		this._childs.controls.arrow.drawable.point.x -= x - this._childs.controls.puzzled.point.x;
-		this._childs.controls.arrow.drawable.point.y = window.innerHeight - 26;
+		this._childs.controls.lock.drawable.x -= x - this._childs.controls.puzzled.x;
+		this._childs.controls.cross.drawable.x -= x - this._childs.controls.puzzled.x;
+		this._childs.controls.arrow.drawable.x -= x - this._childs.controls.puzzled.x;
+		this._childs.controls.arrow.drawable.y = window.innerHeight - 26;
 
 		this.context.refresh();
 	}
@@ -248,16 +327,16 @@ export class Fuzzynotes extends Paperless.Component
 
 	handleWheel(puzzled: Puzzled, fuzzynotes: Fuzzynotes, event: HTMLElementEventMap['wheel']): void
 	{
-		if(puzzled.context.states.pointer.current.x >= puzzled.point.x * (window.devicePixelRatio * puzzled.context.scale) &&
-			puzzled.context.states.pointer.current.x <= (puzzled.point.x + puzzled.size.width) * (window.devicePixelRatio * puzzled.context.scale) &&
-			puzzled.context.states.pointer.current.y >= puzzled.point.y * (window.devicePixelRatio * puzzled.context.scale)
-			/*puzzled.context.getStates().pointCurrent.y <= puzzled.point.y + puzzled.size.height*/)
+		if(puzzled.context.states.pointer.current.x >= puzzled.x * (window.devicePixelRatio * puzzled.context.scale) &&
+			puzzled.context.states.pointer.current.x <= (puzzled.x + puzzled.width) * (window.devicePixelRatio * puzzled.context.scale) &&
+			puzzled.context.states.pointer.current.y >= puzzled.y * (window.devicePixelRatio * puzzled.context.scale)
+			/*puzzled.context.getStates().pointCurrent.y <= puzzled.y + puzzled.height*/)
 		{
 			let delta: number = 0;
 
 			if(event.deltaY > 0)
 			{
-				puzzled.point.y -= (puzzled.hop * 2);
+				puzzled.y -= (puzzled.hop * 2);
 				delta = (-puzzled.hop * 2);
 
 				if(fuzzynotes._resetter)
@@ -265,15 +344,15 @@ export class Fuzzynotes extends Paperless.Component
 			}
 			else
 			{
-				puzzled.point.y += (puzzled.hop * 2);
+				puzzled.y += (puzzled.hop * 2);
 				
-				if(puzzled.point.y > fuzzynotes.attributes.padding.top)
-					puzzled.point.y = fuzzynotes.attributes.padding.top;
+				if(puzzled.y > fuzzynotes.attributes.padding.top)
+					puzzled.y = fuzzynotes.attributes.padding.top;
 				else
 					delta = (puzzled.hop * 2);
 			}
 
-			if(puzzled.point.y == fuzzynotes.attributes.padding.top && fuzzynotes._resetter)
+			if(puzzled.y == fuzzynotes.attributes.padding.top && fuzzynotes._resetter)
 				fuzzynotes._resetter.drawable.visible = false;
 
 			for(let control of puzzled.getControls(Restrict.ignoregroup))

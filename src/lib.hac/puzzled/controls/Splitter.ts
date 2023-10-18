@@ -8,9 +8,9 @@ export class Splitter extends Paperless.Controls.Button
 	private _puzzled: Puzzled;
 	//---
 
-	public constructor(puzzled: Puzzled, callbackLeftClick: (smuggler: any) => void = null, callbackRightClick: (smuggler: any) => void = null, smugglerLeftClick: any = null, smugglerRightClick: any = null)
+	public constructor(puzzled: Puzzled, attributes: Paperless.Interfaces.IControlButtonAttributes = {})
 	{
-		super(callbackLeftClick, callbackRightClick, smugglerLeftClick, smugglerRightClick);
+		super(attributes);
 
 		this.movable = false;
 		this.focusable = false;

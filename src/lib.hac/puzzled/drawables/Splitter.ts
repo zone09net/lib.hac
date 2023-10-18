@@ -8,11 +8,19 @@ export class Splitter extends Paperless.Drawable
 	private _puzzled: Puzzled;
 	//---
 
-	public constructor(point: Paperless.Point, angle: number, puzzled: Puzzled)
+	public constructor(puzzled: Puzzled, attributes: Paperless.Interfaces.IDrawableAttributes = {})
 	{
-		super(point, {linewidth: 2, fillcolor: puzzled.color.marked, strokecolor: puzzled.color.faked, angle: angle});
+		super({
+			...attributes,
+			...{
+				linewidth: 2, 
+				fillcolor: puzzled.color.marked, 
+				strokecolor: puzzled.color.faked, 
+			}
+		});
 
-		this.size = new Paperless.Size(5, 20);
+		this.width = 5;
+		this.height = 20;
 		this._puzzled = puzzled;
 		this.sticky = puzzled.sticky;
 		
@@ -21,14 +29,14 @@ export class Splitter extends Paperless.Drawable
 
 	public generate(): void
 	{
-		let point: Paperless.Point = new Paperless.Point(-this.size.width / 2, -this.size.height / 2);
+		let point: Paperless.Point = new Paperless.Point(-this.width / 2, -this.height / 2);
 
-		this.clearPath();
+		this.path = new Path2D();
 		
 		if(this.angle == 90)
-			this.path.rect(point.x + this._puzzled.spacing, point.y - this._puzzled.spacing, this.size.width, this.size.height);
+			this.path.rect(point.x + this._puzzled.spacing, point.y - this._puzzled.spacing, this.width, this.height);
 		else
-			this.path.rect(point.x + this._puzzled.spacing, point.y + this._puzzled.spacing, this.size.width, this.size.height);
+			this.path.rect(point.x + this._puzzled.spacing, point.y + this._puzzled.spacing, this.width, this.height);
 
 		this.path.closePath();
 	}

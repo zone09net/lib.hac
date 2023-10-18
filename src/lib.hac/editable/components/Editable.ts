@@ -10,27 +10,39 @@ import {Interaction} from '../controls/Interaction.js';
 export class Editable extends Paperless.Component
 {
 	private _attributes: IComponentEditableAttributes;
-	private _element: HTMLInputElement = document.createElement('input');
+	//private _element: HTMLInputElement = document.createElement('input');
+	private _element: HTMLTextAreaElement = document.createElement('textarea');
 	private _keyboard: Foundation.Keyboard = new Foundation.Keyboard(this._element, this);
 	private _label: Paperless.Drawables.Label;
 	private _cursor: Cursor;
-	private _Dbackground: Paperless.Drawables.Rectangle;
+	private _Dbackground: Paperless.Drawable;
 	private _Cbackground: Background;
 	private _interaction: Interaction;
 	private _position: {global: number, cursor: {row: number, column: number}} = {global: 0, cursor: {row: 0, column: 0}};
 	//---
 
-	public constructor(point: Paperless.Point, size: Paperless.Size, attributes: IComponentEditableAttributes = {})
+	public constructor(attributes: IComponentEditableAttributes = {})
 	{
-		super(point, size);
+		super({
+			...{
+				size: {width: 512, height: 256},
+				point: {
+					x: window.innerWidth / 2, 
+					y: window.innerHeight / 2
+				},		
+			},
+			...attributes, 
+		});
 
 		const {
+			textarea = false,
 			maxchar = 0,
 			maxline = 0,
 			focuscolor = '#ddbb44',
+			restrict = /./,
 			sticky = false,
 			label = {},
-			cursor = {}
+			cursor = {},
 			/*
 			{
 				0: { 
@@ -41,15 +53,39 @@ export class Editable extends Paperless.Component
 				}
 			}
 			*/
+
+			onEscape = null,
+			onKey = null,
+			onEnter = null,
+			onTab = null,
+			onBackspace = null,
+			onDelete = null,
+			onRight = null,
+			onCtrlRight = null,
+			onShiftRight = null,
+			onLeft = null,
+			onCtrlLeft = null,
+			onShiftLeft = null,
+			onUp = null,
+			onDown = null,
+			onHome = null,
+			onCtrlHome = null,
+			onEnd = null,
+			onCtrlEnd = null,
+			onCopy = null,
+			onPaste = null,
+			onUnselect = null,
 		} = attributes;
 
 		this.sticky = sticky;
 		this._attributes = {
+			textarea: textarea, 
 			maxchar: maxchar,
 			maxline: maxline,
 			focuscolor: focuscolor,
+			restrict: restrict,
 			label: {
-				...{ multiline: true, fillbackground: '#000000', strokecolor: '#666666' }, 
+				...{ multiline: true,/* fillbackground: '#000000',*/ strokecolor: '#666666' }, 
 				...label, 
 				...{ autosize: false, corner: true, sticky: sticky} 
 			},
@@ -62,23 +98,24 @@ export class Editable extends Paperless.Component
 
 		this._keyboard.setCallbacks(
 			new Map([
-				['key', [this.onKey]],
+				['key', [onKey || this.onKey]],
 
-				['enter', [this.onEnter]],
-				['tab', [this.onTab]],
-				['backspace', [this.onBackspace]],
-				['delete', [this.onDelete]],
+				['escape', [onEscape || this.onEscape]],
+				['enter', [onEnter || this.onEnter]],
+				['tab', [onTab || this.onTab]],
+				['backspace', [onBackspace || this.onBackspace]],
+				['delete', [onDelete || this.onDelete]],
 
-				['right', [this.onRight]], ['ctrl+right', [this.onCtrlRight]], ['shift+right', [this.onShiftRight]],
-				['left', [this.onLeft]], ['ctrl+left', [this.onCtrlLeft]], ['shift+left', [this.onShiftLeft]],
-				['up', [this.onUp]],
-				['down', [this.onDown]],
+				['right', [onRight || this.onRight]], ['ctrl+right', [onCtrlRight || this.onCtrlRight]], ['shift+right', [onShiftRight || this.onShiftRight]],
+				['left', [onLeft || this.onLeft]], ['ctrl+left', [onCtrlLeft || this.onCtrlLeft]], ['shift+left', [onShiftLeft || this.onShiftLeft]],
+				['up', [onUp || this.onUp]],
+				['down', [onDown || this.onDown]],
 
-				['home', [this.onHome]], ['ctrl+home', [this.onCtrlHome]],
-				['end', [this.onEnd]], ['ctrl+end', [this.onCtrlEnd]],
+				['home', [onHome || this.onHome]], ['ctrl+home', [onCtrlHome || this.onCtrlHome]],
+				['end', [,onEnd || this.onEnd]], ['ctrl+end', [onCtrlEnd || this.onCtrlEnd]],
 
-				//['ctrl+c', [this.onCopy]],
-				['ctrl+v', [this.onPaste]],
+				['ctrl+c', [onCopy || this.onCopy]],
+				['ctrl+v', [onPaste || this.onPaste]],
 			])
 		);
 
@@ -86,16 +123,82 @@ export class Editable extends Paperless.Component
 		this._element.style.opacity = '0';
 		this._element.style.position = 'fixed';
 		this._element.style.top = '-1000px';
+		this._element.spellcheck = false;
+		
+		if(this._attributes.maxchar != 0)
+			this._element.maxLength = this._attributes.maxchar;
+
 		document.body.appendChild(this._element);
 
-		this._keyboard.enable();
-		this._label = new Paperless.Drawables.Label(this.point, this.size, this._attributes.label);
+		if(!textarea)
+			this._keyboard.enable();
+		else
+		{
+			//this._element.addEventListener("keydown", this.handleKeydown.bind(null, this), false);
+			//this._element.addEventListener("keyup", this.handleKeyup.bind(null, this), false);
+		}
+
+		this._label = new Paperless.Drawables.Label({
+			...this._attributes.label,
+			...{
+				point: {x: this.x, y: this.y},
+				size: {width: this.width, height: this.height}
+			}
+		});
 	}
 
-	public attachBackground(Dbackground?: Paperless.Drawable): void
+	private handleKeydown(self: Editable, event: HTMLElementEventMap['keydown']): void
 	{
-		if(Dbackground)
-			this._Dbackground = Dbackground;
+
+	}
+
+	private handleKeyup(self: Editable, event: HTMLElementEventMap['keyup']): void
+	{
+		if(self._attributes.restrict.test(event.key))
+		{
+			let lines = self._element.value.substr(0, self._element.selectionStart).split('\n');
+			let row = lines.length;
+			let column = lines[lines.length - 1].length;
+
+			self._position = {
+				global: self._element.selectionStart,
+				cursor: {row: row, column: column}
+			}
+
+			if(self._cursor)
+			{
+				self.context.context2D.save();
+				self.context.context2D.font = self._label.font;
+				self.context.context2D.textAlign = 'left';
+				self.context.context2D.textBaseline = 'top';
+	
+				let width = self.context.context2D.measureText('X').width;
+				let height = self.context.context2D.measureText('[j').actualBoundingBoxDescent + self.context.context2D.measureText('[j').actualBoundingBoxAscent;
+	
+				self._cursor.offset = {
+					x: (width * self._position.cursor.column) + /*self._label.padding.left*/ 5 + self._label.offset.x + Math.ceil(self._cursor.size.width / 2),
+					y: ((/*self._cursor.size.height*/ height - 2 + self._label.spacing) * self._position.cursor.row) + ((self._cursor.size.height + 2) / 2) + /*self._label.padding.top*/ 5 + self._label.offset.y - 1
+				}
+				
+				self.context.context2D.restore();
+				self.context.refresh();
+			}
+
+
+		}
+		else
+			event.preventDefault();
+	}
+
+	public attachLabel(label: any)
+	{
+		this._label = label;
+	}
+
+	public attachBackground(drawable?: Paperless.Drawable): void
+	{
+		if(drawable)
+			this._Dbackground = drawable;
 		else
 		{
 			this._Cbackground = new Background(this);
@@ -103,17 +206,26 @@ export class Editable extends Paperless.Component
 		}
 	}
 	
-	public attachCursor(): void
+	public attachCursor(drawable?: Cursor): void
 	{
-		let cursorHeight = this._label.boundingbox('j').height + 2;
+		if(drawable)
+			this._cursor = drawable;
+		else
+		{
+			let cursorHeight = this._label.boundingbox('[j').height + 2;
 
-		this._cursor = new Cursor(new Paperless.Point(this._label.matrix.e, this._label.matrix.f), new Paperless.Size(this._attributes.cursor.width, cursorHeight), {
-			...this._attributes.cursor,
-			...{
-				offset: {x: this._label.offset.x + this._label.padding.left + Math.ceil(this._attributes.cursor.width / 2), y: this._label.offset.y + (cursorHeight / 2) + this._label.padding.top - 1},
-				sticky: this.sticky
-			}
-		});
+			this._cursor = new Cursor({
+				...this._attributes.cursor,
+				...{
+					point: {x: this._label.x, y: this._label.y},
+					size: {width: this._attributes.cursor.width, height: cursorHeight},
+					offset: {x: this._label.offset.x + this._label.padding.left + Math.ceil(this._attributes.cursor.width / 2), y: this._label.offset.y + (cursorHeight / 2) + this._label.padding.top - 1},
+					sticky: this.sticky
+				}
+			});
+
+			this.context.attach(this._cursor)
+		}
 	}
 
 	public attachInteraction(): void
@@ -123,44 +235,70 @@ export class Editable extends Paperless.Component
 
 	public initialize(): void
 	{
-		this.context.attach(this._label);
+		if(!this._attributes.textarea)
+		{
+			this.context.enroll(this._label);
+			//this.context.attach(this._label);
 
-		if(this._Cbackground)
-		{
-			this.context.attach(this._Cbackground)
-			this.context.attach(this._Dbackground);
-			this._Cbackground.attach(this._Dbackground);
+			if(this._Cbackground)
+			{
+				this.context.attach(this._Cbackground)
+				this.context.attach(this._Dbackground);
+				this._Cbackground.attach(this._Dbackground);
+			}
+			else if(this._Dbackground)
+			{
+				if(!this.context.get(this._Dbackground.guid))
+					this.context.attach(this._Dbackground)
+			}
+
+			if(this._interaction)
+				this.context.attach(this._interaction);
+
+			let group: Paperless.Group = new Paperless.Group();
+			this.context.attach(group);
+
+			if(this._cursor)
+				group.attach(this._cursor);
+
+			group.attach(this._label);
 		}
-		else if(this._Dbackground)
+		else
 		{
+			this._element.style.pointerEvents = 'auto';
+			this._element.style.opacity = '1';
+			this._element.style.position = 'fixed';
+			this._element.style.left = this.point.x + this._attributes.label.padding.left + 'px';
+			this._element.style.top = this.point.y + this._attributes.label.padding.top + 'px';
+			this._element.style.width = this.size.width - this._attributes.label.padding.left - this._attributes.label.padding.right + 'px';
+			this._element.style.height = this.size.height - this._attributes.label.padding.top - this._attributes.label.padding.bottom + 'px';
+
 			if(!this.context.get(this._Dbackground.guid))
-				this.context.attach(this._Dbackground)
+				this.context.attach(this._Dbackground);
+
+			if(this._cursor)
+				this.context.attach(this._cursor);
 		}
-
-		if(this._interaction)
-			this.context.attach(this._interaction);
-
-		let group: Paperless.Group = new Paperless.Group();
-		this.context.attach(group);
-
-		if(this._cursor)
-			group.attach(this._cursor);
-
-		group.attach(this._label);
 	}
 
 	public onAttach(): void
 	{
-		this.attachBackground();
+		this.attachBackground(); 
 		this.attachCursor();
-		this.attachInteraction();
+
+		if(!this._attributes.textarea)
+		{
+			
+			this.attachInteraction();
+		}
+
 		this.initialize();
 	}
 
 	public onDetach(): void
 	{
-		this.context.detach(this._label.group);
-		this.context.detach(this._label.guid);
+		this.context.detach(this._label.group); 
+		//this.context.detach(this._label.guid);
 		
 		if(this._interaction)
 			this.context.detach(this._interaction.guid);
@@ -186,9 +324,14 @@ export class Editable extends Paperless.Component
 		let length: number = 0;
 		let lastLength: number = 0;
 		let row: number = 0;
-
-		let mark1: number = 5;
-		let mark2: number = 10;
+		let newlines: Array<number> = [];
+		let index: number = this._label.content.indexOf('\n');
+	
+		while(index != -1) 
+		{
+			newlines.push(index);
+			index = this._label.content.indexOf('\n', index + 1);
+		}
 
 		for(; row <= this._label.contentAs.splitted.length - 1; row++)
 		{
@@ -198,7 +341,7 @@ export class Editable extends Paperless.Component
 			if(this._position.global >= lastLength && this._position.global <= length)
 				break;
 
-			if(this._label.getNewlinesIndex().includes(length))
+			if(newlines.includes(length))
 				length++;
 		}
 
@@ -217,13 +360,19 @@ export class Editable extends Paperless.Component
 
 		if(this._cursor)
 		{
-			let boundingbox: {width: number, height: number} = this._label.boundingbox(this._label.contentAs.splitted[row].slice(0, this._position.global - lastLength));
+			this._label.context.context2D.save();
+			this._label.context.context2D.font = this._label.font;
+			this._label.context.context2D.textAlign = 'left';
+			this._label.context.context2D.textBaseline = 'top';
+
+			let metrics = this._label.context.context2D.measureText(this._label.contentAs.splitted[row].slice(0, this._position.global - lastLength));
 
 			this._cursor.offset = {
-				x: boundingbox.width + this._label.padding.left + this._label.offset.x + Math.ceil(this._attributes.cursor.width / 2),
-				y: ((boundingbox.height + this._label.spacing) * row) + (this._cursor.size.height / 2) + this._label.padding.top + this._label.offset.y - 1
+				x: metrics.width + this._label.padding.left + this._label.offset.x + Math.ceil(this._cursor.size.width / 2),
+				y: ((this._cursor.size.height - 2 + this._label.spacing) * row) + ((this._cursor.size.height + 2) / 2) + this._label.padding.top + this._label.offset.y - 1
 			}
-
+			
+			this._label.context.context2D.restore();
 		}
 
 		this._position.cursor.row = row;
@@ -233,41 +382,32 @@ export class Editable extends Paperless.Component
 	}
 
 	/*
-	public updateCursorHeight(): void
-	{
-		this._cursor.size.height = this._label.boundingbox('j').height;
-		this._cursor.generate();
-		this._cursor.point.x = this._label.point.x + this._label.padding.left;
-		this._cursor.point.y = this._label.point.y + (this._cursor.size.height / 2) + this._label.padding.top;
-	}
-	*/
-
 	public getPosition(): number
 	{
 		return this._position.global;
 	}
+	*/
 
 	public clear(): void
 	{
 		this._label.content = '';
-		this.update();
-	}
+		}
 
-	private moveRight(howmany: number): void
+	public moveRight(howmany: number): void 
 	{
 		this._position.global += howmany;
-		
+
 		if(this._position.global >= this._label.content.length)
 			this._position.global = this._label.content.length;
 	}
 
-	private moveLeft(howmany: number): void
+	public moveLeft(howmany: number): void
 	{
 		if(this._position.global - howmany >= 0)
 			this._position.global -= howmany;
 	}
 
-	private moveUp(): void
+	public moveUp(): void
 	{
 		if(this._label.contentAs.splitted[this._position.cursor.row - 1] != undefined)
 		{
@@ -288,7 +428,7 @@ export class Editable extends Paperless.Component
 		}
 	}
 
-	private moveDown(): void
+	public moveDown(): void
 	{
 		if(this._label.contentAs.splitted[this._position.cursor.row + 1] != undefined)
 		{
@@ -303,19 +443,19 @@ export class Editable extends Paperless.Component
 		}
 	}
 
-	private moveFirst(): void
+	public moveFirst(): void
 	{
 		this.moveLeft(this._position.cursor.column);
 	}
 
-	private moveLast(): void
+	public moveLast(): void
 	{
 		let increment: number = this._label.contentAs.splitted[this._position.cursor.row].length - this._position.cursor.column;
 
 		this.moveRight(increment);
 
 		if(this._position.cursor.row == this._label.contentAs.splitted.length - 1)
-			this._position.global = this._label.content.length + 1;
+			this._position.global = this._label.content.length /*+ 1*/;
 		else
 		{
 			if(this._label.content[this._position.global] != '\n')
@@ -323,26 +463,26 @@ export class Editable extends Paperless.Component
 		}
 	}
 
-	private isInsertable(length: number): boolean
+	public isInsertable(length: number): boolean
 	{
-		return this._attributes.maxchar != 0 ? this._label.content.length + length <= this._attributes.maxchar : true
+		return this._attributes.maxchar != 0 ? this._label.content.length + length <= this._attributes.maxchar : true;
 	}
 
-	private insertStringAt(string: string, index: number): void
+	public insertStringAt(string: string, index: number): void
 	{
 		this._label.content = this._label.content.substring(0, index) + string + this._label.content.substr(index);
 	}
 
-	private removeStringAt(from: number, end: number)
+	public removeStringAt(from: number, end: number)
 	{
 		this._label.content = this._label.content.slice(0, from) + this._label.content.slice(end);
 	}
 
 	private onKey(event: HTMLElementEventMap['keydown'], self: Editable)
 	{
-		if(self.isInsertable(1))
+		if(self.isInsertable(1) && self._attributes.restrict.test(event.key))
 		{
-			self.insertStringAt(event.key, self.getPosition())
+			self.insertStringAt(event.key, self._position.global)
 			self.moveRight(1);
 			self.update();
 		}
@@ -350,11 +490,16 @@ export class Editable extends Paperless.Component
 		event.preventDefault();
 	}
 
+	private onEscape(event: HTMLElementEventMap['keydown'], self: Editable)
+	{
+		event.preventDefault();
+	}
+
 	private onEnter(event: HTMLElementEventMap['keydown'], self: Editable)
 	{
 		if(self.isInsertable(1) && self.childs.label.multiline)
 		{
-			self.insertStringAt('\n', self.getPosition())
+			self.insertStringAt('\n', self._position.global)
 			self.moveRight(1);
 			self.update();
 		}
@@ -366,7 +511,7 @@ export class Editable extends Paperless.Component
 	{
 		if(self.isInsertable(self.childs.label.tabsize))
 		{
-			self.insertStringAt(' '.repeat(self.childs.label.tabsize), self.getPosition())
+			self.insertStringAt(' '.repeat(self.childs.label.tabsize), self._position.global)
 			self.moveRight(self.childs.label.tabsize);
 			self.update();
 		}
@@ -376,9 +521,9 @@ export class Editable extends Paperless.Component
 
 	private onBackspace(event: HTMLElementEventMap['keydown'], self: Editable)
 	{
-		if(self.getPosition() > 0)
+		if(self._position.global > 0)
 		{
-			self.removeStringAt(self.getPosition() - 1, self.getPosition());
+			self.removeStringAt(self._position.global - 1, self._position.global);
 			self.moveLeft(1);
 			self.update();
 		}
@@ -388,7 +533,7 @@ export class Editable extends Paperless.Component
 
 	private onDelete(event: HTMLElementEventMap['keydown'], self: Editable)
 	{
-		self.removeStringAt(self.getPosition(), self.getPosition() + 1);
+		self.removeStringAt(self._position.global, self._position.global + 1);
 		self.update();
 
 		event.preventDefault();
@@ -488,7 +633,9 @@ export class Editable extends Paperless.Component
 
 	private onCopy(event: HTMLElementEventMap['keydown'], self: Editable)
 	{
-		console.log('onCopy');
+		Foundation.Clipboard.setContent(self.childs.label.content).then(() => {
+
+		}); 
 
 		event.preventDefault();
 	}
@@ -499,9 +646,9 @@ export class Editable extends Paperless.Component
 			content = content.replace(/\t/g, ' '.repeat(self.childs.label.tabsize));
 			content = content.replace(/\r/g, '');
 
-			if(self.isInsertable(content.length))
+			if(self.isInsertable(content.length) && self._attributes.restrict.test(content))
 			{
-				self.insertStringAt(content, self.getPosition())
+				self.insertStringAt(content, self._position.global)
 				self.moveRight(content.length);
 				self.update();
 			}
@@ -522,9 +669,10 @@ export class Editable extends Paperless.Component
 	// Accessors
 	// --------------------------------------------------------------------------
 
-	get childs(): {element: HTMLInputElement, control: Background, label: Paperless.Drawables.Label, cursor: Cursor, background: Paperless.Drawables.Rectangle}
+	get childs(): {element: HTMLTextAreaElement, control: Background, label: Paperless.Drawables.Label, cursor: Cursor, background: Paperless.Drawable, keyboard: Foundation.Keyboard}
+	//get childs(): {element: HTMLInputElement, control: Background, label: Paperless.Drawables.Label, cursor: Cursor, background: Paperless.Drawables.Rectangle}
 	{
-		return {element: this._element, control: this._Cbackground, label: this._label, cursor: this._cursor, background: this._Dbackground};
+		return {element: this._element, control: this._Cbackground, label: this._label, cursor: this._cursor, background: this._Dbackground, keyboard: this._keyboard};
 	}
 
 	get content(): string
@@ -536,6 +684,15 @@ export class Editable extends Paperless.Component
 		this._label.content = content;
 	}
 
+	get position(): {global: number, cursor: {row: number, column: number}}
+	{
+		return this._position;
+	}
+	set position(position: {global: number, cursor: {row: number, column: number}})
+	{
+		this._position = position;
+	}
+/*
 	get global(): number
 	{
 		return this._position.global;
@@ -544,7 +701,16 @@ export class Editable extends Paperless.Component
 	{
 		this._position.global = global;
 	}
-
+	
+	get cursor(): {row: number, column: number}
+	{
+		return this._position.cursor;
+	}
+	set cursor(cursor: {row: number, column: number})
+	{
+		this._position.cursor = cursor;
+	}
+*/
 	get maxchar(): number
 	{
 		return this._attributes.maxchar;
@@ -563,6 +729,16 @@ export class Editable extends Paperless.Component
 		this._attributes.maxline = maxline;
 	}
 
+	get restrict(): RegExp
+	{
+		return this._attributes.restrict;
+	}
+	set restrict(restrict: RegExp)
+	{
+		this._attributes.restrict = restrict;
+	}
+
+/*
 	get focuscolor(): string
 	{
 		return this._attributes.focuscolor;
@@ -571,4 +747,5 @@ export class Editable extends Paperless.Component
 	{
 		this._attributes.focuscolor = focuscolor;
 	}
+	*/
 }

@@ -3,7 +3,7 @@ import {Editable} from '../components/Editable.js';
 
 
 
-export class Interaction extends Paperless.MouseActions
+export class Interaction extends Paperless.MouseAction
 {
 	private _editable: Editable;
 	//---
@@ -13,6 +13,20 @@ export class Interaction extends Paperless.MouseActions
 		super();
 
 		this._editable = editable;
+	}
+
+	private getNewlinesIndex(): number[]
+	{
+		let newlines: number[] = [];
+		let index: number = this._editable.childs.label.content.indexOf('\n');
+
+		while(index != -1) 
+		{
+			newlines.push(index);
+			index = this._editable.childs.label.content.indexOf('\n', index + 1);
+		}
+
+		return newlines;
 	}
 
 	public onMouseUp(): void 
@@ -27,24 +41,24 @@ export class Interaction extends Paperless.MouseActions
 		{
 			let x: number = this.context.states.pointer.clicked.x - this._editable.childs.label.x - this._editable.childs.label.padding.left - this._editable.childs.label.offset.x;
 			let y: number = this.context.states.pointer.clicked.y - this._editable.childs.label.y - this._editable.childs.label.padding.top - this._editable.childs.label.offset.y;
-			let boundingbox: {width: number, height: number} = this._editable.childs.label.boundingbox('j');
+			let boundingbox: {width: number, height: number} = this._editable.childs.label.boundingbox('[j');
 			let row: number = Math.floor(y / (boundingbox.height + this._editable.childs.label.spacing));
 
 			if(row < 0)
 				row = 0;
 
-			this._editable.global = 0;
+			this._editable.position.global = 0;
 
 			if(row >= this._editable.childs.label.contentAs.splitted.length)
-				this._editable.global = this._editable.childs.label.content.length;
+				this._editable.position.global = this._editable.childs.label.content.length;
 			else
 			{
 				for(let i: number = 0; i < row; i++)
 				{
-					this._editable.global += this._editable.childs.label.contentAs.splitted[i].length;
+					this._editable.position.global += this._editable.childs.label.contentAs.splitted[i].length;
 
-					if(this._editable.childs.label.getNewlinesIndex().includes(this._editable.global))
-						this._editable.global++;
+					if(this.getNewlinesIndex().includes(this._editable.position.global))
+						this._editable.position.global++;
 				}
 				
 				let position: number;
@@ -57,7 +71,7 @@ export class Interaction extends Paperless.MouseActions
 						break;
 				}
 
-				this._editable.global += (position >= this._editable.childs.label.contentAs.splitted[row].length ? this._editable.childs.label.contentAs.splitted[row].length : position);
+				this._editable.position.global += (position >= this._editable.childs.label.contentAs.splitted[row].length ? this._editable.childs.label.contentAs.splitted[row].length : position);
 			}
 
 			this._editable.update(false);

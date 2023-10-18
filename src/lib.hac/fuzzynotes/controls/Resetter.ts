@@ -26,12 +26,12 @@ export class Resetter extends Paperless.Control
 			let control: EntityCoreControl = this._fuzzynotes.puzzled.extractGuid(guid);
 			let source: Paperless.Point = new Paperless.Point(control.drawable.matrix.e, control.drawable.matrix.f);
 			
-			control.drawable.y -= this._fuzzynotes.puzzled.point.y - this._fuzzynotes.attributes.padding.top;
+			control.drawable.y -= this._fuzzynotes.puzzled.y - this._fuzzynotes.attributes.padding.top;
 			(<EntityCoreControl>control).onMoved(source);
 		}
 
 		this.drawable.visible = false;
-		this._fuzzynotes.puzzled.point.y = this._fuzzynotes.attributes.padding.top;
+		this._fuzzynotes.puzzled.y = this._fuzzynotes.attributes.padding.top;
 	}
 
 	public onInside(): void

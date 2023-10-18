@@ -10,22 +10,30 @@ export class Sizer extends Paperless.Drawable
 	private _puzzled: Puzzled;
 	//---
 
-	public constructor(point: Paperless.Point, angleStart: number, angleEnd: number, puzzled: Puzzled)
+	public constructor(puzzled: Puzzled, attributes: Paperless.Interfaces.IDrawableCircleAttributes = {})
 	{
-		super(point, {linewidth: 2, fillcolor: puzzled.color.marked, strokecolor: puzzled.color.faked});
+		super({
+			...attributes,
+			...{
+				linewidth: 2, 
+				fillcolor: puzzled.color.marked, 
+				strokecolor: puzzled.color.faked
+			}
+		});
 
-		this._angleStart = angleStart;
-		this._angleEnd = angleEnd;
+		this._angleStart = attributes.angleStart;
+		this._angleEnd = attributes.angleEnd;
 		this._puzzled = puzzled;
 		this.sticky = puzzled.sticky;
-		this.size = new Paperless.Size(9, 9);
+		this.width = 9;
+		this.height = 9;
 
 		this.generate();
 	}
 
 	public generate(): void
 	{
-		this.clearPath();
+		this.path = new Path2D();
 		this.path.arc(this._puzzled.spacing, this._puzzled.spacing, 9, (this._angleEnd / 180) * Math.PI, (this._angleStart / 180) * Math.PI, true);
 	}
 

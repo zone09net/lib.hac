@@ -10,9 +10,9 @@ export class EntityCoreDrawable extends Drawable
 	private _strokecolor2: string;
 	//---
 
-	public constructor(point: Paperless.Point, size: Paperless.Size, puzzled: Puzzled)
+	public constructor(puzzled: Puzzled, attributes: Paperless.Interfaces.IDrawableAttributes = {})
 	{
-		super(point, size, puzzled);
+		super(puzzled, attributes);
 	}
 
 

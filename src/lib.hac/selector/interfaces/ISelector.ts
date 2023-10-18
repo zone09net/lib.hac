@@ -2,7 +2,7 @@ import * as Paperless from '@zone09.net/paperless';
 
 
 
-export interface IComponentSelectorAttributes 
+export interface IComponentSelectorAttributes extends Paperless.Interfaces.IComponentAttributes
 {
 	padding?: Paperless.Interfaces.IPadding,
 	spacing?: number,

@@ -12,6 +12,8 @@ interface IDrawableShadeAttributes extends Paperless.Interfaces.IDrawableAttribu
 
 export interface IComponentFuzzynotesAttributes extends Paperless.Interfaces.IComponentAttributes 
 {
+	x?: number,
+	width?: number,
 	puzzled?: IComponentPuzzledAttributes,
 	background?: Paperless.Interfaces.IDrawableAttributes,
 	borders?: Paperless.Interfaces.IDrawableAttributes,

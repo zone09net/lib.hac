@@ -7,14 +7,14 @@ import {IComponentSelectorAttributes} from '../interfaces/ISelector.js';
 
 export class Selector extends Paperless.Component
 {
-	private _items: Array<Item> = [];
+	private _items: Item[] = [];
 	private _manipulator: Manipulator;
 	private _attributes: IComponentSelectorAttributes;
 	//---
 
-	public constructor(point: Paperless.Point, size: Paperless.Size, manipulator: Manipulator, attributes: IComponentSelectorAttributes = {})
+	public constructor(manipulator: Manipulator, attributes: IComponentSelectorAttributes = {})
 	{
-		super(point, size);
+		super(attributes);
 
 		const {
 			padding = {},
@@ -22,7 +22,7 @@ export class Selector extends Paperless.Component
 		} = attributes;
 
 		this._attributes = {
-			padding: {...{top: 0, down: 0, left: 0, right: 0}, ...padding},
+			padding: {...{top: 0, bottom: 0, left: 0, right: 0}, ...padding},
 			spacing: spacing,
 		};
 

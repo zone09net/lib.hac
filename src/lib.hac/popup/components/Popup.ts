@@ -14,7 +14,7 @@ export class Popup extends Paperless.Component
 
 	public constructor(attributes: IComponentPopopAttributes = {})
 	{
-		super(new Paperless.Point(0, 0), new Paperless.Size(0, 0), attributes);
+		super(attributes);
 
 		const {
 			title = {},
@@ -47,51 +47,59 @@ export class Popup extends Paperless.Component
 
 	public onAttach(): void
 	{
-		this.size = this.context.size;
-		this.point = new Paperless.Point(this.size.width / 2, this.size.height / 2);
+		this.width = this.context.canvas.width;
+		this.height = this.context.canvas.height;
+		this.x = this.width / 2;
+		this.y = this.height / 2;
 
-		this._dark = new Paperless.Drawables.Rectangle(this.point, this.context.size, this._attributes.dark);
-		this._title = new Paperless.Drawables.Label(new Paperless.Point(this.point.x, this.point.y), new Paperless.Size(1, 1), this._attributes.title);
-		this._detail = new Paperless.Drawables.Label(new Paperless.Point(this.point.x, this.point.y), new Paperless.Size(1, 1), this._attributes.detail);	
+		this._dark = new Paperless.Drawables.Rectangle({...this._attributes.dark, ...{point: {x: this.x, y: this.y}, size: {width: this.context.canvas.width, height: this.context.canvas.height}}});
+		this._title = new Paperless.Drawables.Label({...this._attributes.title, ...{point: {x: this.x, y: this.y}}});
+		this._detail = new Paperless.Drawables.Label({...this._attributes.detail, ...{point: {x: this.x, y: this.y}}});	
 
-		this._control = new Paperless.Controls.Button((resolve) => {
-			this.context.detach([
-				this._title.guid,
-				this._detail.guid,
-				this._dark.guid,
-				this._control.guid
-			]);
+		this._control = new Paperless.Controls.Button({
+			movable: false,
+			callbackLeftClick: (resolve) => {
+				this.context.detach([
+					this._title.guid,
+					this._detail.guid,
+					this._dark.guid,
+					this._control.guid
+				]);
 
-			resolve(null);
-		}, null, null, null, {movable: false});
+				resolve(null);
+			},
+		});
 	}
 
 	public onResize(): void
 	{
 		let height: number = 0;
 		
-		this.size = this.context.size;
-		this.point = new Paperless.Point(this.size.width / 2, this.size.height / 2);
+		this.width = this.context.canvas.width;
+		this.height = this.context.canvas.height;
+		this.x = this.width / 2;
+		this.y = this.height / 2;
 
-		this._detail.x = this.point.x - (this._title.size.width / 2);
-		this._detail.y = this.point.y - (this._detail.size.height / 2);
+		this._detail.x = this.x - (this._title.width / 2);
+		this._detail.y = this.y - (this._detail.height / 2);
 
-		let top = this._title.size.height + 20;
+		let top = this._title.height + 20;
 
 		if(this._title.content && this._detail.content)
 		{
-			height = top + this._detail.size.height;
-			this._detail.y = this.point.y + ((height / 2) - this._detail.size.height);
+			height = top + this._detail.height;
+			this._detail.y = this.y + ((height / 2) - this._detail.height);
 		}
 		else
 			height = top;
 
-		this._title.x = this.point.x - (this._title.size.width / 2);
-		this._title.y = this.point.y -  (height / 2);
+		this._title.x = this.x - (this._title.width / 2);
+		this._title.y = this.y -  (height / 2);
 
-		this._dark.x = this.point.x;
-		this._dark.y = this.point.y;
-		this._dark.size = this.context.size;
+		this._dark.x = this.x;
+		this._dark.y = this.y;
+		this._dark.width = this.context.canvas.width;
+		this._dark.height = this.context.canvas.height;
 		this._dark.generate();
 
 	}
@@ -100,27 +108,27 @@ export class Popup extends Paperless.Component
 	{
 		this._title.generate();
 
-		let width: number = this._title.size.width;
+		let width: number = this._title.width;
 		let height: number = 0;
 
 		if(!this._title.content)
 			width = this._attributes.width;
 
-		this._title.x = this.point.x - (width / 2);
-		this._title.y = this.point.y - (this._title.size.height / 2);
+		this._title.x = this.x - (width / 2);
+		this._title.y = this.y - (this._title.height / 2);
 
-		this._detail.x = this.point.x - (width / 2);
-		this._detail.size.width = width;
+		this._detail.x = this.x - (width / 2);
+		this._detail.width = width;
 		this._detail.generate();
-		this._detail.y = this.point.y - (this._detail.size.height / 2);
+		this._detail.y = this.y - (this._detail.height / 2);
 
-		let top = this._title.size.height + 20;
+		let top = this._title.height + 20;
 
 		if(this._title.content && this._detail.content)
 		{
-			height = top + this._detail.size.height;
+			height = top + this._detail.height;
 			this._detail.alpha = 0;
-			this._detail.y = this.point.y + ((height / 2) - this._detail.size.height);
+			this._detail.y = this.y + ((height / 2) - this._detail.height);
 		}
 		else
 			height = top;
@@ -154,7 +162,7 @@ export class Popup extends Paperless.Component
 						duration: 400,
 						drawable: this._title,
 						effect: this.fx.translate,
-						smuggler: { ease: Paperless.Fx.easeInOutExpo, angle: 270, distance: this._title.y - (this.point.y - (height / 2)) },
+						smuggler: { ease: Paperless.Fx.easeInOutExpo, angle: 270, distance: this._title.y - (this.y - (height / 2)) },
 						complete: () => {
 							this.fx.add({
 								duration: 400,
@@ -213,5 +221,14 @@ export class Popup extends Paperless.Component
 	public set noclick(noclick: boolean)
 	{
 		this._attributes.noclick = noclick;
+	}
+
+	public get passthrough(): boolean
+	{
+		return this._attributes.passthrough;
+	}
+	public set passthrough(passthrough: boolean)
+	{
+		this._attributes.passthrough = passthrough;
 	}
 }

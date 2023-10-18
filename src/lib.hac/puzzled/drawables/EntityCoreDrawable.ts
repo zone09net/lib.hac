@@ -10,9 +10,9 @@ export class EntityCoreDrawable extends Paperless.Drawable
 	//private _mocksize: Paperless.Size;
 	//---
 
-	public constructor(point: Paperless.Point, size: Paperless.Size, puzzled: Puzzled, attributes: {} = {})
+	public constructor(puzzled: Puzzled, attributes: Paperless.Interfaces.IDrawableAttributes = {})
 	{
-		super(point, {
+		super({
 			...{
 				fillcolor: puzzled.color.fill,
 				strokecolor: puzzled.color.stroke,
@@ -20,13 +20,12 @@ export class EntityCoreDrawable extends Paperless.Drawable
 				nofill: puzzled.nofill,
 				linewidth: puzzled.linewidth,
 			},
-			...attributes
+			...attributes,
 		});
 
 		this._puzzled = puzzled;
 		//this._contour = new Path2D();
 		this.context = puzzled.context;
-		this.size = new Paperless.Size(size.width, size.height);
 
 		this.generate(true);
 	}
@@ -38,9 +37,11 @@ export class EntityCoreDrawable extends Paperless.Drawable
 
 		if((<any>this.points)['origin'])
 			(<any>points)['origin'] = (<any>this.points)['origin'];
+		if((<any>this.points)['dragdiff'])
+			(<any>points)['dragdiff'] = (<any>this.points)['dragdiff'];
 			
-		points[0] = new Paperless.Point(point.x + this.puzzled.spacing, point.y + this.puzzled.spacing);																				// top left
-		points[1] = new Paperless.Point(point.x + this.size.width - this.puzzled.spacing, point.y + this.size.height - this.puzzled.spacing);								// bottom right
+		points[0] = new Paperless.Point(point.x + this.puzzled.spacing, point.y + this.puzzled.spacing);																	// top left
+		points[1] = new Paperless.Point(point.x + this.width - this.puzzled.spacing, point.y + this.height - this.puzzled.spacing);								// bottom right
 		
 		if(this.puzzled.getMarker() && expandable)
 		{
@@ -58,12 +59,12 @@ export class EntityCoreDrawable extends Paperless.Drawable
 			let top: number | boolean = expandable.top ? false : -1;
 			let bottom: number | boolean = expandable.bottom ? false : -1;
 
-			points[2] = new Paperless.Point(points[0].x + ((this.size.width - this.puzzled.spacing) / 2), points[0].y);																	// middle top
-			points[3] = new Paperless.Point(points[1].x + this.puzzled.spacing, points[1].y - ((this.size.height - this.puzzled.spacing) / 2) + this.puzzled.spacing);	// middle right
-			points[4] = new Paperless.Point(points[0].x + ((this.size.width - this.puzzled.spacing) / 2), points[1].y + this.puzzled.spacing);									// middle bottom
-			points[5] = new Paperless.Point(points[0].x, points[1].y - ((this.size.height - this.puzzled.spacing) / 2) + this.puzzled.spacing);									// middle left
+			points[2] = new Paperless.Point(points[0].x + ((this.width - this.puzzled.spacing) / 2), points[0].y);																	// middle top
+			points[3] = new Paperless.Point(points[1].x + this.puzzled.spacing, points[1].y - ((this.height - this.puzzled.spacing) / 2) + this.puzzled.spacing);	// middle right
+			points[4] = new Paperless.Point(points[0].x + ((this.width - this.puzzled.spacing) / 2), points[1].y + this.puzzled.spacing);									// middle bottom
+			points[5] = new Paperless.Point(points[0].x, points[1].y - ((this.height - this.puzzled.spacing) / 2) + this.puzzled.spacing);									// middle left
 
-			this.clearPath();
+			this.path = new Path2D();
 			this.path.moveTo(points[5].x, points[2].y);
 			this.path.lineTo(points[2].x - 10, points[2].y);
 			if(top == -1)
@@ -97,7 +98,7 @@ export class EntityCoreDrawable extends Paperless.Drawable
 		}
 		else
 		{
-			this.clearPath();
+			this.path = new Path2D();
 			this.path.rect(points[0].x, points[0].y, points[1].x, points[1].y);
 		}
 

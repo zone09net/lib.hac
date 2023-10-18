@@ -8,11 +8,16 @@ export class Slider extends Paperless.Drawable
 	private _puzzled: Puzzled;
 	//---
 	
-	public constructor(point: Paperless.Point, size: Paperless.Size, puzzled: Puzzled)
+	public constructor(puzzled: Puzzled, attributes: Paperless.Interfaces.IDrawableAttributes = {})
 	{
-		super(point, {linewidth: puzzled.linewidth, strokecolor: puzzled.color.sizer});
+		super({
+			...attributes,
+			...{
+				linewidth: puzzled.linewidth, 
+				strokecolor: puzzled.color.sizer
+			}
+		});
 
-		this.size = size;
 		this.hoverable = false;
 		this._puzzled = puzzled;
 
@@ -23,25 +28,25 @@ export class Slider extends Paperless.Drawable
 	{
 		let point: Paperless.Point = new Paperless.Point(0, 0);
 
-		this.clearPath();
+		this.path = new Path2D();
 
 		if(this.angle == 90)
 		{
-			this.path.moveTo(point.x - (this.size.height / 2), point.y);
-			this.path.lineTo(point.x + (this.size.height / 2), point.y);
-			this.path.moveTo(point.x - (this.size.height / 2), point.y - 5);
-			this.path.lineTo(point.x - (this.size.height / 2), point.y + 5);
-			this.path.moveTo(point.x + (this.size.height / 2), point.y - 5);
-			this.path.lineTo(point.x + (this.size.height / 2), point.y + 5);
+			this.path.moveTo(point.x - (this.height / 2), point.y);
+			this.path.lineTo(point.x + (this.height / 2), point.y);
+			this.path.moveTo(point.x - (this.height / 2), point.y - 5);
+			this.path.lineTo(point.x - (this.height / 2), point.y + 5);
+			this.path.moveTo(point.x + (this.height / 2), point.y - 5);
+			this.path.lineTo(point.x + (this.height / 2), point.y + 5);
 		}
 		else
 		{
-			this.path.moveTo(point.x - (this.size.width / 2), point.y);
-			this.path.lineTo(point.x + (this.size.width / 2), point.y);
-			this.path.moveTo(point.x - (this.size.width / 2), point.y - 5);
-			this.path.lineTo(point.x - (this.size.width / 2), point.y + 5);
-			this.path.moveTo(point.x + (this.size.width / 2), point.y - 5);
-			this.path.lineTo(point.x + (this.size.width / 2), point.y + 5);
+			this.path.moveTo(point.x - (this.width / 2), point.y);
+			this.path.lineTo(point.x + (this.width / 2), point.y);
+			this.path.moveTo(point.x - (this.width / 2), point.y - 5);
+			this.path.lineTo(point.x - (this.width / 2), point.y + 5);
+			this.path.moveTo(point.x + (this.width / 2), point.y - 5);
+			this.path.lineTo(point.x + (this.width / 2), point.y + 5);
 		}
 	}
 
