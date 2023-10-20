@@ -2,11 +2,12 @@
 	"compileOnSave": true,
 
 	"compilerOptions": {
-		"target": "es2017",
+		"target": "es2018",
 		"module": "es6",
 		"moduleResolution": "node",
 		"lib": [
 			"dom", 
+			"dom.iterable",
 			"es2018"
 		],
 		
@@ -14,33 +15,36 @@
 		"removeComments": true,
 		"preserveConstEnums": true,
 		"noEmitOnError": false,
-		"allowJs": false,
-		"watch": true,
+		"allowJs": true,
 		"declaration": true,
 		"declarationMap": true,
-		"outDir": "../www.zone09.net/public/js/dev",
+		"outDir": "./.dist",
 		"baseUrl": "../",
 		"paths": {
 			"@zone09.net/foundation": ["lib.foundation/src/lib.foundation.ts"],
 			"@zone09.net/paperless": ["lib.paperless/src/lib.paperless.ts"],
 			"@zone09.net/hac": ["lib.hac/src/lib.hac.ts"],
 			"@extlib/codemirror": ["extlib/CodeMirror.js"],
+			"@extlib/cryptojs": ["extlib/crypto-es-1.2.7/lib/index.js"]
 		},
 		"typeRoots": ["./types"],
-		"types": ["OffscreenCanvas"],
+		"types": ["OffscreenCanvas"]
 	},
 
 	"tsc-alias": {
 		"verbose": true,
-		"resolveFullPaths": true,
-	},
-	
+		"resolveFullPaths": true
+	 },
+
 	"include": [
-		"./src/lib.hac.ts",
-		"./src/demo.*"
+		"./src/lib.hac.ts"
 	],
 
 	"exclude": [
-		"./src/demo.puzzled.ts",
+		"./node_modules",
+		"./.dist",
+		"./.rollup",
+		"./.obfuscator",
+		"./.minify"
 	]
 }
