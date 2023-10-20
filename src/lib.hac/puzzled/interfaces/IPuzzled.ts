@@ -26,5 +26,8 @@ export interface IComponentPuzzledAttributes extends Paperless.Interfaces.ICompo
 		splitter?: string,
 		highlight?: string,
 		faked?: string,
-	}
+	},
+
+	onEntityLoading?: (entity: EntityCoreControl) => Promise<unknown>,
+	onEntityLoaded?: (entity: EntityCoreControl) => void,
 }

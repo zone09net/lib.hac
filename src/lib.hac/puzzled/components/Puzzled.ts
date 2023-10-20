@@ -21,11 +21,18 @@ export class Puzzled extends Paperless.Component
 
 	constructor(attributes: IComponentPuzzledAttributes = {})
 	{
-		super();
+		super({
+			...{
+				size: {width: 512, height: 512},
+				point: {x: 0, y: 0}
+			},
+			...attributes, 
+			...{
+				context: null
+			}
+		});
 
 		const {
-			point = {x: 0, y: 0},
-			size = {width: 512, height: 512},
 			hop = 64,
 			expandable = false,
 			nofill = false,
@@ -37,13 +44,16 @@ export class Puzzled extends Paperless.Component
 			control = EntityCoreControl,
 			drawable = EntityCoreDrawable,
 			color = {},
-			sticky = false
+			sticky = false,
+
+			onEntityLoading = null,
+			onEntityLoaded = null
 		} = attributes;
 
-		this.width = (Math.floor((size.width) / hop) * hop);
-		this.height = Math.floor((size.height) / hop) * hop;
-		this.x = Math.floor(point.x);
-		this.y = Math.floor(point.y);
+		this.width = Math.floor((this.size.width) / hop) * hop;
+		this.height = Math.floor((this.size.height) / hop) * hop;
+		this.x = Math.floor(this.point.x);
+		this.y = Math.floor(this.point.y);
 		this.sticky = sticky;
 
 		this._attributes = {
@@ -73,6 +83,11 @@ export class Puzzled extends Paperless.Component
 				...color
 			}
 		};
+
+		attributes.context ? attributes.context.attach(this) : null;
+
+		onEntityLoading ? this.onEntityLoading = onEntityLoading : null;
+		onEntityLoaded ? this.onEntityLoaded = onEntityLoaded : null;
 	}
 
 	public onAttach(): void
@@ -500,10 +515,18 @@ export class Puzzled extends Paperless.Component
 				});
 			}
 
-			let promise: Promise<unknown> = control.onLoading();
-			promise.then(
+			//let promise: Promise<unknown>;
+
+			control.onLoading().then(
 				success => {
 					control.onLoaded();
+				},
+				error => {}
+			);
+
+			this.onEntityLoading(control).then(
+				success => {
+					this.onEntityLoaded(control);
 				},
 				error => {}
 			);
@@ -571,6 +594,15 @@ export class Puzzled extends Paperless.Component
 		else
 			return false;
 	}
+
+	public onEntityLoading(entity: EntityCoreControl): Promise<unknown>
+	{
+		return new Promise((resolve, reject) => {
+			resolve(entity);
+		})
+	}
+
+	public onEntityLoaded(entity: EntityCoreControl): void {}
 
 	// split
 	// ------------------------------
