@@ -69,8 +69,8 @@ export class EntityCoreControl extends Paperless.Control
 
 		this._pointCurrent = this.context.states.pointer.current;
 		this._pointCurrent = new Paperless.Point(
-			(Math.round((this._pointCurrent.x - (<any>this.drawable.points)['dragdiff'].x - this.puzzled.point.x) / this.puzzled.hop) * this.puzzled.hop) + this._offsets.hopx - this._offsets.x,
-			(Math.round((this._pointCurrent.y - (<any>this.drawable.points)['dragdiff'].y - this.puzzled.point.y) / this.puzzled.hop) * this.puzzled.hop) + this._offsets.hopy - this._offsets.y,
+			(Math.round((this._pointCurrent.x - this.context.states.pointer.dragdiff.x - this.puzzled.point.x) / this.puzzled.hop) * this.puzzled.hop) + this._offsets.hopx - this._offsets.x,
+			(Math.round((this._pointCurrent.y - this.context.states.pointer.dragdiff.y - this.puzzled.point.y) / this.puzzled.hop) * this.puzzled.hop) + this._offsets.hopy - this._offsets.y,
 		);
 
 		let guid: string = this.puzzled.getGuid(new Paperless.Point(this._pointCurrent.x, this._pointCurrent.y + this.puzzled.point.y), new Array(this.guid));
