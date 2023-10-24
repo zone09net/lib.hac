@@ -1,5 +1,5 @@
 import * as Paperless from '@zone09.net/paperless';
-import {IComponentPuzzledAttributes} from '../interfaces/IPuzzled.js';
+import {IComponentPuzzledAttributes, IComponentPuzzledEntity} from '../interfaces/IPuzzled.js';
 import {Icon} from '../controls/Icon.js';
 import {Sizer} from '../controls/Sizer.js';
 import {Splitter} from '../controls/Splitter.js';
@@ -433,7 +433,7 @@ export class Puzzled extends Paperless.Component
 		this.context.refresh();
 	}
 
-	public new(entities: Array<{point?: Paperless.Point, size?: Paperless.Size, control: typeof EntityCoreControl, drawable?: typeof EntityCoreDrawable, attributes?: any, backdoor?: any, transpose?: boolean, guid?: string}>): EntityCoreControl
+	public new(entities: IComponentPuzzledEntity[]): EntityCoreControl
 	{
 		let returned: EntityCoreControl = undefined;
 
