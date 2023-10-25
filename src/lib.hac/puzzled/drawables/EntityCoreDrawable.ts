@@ -37,8 +37,6 @@ export class EntityCoreDrawable extends Paperless.Drawable
 
 		if((<any>this.points)['origin'])
 			(<any>points)['origin'] = (<any>this.points)['origin'];
-		if((<any>this.points)['dragdiff'])
-			(<any>points)['dragdiff'] = (<any>this.points)['dragdiff'];
 			
 		points[0] = new Paperless.Point(point.x + this.puzzled.spacing, point.y + this.puzzled.spacing);																	// top left
 		points[1] = new Paperless.Point(point.x + this.width - this.puzzled.spacing, point.y + this.height - this.puzzled.spacing);								// bottom right
