@@ -175,9 +175,9 @@ export class Editable extends Paperless.Component
 				let width = self.context.context2D.measureText('X').width;
 				let height = self.context.context2D.measureText('[j').actualBoundingBoxDescent + self.context.context2D.measureText('[j').actualBoundingBoxAscent;
 	
-				self._cursor.offset = {
-					x: (width * self._position.cursor.column) + /*self._label.padding.left*/ 5 + self._label.offset.x + Math.ceil(self._cursor.size.width / 2),
-					y: ((/*self._cursor.size.height*/ height - 2 + self._label.spacing) * self._position.cursor.row) + ((self._cursor.size.height + 2) / 2) + /*self._label.padding.top*/ 5 + self._label.offset.y - 1
+				self._cursor.offset1 = {
+					x: (width * self._position.cursor.column) + /*self._label.padding.left*/ 5 + self._label.offset1.x + Math.ceil(self._cursor.size.width / 2),
+					y: ((/*self._cursor.size.height*/ height - 2 + self._label.spacing) * self._position.cursor.row) + ((self._cursor.size.height + 2) / 2) + /*self._label.padding.top*/ 5 + self._label.offset1.y - 1
 				}
 				
 				self.context.context2D.restore();
@@ -219,7 +219,7 @@ export class Editable extends Paperless.Component
 				...{
 					point: {x: this._label.x, y: this._label.y},
 					size: {width: this._attributes.cursor.width, height: cursorHeight},
-					offset: {x: this._label.offset.x + this._label.padding.left + Math.ceil(this._attributes.cursor.width / 2), y: this._label.offset.y + (cursorHeight / 2) + this._label.padding.top - 1},
+					offset1: {x: this._label.offset1.x + this._label.padding.left + Math.ceil(this._attributes.cursor.width / 2), y: this._label.offset1.y + (cursorHeight / 2) + this._label.padding.top - 1},
 					sticky: this.sticky
 				}
 			});
@@ -367,9 +367,9 @@ export class Editable extends Paperless.Component
 
 			let metrics = this._label.context.context2D.measureText(this._label.contentAs.splitted[row].slice(0, this._position.global - lastLength));
 
-			this._cursor.offset = {
-				x: metrics.width + this._label.padding.left + this._label.offset.x + Math.ceil(this._cursor.size.width / 2),
-				y: ((this._cursor.size.height - 2 + this._label.spacing) * row) + ((this._cursor.size.height + 2) / 2) + this._label.padding.top + this._label.offset.y - 1
+			this._cursor.offset1 = {
+				x: metrics.width + this._label.padding.left + this._label.offset1.x + Math.ceil(this._cursor.size.width / 2),
+				y: ((this._cursor.size.height - 2 + this._label.spacing) * row) + ((this._cursor.size.height + 2) / 2) + this._label.padding.top + this._label.offset1.y - 1
 			}
 			
 			this._label.context.context2D.restore();

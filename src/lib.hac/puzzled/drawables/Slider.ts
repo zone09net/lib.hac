@@ -53,7 +53,7 @@ export class Slider extends Paperless.Drawable
 	public draw(context2D: OffscreenCanvasRenderingContext2D): void
 	{
 		context2D.save();
-		context2D.setTransform(this.matrix.a, this.matrix.b, this.matrix.c, this.matrix.d, this.matrix.e + this.offset.x, this.matrix.f + this.offset.y);
+		context2D.setTransform(this.matrix.a, this.matrix.b, this.matrix.c, this.matrix.d, this.matrix.e + this.offset1.x, this.matrix.f + this.offset1.y);
 
 		context2D.strokeStyle = this.strokecolor;
 		context2D.lineWidth = this.linewidth;

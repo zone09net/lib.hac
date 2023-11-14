@@ -29,7 +29,7 @@ const editable1: HaC.Components.Editable = new HaC.Components.Editable({
 				0: {fillcolor: '#999999'},
 			},
 		},
-		offset: {x: 0, y: 0}
+		offset1: {x: 0, y: 0}
 	},
 	cursor: {
 		fillcolor: colors[1],
@@ -54,7 +54,7 @@ const editable2: HaC.Components.Editable = new HaC.Components.Editable({
 		//spacing: 3,
 		multiline: true,
 		nostroke: false,
-		//offset: {x: 0, y: 0}
+		//offset1: {x: 0, y: 0}
 	},
 	cursor: {
 		//fillcolor: colors[1],

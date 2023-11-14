@@ -286,7 +286,7 @@ export class EntityCoreControl extends Paperless.Control
 			newicon = Icon
 
 		if(typeof object == 'string' || object instanceof HTMLImageElement)
-			drawable = this.context.attach(new Paperless.Drawables.Artwork({point: {x: point.x, y: point.y}, size: {width: size.width, height: size.height}, content: object, hoverable: true}));
+			drawable = this.context.attach(new Paperless.Drawables.Artwork({point: {x: point.x, y: point.y}, offset1: {x: this._puzzled.x, y: this._puzzled.y}, size: {width: size.width, height: size.height}, content: object, hoverable: true}));
 		else
 			drawable = object;
 
@@ -372,7 +372,7 @@ export class EntityCoreControl extends Paperless.Control
 	{
 		point = new Paperless.Point(point.x, point.y);
 
-		let drawable: Paperless.Drawable = this.context.attach(new DSizer(this.puzzled, {point: {x: point.x, y: point.y}, angleStart: angle1, angleEnd: angle2}));
+		let drawable: Paperless.Drawable = this.context.attach(new DSizer(this.puzzled, {point: {x: point.x, y: point.y}, offset1: {x: this.puzzled.x, y: this.puzzled.y}, angleStart: angle1, angleEnd: angle2}));
 		let icon: CSizer = this.context.attach(new CSizer(
 			this.puzzled,
 			this,
@@ -403,7 +403,7 @@ export class EntityCoreControl extends Paperless.Control
 	{
 		point = new Paperless.Point(point.x, point.y);
 
-		let drawable: Paperless.Drawable = this.context.attach(new DSplitter(this.puzzled, {point: {x: point.x, y: point.y}, angle: angle}));
+		let drawable: Paperless.Drawable = this.context.attach(new DSplitter(this.puzzled, {point: {x: point.x, y: point.y}, offset1: {x: this.puzzled.x, y: this.puzzled.y}, angle: angle}));
 		let icon: CSplitter = this.context.attach(new CSplitter(
 			this.puzzled,
 			{

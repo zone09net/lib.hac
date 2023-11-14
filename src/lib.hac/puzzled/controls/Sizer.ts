@@ -65,6 +65,7 @@ export class Sizer extends Paperless.Controls.Button
 
 		this._ghost.width = this._entity.drawable.width - this._puzzled.spacing;
 		this._ghost.height = this._entity.drawable.height - this._puzzled.spacing;
+		this._ghost.offset1 = {x: this._puzzled.x, y: this._puzzled.y};
 		this._ghost.generate();
 	}
 
