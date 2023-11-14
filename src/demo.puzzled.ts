@@ -1,13 +1,17 @@
 import * as Paperless from '@zone09.net/paperless';
 import * as HaC from '@zone09.net/hac';
-import * as Addons from '../../app.brained/src/app.brained/ui/UI.js'
+//import * as Addons from '../../app.brained/src/app.brained/ui/UI.js'
 
 
 
 let context: Paperless.Context = new Paperless.Context({autosize: true});
-let group: Paperless.Group = new Paperless.Group();
+
+let group: Paperless.Group = new Paperless.Group({
+	context: context
+});
 
 let puzzled1: HaC.Components.Puzzled = new HaC.Components.Puzzled({
+	context: context,
 	point: {x: 16, y: 16},
 	size: {width: (window.innerWidth ) - 16, height: window.innerHeight - 16},
 	hop: 64, 
@@ -45,9 +49,9 @@ let puzzled2: HaC.Components.Puzzled = new HaC.Components.Puzzled(new Paperless.
 */
 
 context.attach(document.body);
-context.attach(puzzled1);
+
 //context.attach(puzzled2);
-context.attach(group);
+
 
 //group.attach([puzzled1, puzzled2]);
 
@@ -59,6 +63,7 @@ puzzled1.new([
 		drawable: HaC.Drawables.Puzzled.EntityCoreDrawable,
 	},
 
+	/*
 	// static/void
 	{
 		size: new Paperless.Size(128, 128),
@@ -261,24 +266,11 @@ puzzled1.new([
 			}
 		},
 	},
+	*/
 ]);
 
-/*
-puzzled1.new([
 
 
-
-
-
-	
-
-
-
-
-		
-
-]);
-*/
 
 /*
 let control = puzzled2.new([

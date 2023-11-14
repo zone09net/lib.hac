@@ -26,8 +26,6 @@ export class EntityCoreControl extends Paperless.Control
 	private _highlightOrigin: Highlight;
 	private _isMovable: boolean = false;
 	private _isSwappable: boolean = false;
-	private _offsets: {x: number, y: number, hopx: number, hopy: number};
-	private _origin: Paperless.Point;
 	private _pointCurrent: Paperless.Point;
 	//---
 
@@ -38,13 +36,6 @@ export class EntityCoreControl extends Paperless.Control
 		this._puzzled = puzzled;
 		this._highlightMoving = new Highlight(this.puzzled);
 		this._highlightOrigin = new Highlight(this.puzzled);
-
-		this._offsets = {
-			x: (this._puzzled.point.x < this._puzzled.hop) ? -this._puzzled.point.x : (Math.ceil(this._puzzled.point.x / this._puzzled.hop) * this._puzzled.hop) - this._puzzled.point.x,
-			y: (this._puzzled.point.y < this._puzzled.hop) ? -this._puzzled.point.y : (Math.ceil(this._puzzled.point.y / this._puzzled.hop) * this._puzzled.hop) - this._puzzled.point.y,
-			hopx: (this._puzzled.point.x < this._puzzled.hop) ? 0 : (Math.ceil(this._puzzled.point.x / this._puzzled.hop) * this._puzzled.hop),
-			hopy: (this._puzzled.point.y < this._puzzled.hop) ? 0 : (Math.ceil(this._puzzled.point.y / this._puzzled.hop) * this._puzzled.hop),
-		}
 	}
 
 	public onDragBegin(): void
@@ -53,14 +44,16 @@ export class EntityCoreControl extends Paperless.Control
 		this.puzzled.removeMarker();
 
 		this._highlightMoving.width = this.drawable.width;
-		this._highlightMoving.height = this.drawable.height;
+		this._highlightMoving.height = this.drawable.height
+		this._highlightMoving.offset1 = {x: this.puzzled.x, y: this.puzzled.y};
 		this._highlightMoving.generate();
 
 		this._highlightOrigin.width = this.drawable.width;
 		this._highlightOrigin.height = this.drawable.height;
+		this._highlightOrigin.x = this.drawable.x;
+		this._highlightOrigin.y = this.drawable.y;
+		this._highlightOrigin.offset1 = {x: this.puzzled.x, y: this.puzzled.y};
 		this._highlightOrigin.generate();
-
-		this._origin = new Paperless.Point(this.drawable.matrix.e, this.drawable.matrix.f);
 	}
 
 	public onDrag(): void
@@ -68,12 +61,13 @@ export class EntityCoreControl extends Paperless.Control
 		let context2D: OffscreenCanvasRenderingContext2D = this.context.context2D;
 
 		this._pointCurrent = this.context.states.pointer.current;
+
 		this._pointCurrent = new Paperless.Point(
-			(Math.round((this._pointCurrent.x - this.context.states.pointer.dragdiff.x - this.puzzled.point.x) / this.puzzled.hop) * this.puzzled.hop) + this._offsets.hopx - this._offsets.x,
-			(Math.round((this._pointCurrent.y - this.context.states.pointer.dragdiff.y - this.puzzled.point.y) / this.puzzled.hop) * this.puzzled.hop) + this._offsets.hopy - this._offsets.y,
+			(Math.round((this._pointCurrent.x - this.context.states.pointer.dragdiff.x) / this.puzzled.hop) * this.puzzled.hop),
+			(Math.round((this._pointCurrent.y - this.context.states.pointer.dragdiff.y) / this.puzzled.hop) * this.puzzled.hop)
 		);
 
-		let guid: string = this.puzzled.getGuid(new Paperless.Point(this._pointCurrent.x, this._pointCurrent.y + this.puzzled.point.y), new Array(this.guid));
+		let guid: string = this.puzzled.getGuid(new Paperless.Point(this._pointCurrent.x, this._pointCurrent.y), new Array(this.guid));
 		if(this.puzzled.isSwappable(this.guid, guid))
 		{
 			let control: Paperless.Control = this.puzzled.extractGuid(guid);
@@ -81,8 +75,6 @@ export class EntityCoreControl extends Paperless.Control
 			if(this._swappable)
 			{
 				this._isSwappable = true;
-				this._highlightOrigin.x = this._origin.x;
-				this._highlightOrigin.y = this._origin.y;
 				this._highlightOrigin.draw(context2D);
 			}
 
@@ -93,29 +85,39 @@ export class EntityCoreControl extends Paperless.Control
 		{
 			this._isSwappable = false;
 			this._highlightMoving.matrix.e = this._pointCurrent.x;
-			this._highlightMoving.matrix.f = this._pointCurrent.y + this.puzzled.point.y + this._offsets.y;
+			this._highlightMoving.matrix.f = this._pointCurrent.y;
 		}
 
-		this._highlightMoving.draw(context2D);
-
+		context2D.save();
 		context2D.shadowBlur = this.puzzled.shadow;
-		context2D.shadowColor = this.puzzled.color.move;
-		if(!this.puzzled.isMovable(this.guid, new Paperless.Point(this._pointCurrent.x, this._pointCurrent.y + this.puzzled.point.y + this._offsets.y)) && !this._isSwappable)
+
+		if(!this.puzzled.isMovable(this.guid, new Paperless.Point(this._pointCurrent.x, this._pointCurrent.y)) && !this._isSwappable)
 		{
+			this._highlightMoving.fillcolor = this.puzzled.color.nomove;
 			context2D.shadowColor = this.puzzled.color.nomove;
-			context2D.strokeStyle = this.puzzled.color.nomove;
+			//context2D.strokeStyle = this.puzzled.color.nomove;
+			//context2D.fillStyle = this.puzzled.color.nomove;
 			this._isMovable = false;
 		}
 		else
+		{
+			this._highlightMoving.fillcolor = this.puzzled.color.move;
+			context2D.shadowColor = this.puzzled.color.move;
+			//context2D.strokeStyle = this.puzzled.color.move;
+			//context2D.fillStyle = this.puzzled.color.move;
 			this._isMovable = true;
+		}
+
+		this._highlightMoving.draw(context2D);
+		context2D.restore();
 	}
 
 	public async onDragEnd(): Promise<void>
 	{
 		if(!this._isMovable && !this._isSwappable)
 		{
-			this.drawable.matrix.e = this._origin.x;
-			this.drawable.matrix.f = this._origin.y;
+			this.drawable.matrix.e = this._highlightOrigin.x;
+			this.drawable.matrix.f = this._highlightOrigin.y;
 			this.onCancel();
 		}
 
@@ -131,15 +133,15 @@ export class EntityCoreControl extends Paperless.Control
 					this.drawable.matrix.e = this._highlightMoving.matrix.e;
 					this.drawable.matrix.f = this._highlightMoving.matrix.f;
  
-					control.drawable.matrix.e = this._origin.x;
-					control.drawable.matrix.f = this._origin.y;
+					control.drawable.matrix.e = this._highlightOrigin.x;
+					control.drawable.matrix.f = this._highlightOrigin.y;
 
 					control.onSwapped(new Paperless.Point(this._highlightMoving.matrix.e, this._highlightMoving.matrix.f));
-					this.onSwapped(this._origin);
+					this.onSwapped(this._highlightOrigin.point);
 				},
 				error => {
-					this.drawable.matrix.e = this._origin.x;
-					this.drawable.matrix.f = this._origin.y;
+					this.drawable.matrix.e = this._highlightOrigin.x;
+					this.drawable.matrix.f = this._highlightOrigin.y;
 				}
 			);
 		}
@@ -156,14 +158,16 @@ export class EntityCoreControl extends Paperless.Control
 					if(this.puzzled.expandable)
 						this.puzzled.resize();
 
-					this.onMoved(this._origin);
+					this.onMoved(this._highlightOrigin.point);
 				},
 				error => {
-					this.drawable.matrix.e = this._origin.x;
-					this.drawable.matrix.f = this._origin.y;
+					this.drawable.matrix.e = this._highlightOrigin.x;
+					this.drawable.matrix.f = this._highlightOrigin.y;
 				}
 			);
 		}
+
+		this.context.detach(this._highlightMoving.guid);
 	}
 
 	public onLoading(): Promise<unknown>
