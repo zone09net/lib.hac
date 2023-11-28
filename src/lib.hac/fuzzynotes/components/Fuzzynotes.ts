@@ -220,7 +220,7 @@ export class Fuzzynotes extends Paperless.Component
 		this._resetter.onLeftClick();
 	}
 
-	public new(entities: Array<{point?: Paperless.Point, size?: Paperless.Size, control: typeof EntityCoreControl, drawable: typeof EntityCoreDrawable, header?: boolean, attributes?: any, backdoor?: any, transpose?: boolean}>): void
+	public new(entities: Array<{point?: Paperless.Point, size?: Paperless.Size, minimum?: {width?: number, height?: number}, control: typeof EntityCoreControl, drawable: typeof EntityCoreDrawable, header?: boolean, attributes?: any, backdoor?: any, transpose?: boolean}>): void
 	{
 		for(let entity of entities)
 		{
@@ -234,6 +234,7 @@ export class Fuzzynotes extends Paperless.Component
 				this._header.new([{
 					point: entity.point,
 					size: entity.size,
+					minimum: entity.minimum,
 					control: entity.control,
 					drawable: entity.drawable,
 					transpose: entity.transpose,
@@ -246,6 +247,7 @@ export class Fuzzynotes extends Paperless.Component
 				this._puzzled.new([{
 					point: entity.point,
 					size: entity.size,
+					minimum: entity.minimum,
 					control: entity.control,
 					drawable: entity.drawable,
 					transpose: entity.transpose,

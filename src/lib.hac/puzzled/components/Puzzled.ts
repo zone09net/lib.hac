@@ -506,6 +506,9 @@ export class Puzzled extends Paperless.Component
 			let control: EntityCoreControl = this.context.attach(new entity.control(this));
 			control.attach(drawable);
 			
+			if(entity.minimum)
+				control.minimum = {width: entity.minimum.width || 0, height: entity.minimum.height || 0};
+
 			if(entity.backdoor)
 			{
 				Object.keys(entity.backdoor).forEach((key, index) => {
@@ -896,7 +899,9 @@ export class Puzzled extends Paperless.Component
 
 	public isShrinkableWidth(guid: string): boolean
 	{
-		if(!this._entities[guid] || this._entities[guid].drawable.width < this._attributes.hop * 2)
+		if(!this._entities[guid] || 
+			this._entities[guid].drawable.width < this._attributes.hop * 2 || 
+			this._entities[guid].drawable.width - this._attributes.hop <  this._entities[guid].minimum.width)
 			return false;
 
 		return true;
@@ -904,7 +909,9 @@ export class Puzzled extends Paperless.Component
 
 	public isShrinkableHeight(guid: string): boolean
 	{
-		if(!this._entities[guid] || this._entities[guid].drawable.height < this._attributes.hop * 2)
+		if(!this._entities[guid] || 
+			this._entities[guid].drawable.height < this._attributes.hop * 2 ||
+			this._entities[guid].drawable.height - this._attributes.hop <  this._entities[guid].minimum.height)
 			return false;
 
 		return true;

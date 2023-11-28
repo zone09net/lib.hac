@@ -6,6 +6,8 @@ import {Puzzled} from '../components/Puzzled.js';
 export class EntityCoreDrawable extends Paperless.Drawable
 {
 	private _puzzled: Puzzled;
+	private _minwidth: number;
+	private _minheight: number;
 	//private _contour: Path2D;
 	//private _mocksize: Paperless.Size;
 	//---

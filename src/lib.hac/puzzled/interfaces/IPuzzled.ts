@@ -36,7 +36,8 @@ export interface IComponentPuzzledAttributes extends Paperless.Interfaces.ICompo
 export interface IComponentPuzzledEntity 
 {
 	point?: Paperless.Point, 
-	size?: Paperless.Size, 
+	size?: Paperless.Size,
+	minimum?: {width?: number, height?: number},
 	control: typeof EntityCoreControl, 
 	drawable?: typeof EntityCoreDrawable, 
 	attributes?: any, 
@@ -44,3 +45,4 @@ export interface IComponentPuzzledEntity
 	transpose?: boolean, 
 	guid?: string
 }
+

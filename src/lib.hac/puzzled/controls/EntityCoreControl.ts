@@ -27,6 +27,7 @@ export class EntityCoreControl extends Paperless.Control
 	private _isMovable: boolean = false;
 	private _isSwappable: boolean = false;
 	private _pointCurrent: Paperless.Point;
+	private _minimum: {width?: number, height?: number} = {width: 0, height: 0};
 	//---
 
 	public constructor(puzzled: Puzzled)
@@ -468,5 +469,14 @@ export class EntityCoreControl extends Paperless.Control
 	public set splittable(splittable: boolean)
 	{
 		this._splittable = splittable;
+	}
+
+	public get minimum(): {width?: number, height?: number}
+	{
+		return this._minimum;
+	}
+	public set minimum(minimum: {width?: number, height?: number})
+	{
+		this._minimum = minimum;
 	}
 }
