@@ -78,73 +78,80 @@ export class Align extends Manipulator
 				else
 					item.drawable.matrix.e = this.selector.x + (item.drawable.width / 2) + this.selector.padding.left;
 
-				this.realign();
-	
-				this.selector.fx.add({
-					duration: this._attributes.duration.fade,
-					drawable: item.drawable,
-					effect: this.selector.fx.fadeIn,
-					nogroup: true,
-					smuggler: { ease: Paperless.Fx.easeInExpo }
-				});
-				
-				this.selector.fx.add({
-					duration: this._attributes.duration.fade,
-					drawable: item.drawable,
-					effect: this.selector.fx.translate,
-					nogroup: true,
-					smuggler: { ease: Paperless.Fx.easeInSine, angle: this._attributes.direction.fadein, distance: fadeDistance },
-					complete: () => {
-						this.selector.items.unshift(item);
-						
-						window.requestAnimationFrame(() => {
-							item.drawable.context.refresh();
+				this.realign().then(() => {
+					this.selector.fx.add({
+						duration: this.attributes.duration.fade,
+						drawable: item.drawable,
+						effect: this.selector.fx.fadeIn,
+						nogroup: true,
+						smuggler: { ease: Paperless.Fx.easeInExpo }
+					});
+					 
+					this.selector.fx.add({ 
+						duration: this.attributes.duration.fade,
+						drawable: item.drawable,
+						effect: this.selector.fx.translate,
+						nogroup: true,
+						smuggler: { ease: Paperless.Fx.easeInSine, angle: this.attributes.direction.fadein, distance: fadeDistance },
+						complete: () => {
+							this.selector.items.unshift(item);
+							
+							item.drawable.context.draw();
 							item.enabled = false;
 							item.drawable.hoverable = false;
 							item.onAfterSelection();
 							this.enableItems();
 							item.enabled = false;
-						});
-					}
+						}
+					});
 				});
 			}
 		});
 	}
 	
-	private realign(): void
+	public realign(): Promise<unknown>
 	{
-		if(this.selector.items.length > 0)
-		{
-			let point: number;
-			let distance: number;
-			let drawable: Paperless.Drawable;
-
-			if(this._attributes.restrict == Paperless.Enums.Restrict.vertical)
-				point = this.selector.y + this.selector.height
-			else
-				point = this.selector.x + this.selector.width;
-
-			for(let i: number = this.selector.items.length - 1; i >= 0; i--)
+		return new Promise((resolve, reject) => {
+			if(this.selector.items.length > 0)
 			{
-				drawable = this.selector.items[i].drawable;
-				point -= (this._attributes.restrict == Paperless.Enums.Restrict.vertical) ? drawable.height : drawable.width;
-	
-				if(this._attributes.restrict == Paperless.Enums.Restrict.vertical)
-					distance = point - drawable.matrix.f + (drawable.height / 2) - this.selector.padding.bottom;
-				else
-					distance = point - drawable.matrix.e + (drawable.width / 2) - this.selector.padding.right;
+				let point: number;
+				let distance: number;
+				let drawable: Paperless.Drawable;
+				let count: number = this.selector.items.length;
 
-				this.selector.fx.add({
-					duration: this._attributes.duration.shift,
-					drawable: drawable,
-					effect: this.selector.fx.translate,
-					nogroup: true,
-					smuggler: { ease: Paperless.Fx.easeInOutExpo, angle: this._attributes.direction.shift, distance: distance },
-				});
-	
-				point -= this.selector.spacing;
+				if(this._attributes.restrict == Paperless.Enums.Restrict.vertical)
+					point = this.selector.y + this.selector.height
+				else
+					point = this.selector.x + this.selector.width;
+
+				for(let i: number = count - 1; i >= 0; i--)
+				{
+					drawable = this.selector.items[i].drawable;
+					point -= (this._attributes.restrict == Paperless.Enums.Restrict.vertical) ? drawable.height : drawable.width;
+		
+					if(this._attributes.restrict == Paperless.Enums.Restrict.vertical)
+						distance = point - drawable.matrix.f + (drawable.height / 2) - this.selector.padding.bottom;
+					else
+						distance = point - drawable.matrix.e + (drawable.width / 2) - this.selector.padding.right;
+
+					this.selector.fx.add({
+						duration: this._attributes.duration.shift,
+						drawable: drawable,
+						effect: this.selector.fx.translate,
+						nogroup: true,
+						smuggler: { ease: Paperless.Fx.easeInOutExpo, angle: this._attributes.direction.shift, distance: distance },
+						complete: () => {
+							count--;
+
+							if(count <= 0)
+								resolve(null);
+						}
+					});
+		
+					point -= this.selector.spacing;
+				}
 			}
-		}
+		});
 	}
 
 	private alignHorizontal(): void
@@ -211,5 +218,18 @@ export class Align extends Manipulator
 		}
 
 		this.selector.context.refresh();
+	}
+
+
+
+	// Accessors
+	// --------------------------------------------------------------------------
+	public get attributes(): IComponentSelectorAlignAttributes
+	{
+		return this._attributes;
+	}
+	public set attributes(attributes: IComponentSelectorAlignAttributes)
+	{
+		this._attributes = attributes;
 	}
 }
