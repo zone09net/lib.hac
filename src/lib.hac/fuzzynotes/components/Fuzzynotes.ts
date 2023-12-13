@@ -237,7 +237,6 @@ export class Fuzzynotes extends Paperless.Component
 					minimum: entity.minimum,
 					control: entity.control,
 					drawable: entity.drawable,
-					transpose: entity.transpose,
 					attributes: { ...attributes, ...{sticky: true} },
 					backdoor: entity.backdoor
 				}]);
@@ -250,7 +249,6 @@ export class Fuzzynotes extends Paperless.Component
 					minimum: entity.minimum,
 					control: entity.control,
 					drawable: entity.drawable,
-					transpose: entity.transpose,
 					attributes: { ...attributes, ...{sticky: this.sticky} },
 					backdoor: entity.backdoor
 				}]);
