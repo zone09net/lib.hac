@@ -5,3 +5,4 @@ export {Puzzled} from './puzzled/components/Puzzled.js';
 export {Fuzzynotes} from './fuzzynotes/components/Fuzzynotes.js';
 export {Window} from './window/components/Window.js';
 export {Editable} from './editable/components/Editable.js';
+export {Form} from './form/components/Form.js';

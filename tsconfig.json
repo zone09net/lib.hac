@@ -7,9 +7,9 @@
 	
 	"include": [
 		"./src/**/*"
-	],
-
-	"exclude": [
-		"./src/demo.puzzled.ts"
 	]
+
+	//"exclude": [
+	//	"./src/demo.puzzled.ts"
+	//]
 }
