@@ -4,7 +4,7 @@ import * as Paperless from '@zone09.net/paperless';
 
 export class Close extends Paperless.Controls.Button
 {
-	private _shadow: number = 0;
+	private _shadow: number;
 	//---
 
 	public constructor(attributes: Paperless.Interfaces.IControlButtonAttributes = {})
@@ -17,7 +17,7 @@ export class Close extends Paperless.Controls.Button
 
 	public onDrawable(): void
 	{
-		this._shadow = this.drawable.shadow;
+		this._shadow = Number(this.drawable.shadow);
 		this.drawable.shadow = 0;
 	}
 
