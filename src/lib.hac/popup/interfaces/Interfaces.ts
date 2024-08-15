@@ -1,1 +1,1 @@
-export {IComponentPopopAttributes} from './IPopup.js';
+export {IComponentPopupAttributes} from './IPopup.js';
