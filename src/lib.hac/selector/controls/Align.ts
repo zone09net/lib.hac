@@ -70,13 +70,13 @@ export class Align extends Manipulator
 			nogroup: true,
 			smuggler: { ease: Paperless.Fx.easeOutExpo, angle: this._attributes.direction.fadeout, distance: fadeDistance },
 			complete: () => { 
-				let index = this.selector.items.indexOf(item);
+				const index = this.selector.items.indexOf(item);
 
 				this.selector.items.splice(index, 1);
 				if(this._attributes.restrict == Paperless.Enums.Restrict.vertical)
-					item.drawable.matrix.f = this.selector.y + (item.drawable.height / 2) + this.selector.padding.top;
+					item.drawable.y = this.selector.y + (item.drawable.height / 2) + this.selector.padding.top;
 				else
-					item.drawable.matrix.e = this.selector.x + (item.drawable.width / 2) + this.selector.padding.left;
+					item.drawable.x = this.selector.x + (item.drawable.width / 2) + this.selector.padding.left;
 
 				this.realign().then(() => {
 					this.selector.fx.add({
@@ -130,9 +130,9 @@ export class Align extends Manipulator
 					point -= (this._attributes.restrict == Paperless.Enums.Restrict.vertical) ? drawable.height : drawable.width;
 		
 					if(this._attributes.restrict == Paperless.Enums.Restrict.vertical)
-						distance = point - drawable.matrix.f + (drawable.height / 2) - this.selector.padding.bottom;
+						distance = point - drawable.y + (drawable.height / 2) - this.selector.padding.bottom;
 					else
-						distance = point - drawable.matrix.e + (drawable.width / 2) - this.selector.padding.right;
+						distance = point - drawable.x + (drawable.width / 2) - this.selector.padding.right;
 
 					this.selector.fx.add({
 						duration: this._attributes.duration.shift,
@@ -168,19 +168,19 @@ export class Align extends Manipulator
 				{
 					// Right menu
 					x -= (this.selector.items[i].drawable.width / 2);
-					this.selector.items[i].drawable.matrix.e = x ;
+					this.selector.items[i].drawable.x = x ;
 					x -= (this.selector.items[i].drawable.width / 2) + this.selector.spacing;
 				}
 				else
 				{
 					// Left menu
-					this.selector.items[i].drawable.matrix.e = (i * ((this.selector.items[i].drawable.width) + this.selector.spacing)) + this.selector.x + this.selector.padding.left + (this.selector.items[0].drawable.width / 2);
+					this.selector.items[i].drawable.x = (i * ((this.selector.items[i].drawable.width) + this.selector.spacing)) + this.selector.x + this.selector.padding.left + (this.selector.items[0].drawable.width / 2);
 
 					if(!this._attributes.bypass)
 						this.selector.items[i].enabled = false;
 				}
 
-				this.selector.items[i].drawable.matrix.f = this.selector.y + (this.selector.height / 2) + this.selector.padding.top - this.selector.padding.bottom;
+				this.selector.items[i].drawable.y = this.selector.y + (this.selector.height / 2) + this.selector.padding.top - this.selector.padding.bottom;
 			}
 		}
 
@@ -201,19 +201,19 @@ export class Align extends Manipulator
 				{
 					// Bottom menu
 					y -= (this.selector.items[i].drawable.height / 2);
-					this.selector.items[i].drawable.matrix.f = y ;
+					this.selector.items[i].drawable.y = y ;
 					y -= (this.selector.items[i].drawable.height / 2) + this.selector.spacing;
 				}
 				else
 				{
 					// Top menu
-					this.selector.items[i].drawable.matrix.f = (i * ((this.selector.items[i].drawable.height) + this.selector.spacing)) + this.selector.y + this.selector.padding.top + (this.selector.items[0].drawable.height / 2);
+					this.selector.items[i].drawable.y = (i * ((this.selector.items[i].drawable.height) + this.selector.spacing)) + this.selector.y + this.selector.padding.top + (this.selector.items[0].drawable.height / 2);
 					
 					if(!this._attributes.bypass)
 						this.selector.items[i].enabled = false;
 				}
 
-				this.selector.items[i].drawable.matrix.e = this.selector.x + (this.selector.width / 2) + this.selector.padding.left - this.selector.padding.right;
+				this.selector.items[i].drawable.x = this.selector.x + (this.selector.width / 2) + this.selector.padding.left - this.selector.padding.right;
 			}
 		}
 
