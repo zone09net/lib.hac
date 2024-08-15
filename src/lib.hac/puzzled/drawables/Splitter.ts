@@ -1,5 +1,6 @@
 import * as Paperless from '@zone09.net/paperless';
 import {Puzzled} from '../components/Puzzled.js';
+import {IDrawableSplitterAttributes} from '../interfaces/IPuzzled.js';
 
 
 
@@ -8,21 +9,21 @@ export class Splitter extends Paperless.Drawable
 	private _puzzled: Puzzled;
 	//---
 
-	public constructor(puzzled: Puzzled, attributes: Paperless.Interfaces.IDrawableAttributes = {})
+	public constructor(attributes: IDrawableSplitterAttributes = {})
 	{
 		super({
 			...attributes,
 			...{
 				linewidth: 2, 
-				fillcolor: puzzled.color.marked, 
-				strokecolor: puzzled.color.faked, 
+				size: {width: 5, height: 20},
+				fillcolor: attributes.puzzled.color.marked, 
+				sticky: attributes.puzzled.sticky,
+				generate: false,
+				nostroke: true
 			}
 		});
 
-		this.width = 5;
-		this.height = 20;
-		this._puzzled = puzzled;
-		this.sticky = puzzled.sticky;
+		this._puzzled = attributes.puzzled;
 		
 		this.generate();
 	}
@@ -40,15 +41,5 @@ export class Splitter extends Paperless.Drawable
 
 		this.path.closePath();
 	}
-
-	public draw(context2D: OffscreenCanvasRenderingContext2D): void
-	{
-		context2D.save();
-		context2D.setTransform(this.matrix.a, this.matrix.b, this.matrix.c, this.matrix.d, this.matrix.e + this.offset1.x, this.matrix.f + this.offset1.y);
-
-		context2D.fillStyle = this.fillcolor;
-		context2D.fill(this.path);
-
-		context2D.restore();
-	}
 }
+

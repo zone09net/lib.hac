@@ -1,25 +1,24 @@
 import * as Paperless from '@zone09.net/paperless';
 import {Puzzled} from '../components/Puzzled.js';
+import {IDrawableSliderAttributes} from '../interfaces/IPuzzled.js';
 
 
 
 export class Slider extends Paperless.Drawable
 {
-	private _puzzled: Puzzled;
-	//---
-	
-	public constructor(puzzled: Puzzled, attributes: Paperless.Interfaces.IDrawableAttributes = {})
+	public constructor(attributes: IDrawableSliderAttributes = {})
 	{
 		super({
 			...attributes,
 			...{
-				linewidth: puzzled.linewidth, 
-				strokecolor: puzzled.color.sizer
+				linewidth: attributes.puzzled.linewidth, 
+				strokecolor: attributes.puzzled.color.sizer,
+				sticky: attributes.puzzled.sticky,
+				nofill: true,
+				generate: false,
+				hoverable: false,
 			}
 		});
-
-		this.hoverable = false;
-		this._puzzled = puzzled;
 
 		this.generate();
 	}
@@ -49,16 +48,5 @@ export class Slider extends Paperless.Drawable
 			this.path.lineTo(point.x + (this.width / 2), point.y + 5);
 		}
 	}
-
-	public draw(context2D: OffscreenCanvasRenderingContext2D): void
-	{
-		context2D.save();
-		context2D.setTransform(this.matrix.a, this.matrix.b, this.matrix.c, this.matrix.d, this.matrix.e + this.offset1.x, this.matrix.f + this.offset1.y);
-
-		context2D.strokeStyle = this.strokecolor;
-		context2D.lineWidth = this.linewidth;
-		context2D.stroke(this.path);
-
-		context2D.restore();
-	}
 }
+

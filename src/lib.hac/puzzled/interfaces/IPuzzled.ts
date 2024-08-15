@@ -1,6 +1,7 @@
 import * as Paperless from '@zone09.net/paperless';
 import {EntityCoreControl} from '../controls/EntityCoreControl.js';
 import {EntityCoreDrawable} from '../drawables/EntityCoreDrawable.js';
+import {Puzzled} from '../components/Puzzled.js';
 
 
 
@@ -33,16 +34,56 @@ export interface IComponentPuzzledAttributes extends Paperless.Interfaces.ICompo
 	onEntityLoaded?: (entity: EntityCoreControl) => void,
 }
 
+export interface IControlIconAttributes extends Paperless.Interfaces.IControlButtonAttributes
+{
+	puzzled?: Puzzled,
+	entity?: EntityCoreControl
+}
+
+export interface IDrawableSizerAttributes extends Paperless.Interfaces.IDrawableCircleAttributes
+{
+	puzzled?: Puzzled,
+}
+
+export interface IDrawableSliderAttributes extends Paperless.Interfaces.IDrawableAttributes
+{
+	puzzled?: Puzzled,
+}
+
+export interface IDrawableSplitterAttributes extends Paperless.Interfaces.IDrawableAttributes
+{
+	puzzled?: Puzzled,
+}
+
+export interface IDrawableHighlightAttributes extends Paperless.Interfaces.IDrawableAttributes
+{
+	puzzled?: Puzzled,
+}
+
+export interface IEntityCoreDrawableAttributes extends Paperless.Interfaces.IDrawableAttributes
+{
+	puzzled?: Puzzled,
+}
+
+export interface IEntityCoreControlAttributes extends Paperless.Interfaces.IControlAttributes
+{
+	puzzled?: Puzzled,
+	swappable?: boolean;
+	expandable?: boolean;
+	shrinkable?: boolean;
+	splittable?: boolean;
+	stackable?: boolean;
+	minimum?: {width?: number, height?: number},
+}
+
 export interface IComponentPuzzledEntity 
 {
 	point?: Paperless.Point, 
 	size?: Paperless.Size,
 	minimum?: {width?: number, height?: number},
-	control: typeof EntityCoreControl, 
+	control?: typeof EntityCoreControl, 
 	drawable?: typeof EntityCoreDrawable, 
 	attributes?: any, 
 	backdoor?: any, 
-	transpose?: boolean, 
-	guid?: string
 }
 
