@@ -341,6 +341,40 @@ export class Form extends Paperless.Component
 		return this;
 	}
 
+	public mindmap(entities: IComponentFormEntity[]): Form
+	{
+		for(let entity of entities)
+		{
+			this._last = this.string({
+				...entity,
+				...{
+					attributes: this.merge(this._template.mindmap, entity.attributes),
+					control: entity.control || Controls.Mindmap,
+					drawable: entity.drawable || Drawables.Mindmap,
+				}
+			});
+		}
+
+		return this;
+	}
+
+	public whiteboard(entities: IComponentFormEntity[]): Form
+	{
+		for(let entity of entities)
+		{
+			this._last = this.string({
+				...entity,
+				...{
+					attributes: this.merge(this._template.whiteboard, entity.attributes),
+					control: entity.control || Controls.Whiteboard,
+					drawable: entity.drawable || Drawables.Whiteboard,
+				}
+			});
+		}
+
+		return this;
+	}
+
 	public submit(entity: IComponentPuzzledEntity): Promise<unknown>
 	{
 		this._submit = this.new({
@@ -416,6 +450,20 @@ export class Form extends Paperless.Component
 				const gantt: Drawables.Gantt = (<Drawables.Gantt>control.drawable);
 
 				Object.defineProperty(values, variable, {value: gantt.chart});
+			}
+
+			else if(control.drawable instanceof Drawables.Mindmap)
+			{
+				const mindmap: Drawables.Mindmap = (<Drawables.Mindmap>control.drawable);
+
+				Object.defineProperty(values, variable, {value: mindmap.map});
+			}
+
+			else if(control.drawable instanceof Drawables.Whiteboard)
+			{
+				const whiteboard: Drawables.Whiteboard = (<Drawables.Whiteboard>control.drawable);
+
+				Object.defineProperty(values, variable, {value: whiteboard.board});
 			}
 		});
 

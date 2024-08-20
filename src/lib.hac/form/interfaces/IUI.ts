@@ -95,6 +95,16 @@ export interface IDrawableUIGanttAttributes extends IEntityCoreDrawableAttribute
 	chart?: string
 }
 
+export interface IDrawableUIMindmapAttributes extends IEntityCoreDrawableAttributes
+{
+	map?: string
+}
+
+export interface IDrawableUIWhiteboardAttributes extends IEntityCoreDrawableAttributes
+{
+	board?: string
+}
+
 export interface IDropzoneFile
 {
 	name: string,
@@ -168,6 +178,48 @@ export interface IGantt
 	popup?: IComponentPopupAttributes
 }
 
+export interface IMindmap
+{
+	context?: Paperless.Context,
+	name?: string,
+	map?: string,
+	onSave?: (chart: string) => Promise<void>,
+	palette?: {
+		black: string,
+		grey0: string,
+		grey1: string,
+		grey2: string,
+		grey3: string,
+		pink: string,
+		blue: string,
+		orange: string,
+		green: string,
+		yellow: string,
+	},
+	popup?: IComponentPopupAttributes
+}
+
+export interface IWhiteboard
+{
+	context?: Paperless.Context,
+	name?: string,
+	board?: string,
+	onSave?: (chart: string) => Promise<void>,
+	palette?: {
+		black: string,
+		grey0: string,
+		grey1: string,
+		grey2: string,
+		grey3: string,
+		pink: string,
+		blue: string,
+		orange: string,
+		green: string,
+		yellow: string,
+	},
+	popup?: IComponentPopupAttributes
+}
+
 export interface IEditableRestrict
 {
 	numeric: RegExp,
@@ -194,6 +246,8 @@ export interface IFormUITemplate
 	dropzone?: IDrawableUIDropzoneAttributes,
 	drawio?: IDrawableUIDrawioAttributes,
 	gantt?: IDrawableUIGanttAttributes,
+	mindmap?: IDrawableUIMindmapAttributes,
+	whiteboard?: IDrawableUIWhiteboardAttributes,
 	//codemirror?: IDrawableUICodemirrorAttributes
 }
 

@@ -11,4 +11,6 @@ export {Dropzone} from './Dropzone.js';
 export {Drawio} from './Drawio.js';
 export {Codemirror} from './Codemirror.js';
 export {Gantt} from './Gantt.js';
+export {Mindmap} from './Mindmap.js';
+export {Whiteboard} from './Whiteboard.js';
 

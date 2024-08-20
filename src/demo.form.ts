@@ -259,6 +259,26 @@ form
 			}
 		}
 	])
+	.mindmap([
+		{
+			name: 'mindmap',
+			size: new Paperless.Size(128, 128),
+			attributes: {
+				strokecolor: '#436665',
+				fillcolor: '#000000'
+			}
+		}
+	])
+	.whiteboard([
+		{
+			name: 'witeboard',
+			size: new Paperless.Size(128, 128),
+			attributes: {
+				strokecolor: '#436665',
+				fillcolor: '#000000'
+			}
+		}
+	])
 	.codemirror([
 		{
 			name: 'codemirror',
