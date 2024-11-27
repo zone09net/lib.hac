@@ -12,6 +12,7 @@ export class Selector extends Paperless.Component
 	private _attributes: IComponentSelectorAttributes;
 	//---
 
+	// @ts-ignore
 	public constructor(attributes: IComponentSelectorAttributes = {})
 	{
 		const context: Paperless.Context = attributes.context;

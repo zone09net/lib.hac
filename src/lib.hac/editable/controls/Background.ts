@@ -32,10 +32,11 @@ export class Background extends Paperless.Controls.Blank
 		this._colorsave = this.drawable.strokecolor;
 		//this.drawable.strokecolor = this._editable.focuscolor;
 
-		this._editable.childs.cursor.on();
-
-		//if(this._editable.childs.cursor)
-		//	this.context.attach(this._editable.childs.cursor);
+		if(this._editable.childs.cursor)
+		{
+			this.context.attach(this._editable.childs.cursor);
+			this._editable.childs.group.attach(this._editable.childs.cursor);
+		}
 
 		this._editable.childs.element.focus();
 	};
@@ -44,16 +45,24 @@ export class Background extends Paperless.Controls.Blank
 	{
 		this.drawable.strokecolor = this._colorsave;
 
-		this._editable.childs.cursor.off();
-
-		//if(this._editable.childs.cursor)
-		//	this.context.detach(this._editable.childs.cursor.guid);
+		if(this._editable.childs.cursor)
+		{
+			this.context.detach(this._editable.childs.cursor.guid);
+			this._editable.childs.group.detach(this._editable.childs.cursor);
+		}
 
 		this._editable.childs.element.blur();
 	};
-
-	public onDrag() 
+/*
+	public onDragEnd()
 	{
-		this.context.removeFocus();
+		if(this.context.states.focussed == this.guid)
+		{
+			if(!this._editable.childs.cursor)
+				this.context.detach(this._editable.childs.cursor.guid);
+			else
+				this._editable.childs.cursor.toFront();
+		}
 	}
+	*/
 }

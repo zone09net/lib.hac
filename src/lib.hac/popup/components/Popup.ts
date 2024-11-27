@@ -12,6 +12,7 @@ export class Popup extends Paperless.Component
 	private _control: Paperless.Controls.Button;
 	//---
 
+	// @ts-ignore
 	public constructor(attributes: IComponentPopupAttributes = {})
 	{
 		const context: Paperless.Context = attributes.context;
