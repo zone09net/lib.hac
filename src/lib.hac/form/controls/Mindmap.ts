@@ -69,6 +69,7 @@ export class Mindmap extends EntityCoreControl
 				})
 				.then((map) => {
 					drawable.map = map;
+					console.log(drawable.map);
 
 					// svg to canvas to put in puzzled form?
 				});

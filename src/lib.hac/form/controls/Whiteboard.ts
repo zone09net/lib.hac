@@ -62,20 +62,23 @@ export class Whiteboard extends EntityCoreControl
 			Whiteboard
 				.open({
 					board: drawable.board ? drawable.board : undefined,
+					nopng: false,
 					popup:
 					{
 						context: this.context,
 					}
 				})
-				.then((board) => {
-					drawable.board = board;
-
-					// svg to canvas to put in puzzled form?
+				.then((data: {board: string, png: string}) => {
+					if(data.png)
+						drawable.childs.artwork.base64 = data.png;
+					
+					if(data.board)
+						drawable.board = data.board;
 				});
 		});
 	}
 
-	public static open(attributes: IWhiteboard): Promise<string>
+	public static open(attributes: IWhiteboard): Promise<{board: string, png: string}>
 	{
 		let {
 			name = '',
@@ -93,9 +96,11 @@ export class Whiteboard extends EntityCoreControl
 				yellow: '#c8af55'
 			},
 			onSave = undefined,
+			nopng = true,
 			popup = {}
 		} = attributes;
 
+		let png: string = undefined;
 		let loading: Popup;
 
 		if(popup.context)
@@ -155,7 +160,7 @@ export class Whiteboard extends EntityCoreControl
 				{
 					try
 					{
-						let message: any = JSON.parse(event.data);
+						const message: any = JSON.parse(event.data);
 
 						if(message != null)
 						{
@@ -167,18 +172,35 @@ export class Whiteboard extends EntityCoreControl
 									loading.close();
 							}
 
-							else if(message.action == 'save')
+							else if(message.action == 'export')
 							{
-								board = JSON.stringify(message.board);
+								png = message.board;
 
 								if(onSave)
 								{
-									onSave(board)
-									.then(() => { postMessage({action: 'saved'}, event.origin); })
-									.catch((error: string) => { postMessage({action: 'unsaved', error: error }, event.origin); });
+									onSave({board: board, png: png})
+									.then(() => { postMessage({action: 'saved', status: 'saved'}, event.origin); })
+									.catch((error: string) => { postMessage({action: 'saved', status: 'unsaved', error: error }, event.origin); });
 								}
 								else
-									postMessage({action: 'saved'}, event.origin);
+									postMessage({action: 'saved', status: 'saved'}, event.origin);
+							}
+
+							else if(message.action == 'save')
+							{
+								board = message.board;
+
+								if(nopng)
+								{
+									if(onSave)
+									{
+										onSave({board: board, png: png})
+										.then(() => { postMessage({action: 'save', status: 'saved'}, event.origin); })
+										.catch((error: string) => { postMessage({action: 'save', status: 'unsaved', error: error }, event.origin); });
+									}
+								}
+								else
+									postMessage({action: 'export'}, event.origin);
 							}
 
 							if(message.action == 'exit')
@@ -186,7 +208,7 @@ export class Whiteboard extends EntityCoreControl
 								window.onmessage = null;
 								window.document.body.removeChild(iframe);
 								iframe = null;
-								resolve(board);
+								resolve({board: board, png: png});
 							}
 						}
 					}

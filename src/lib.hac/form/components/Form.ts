@@ -23,6 +23,7 @@ export class Form extends Paperless.Component
 	private _template: IFormUITemplate;
 	//---
 
+	// @ts-ignore
 	public constructor(attributes: IComponentFormAttributes = {})
 	{
 		const context: Paperless.Context = attributes.context;
@@ -549,7 +550,7 @@ export class Form extends Paperless.Component
 			phone: /^[0-9\(\)\-\+\#\ ]*$/,
 			website: /^[A-Za-z0-9\-\.\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\%\=]*$/,
 			password: /^[a-zA-Z0-9\+\_\!\@\$\&\#]*$/,
-			string: /^[\p{P}\p{N}\p{L} ]*$/u,
+			string: /^[\P{Cc}\P{Cn}\P{Cs}]*$/u,
 		}
 	}
 }

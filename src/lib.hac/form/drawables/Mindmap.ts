@@ -27,7 +27,7 @@ export class Mindmap extends EntityCoreDrawable
 	}
 	public set map(map: string)
 	{
-		this._map = this._map;
+		this._map = map;
 	}
 }
 

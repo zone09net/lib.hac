@@ -103,6 +103,8 @@ export interface IDrawableUIMindmapAttributes extends IEntityCoreDrawableAttribu
 export interface IDrawableUIWhiteboardAttributes extends IEntityCoreDrawableAttributes
 {
 	board?: string
+	content?: string,
+	artwork?: Paperless.Interfaces.IDrawableArtworkAttributes
 }
 
 export interface IDropzoneFile
@@ -204,7 +206,8 @@ export interface IWhiteboard
 	context?: Paperless.Context,
 	name?: string,
 	board?: string,
-	onSave?: (chart: string) => Promise<void>,
+	onSave?: (data: {board: string, png: string}) => Promise<void>,
+	nopng?: boolean,
 	palette?: {
 		black: string,
 		grey0: string,

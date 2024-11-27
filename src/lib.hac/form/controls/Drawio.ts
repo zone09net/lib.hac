@@ -45,7 +45,7 @@ export class Drawio extends EntityCoreControl
 						context: this.context,
 					}
 				})
-				.then((base64) => {
+				.then((base64: string) => {
 					drawable.childs.artwork.base64 = base64;
 				});
 		});
