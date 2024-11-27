@@ -7,9 +7,9 @@ export default [
 			paths: {
 				'@zone09.net/foundation': './lib.foundation.js',
 				'@zone09.net/paperless': './lib.paperless.js',
-				'@zone09.net/hac': './lib.hac.js',
-				'@extlib/codemirror': './extlib/codemirror-5.63.0.js',
-				'@extlib/cryptojs': './extlib/crypto-es-1.2.7/lib/index.js'
+				'@extlib/matter': './extlib/matter-0.20.0.min.js',
+				'@extlib/poly-decomp': './extlib/poly-decomp-0.2.1.min.js',
+				'@extlib/codemirror': './extlib/codemirror-5.63.0.min.js'
 			 }
 		},
 	},

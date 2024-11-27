@@ -1,6 +1,6 @@
 import * as Paperless from '@zone09.net/paperless';
-import * as HaC from '@zone09.net/hac';
-import * as UI from '../../app.brained/src/app.brained/ui/UI.js'
+import * as HaC from './lib.hac.js';
+//import * as UI from '../../app.brained/src/app.brained/ui/UI.js'
 
 
 
@@ -79,15 +79,15 @@ new HaC.Components.Window({
 			// static/void
 			{
 				size: new Paperless.Size(128, 128),
-				control: UI.Controls.Static,
-				drawable: UI.Drawables.Void,
+				control: HaC.Controls.Form.Static,
+				drawable: HaC.Drawables.Form.Void,
 			},
 
 			// static/artwork
 			{
 				size: new Paperless.Size(128, 128),
-				control: UI.Controls.Static,
-				drawable: UI.Drawables.Artwork,
+				control: HaC.Controls.Form.Static,
+				drawable: HaC.Drawables.Form.Artwork,
 				attributes: {
 					artwork:
 					{
@@ -100,8 +100,8 @@ new HaC.Components.Window({
 			// static/label
 			{
 				size: new Paperless.Size(128, 128),
-				control: UI.Controls.Static,
-				drawable: UI.Drawables.Label,
+				control: HaC.Controls.Form.Static,
+				drawable: HaC.Drawables.Form.Label,
 				attributes: {
 					label: {
 						padding: {top: 5, left: 5},
@@ -113,8 +113,8 @@ new HaC.Components.Window({
 			// texmage/texmage
 			{
 				size: new Paperless.Size(128, 128),
-				control: UI.Controls.Texmage,
-				drawable: UI.Drawables.Texmage,
+				control: HaC.Controls.Form.Texmage,
+				drawable: HaC.Drawables.Form.Texmage,
 				attributes: {
 					type: 'artwork',
 					label: {
@@ -131,8 +131,8 @@ new HaC.Components.Window({
 			// separator/separator
 			{
 				size: new Paperless.Size(128, 128),
-				control: UI.Controls.Separator,
-				drawable: UI.Drawables.Separator,
+				control: HaC.Controls.Form.Separator,
+				drawable: HaC.Drawables.Form.Separator,
 				attributes: {
 					strokecolor: '#436665',
 				},
@@ -141,8 +141,8 @@ new HaC.Components.Window({
 			// empty/empty
 			{
 				size: new Paperless.Size(128, 128),
-				control: UI.Controls.Empty,
-				drawable: UI.Drawables.Empty,
+				control: HaC.Controls.Form.Empty,
+				drawable: HaC.Drawables.Form.Empty,
 				attributes: {
 					strokecolor: '#436665',
 					fillcolor: '#151515'
@@ -152,8 +152,8 @@ new HaC.Components.Window({
 			// drawio/drawio
 			{
 				size: new Paperless.Size(128, 128),
-				control: UI.Controls.Drawio,
-				drawable: UI.Drawables.Drawio,
+				control: HaC.Controls.Form.Drawio,
+				drawable: HaC.Drawables.Form.Drawio,
 				attributes: {
 					artwork: {
 						padding: 5,
@@ -185,8 +185,8 @@ new HaC.Components.Window({
 			// button/button
 			{
 				size: new Paperless.Size(128, 128),
-				control: UI.Controls.Button,
-				drawable: UI.Drawables.Button,
+				control: HaC.Controls.Form.Button,
+				drawable: HaC.Drawables.Form.Button,
 				attributes: {
 					content: 'Push me!',
 					fillcolor: '#436665',
@@ -207,8 +207,8 @@ new HaC.Components.Window({
 			// dropzone/dropzone
 			{
 				size: new Paperless.Size(128, 128),
-				control: UI.Controls.Dropzone,
-				drawable: UI.Drawables.Dropzone,
+				control: HaC.Controls.Form.Dropzone,
+				drawable: HaC.Drawables.Form.Dropzone,
 				attributes: {
 					content: 'Drop here',
 					strokecolor: '#436665',
@@ -219,25 +219,25 @@ new HaC.Components.Window({
 				},
 			},
 			
-			/*
-			// codemirror/codemirror
-			{
-				size: new Paperless.Size(128, 128),
-				control: UI.Controls.Codemirror,
-				drawable: UI.Drawables.Codemirror,
-				attributes: {
-					label: {
-						font: '13px CPMono-v07-Light',
-					},
-				}
-			},
-			*/
+			
+			//// codemirror/codemirror
+			//{
+			//	size: new Paperless.Size(128, 128),
+			//	control: UI.Controls.Codemirror,
+			//	drawable: UI.Drawables.Codemirror,
+			//	attributes: {
+			//		label: {
+			//			font: '13px CPMono-v07-Light',
+			//		},
+			//	}
+			//},
+			//
 			
 			// field/field
 			{
 				size: new Paperless.Size(384, 128),
-				control: UI.Controls.Field,
-				drawable: UI.Drawables.Field,
+				control: HaC.Controls.Form.Field,
+				drawable: HaC.Drawables.Form.Field,
 				attributes: {
 					leftwidth: 122,
 					rightwidth: 0,

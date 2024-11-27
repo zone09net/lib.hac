@@ -1,5 +1,5 @@
 import * as Paperless from '@zone09.net/paperless';
-import * as HaC from '@zone09.net/hac';
+import * as HaC from './lib.hac.js';
 
 
 
@@ -34,7 +34,7 @@ const form: HaC.Components.Form = new HaC.Components.Form({
 	puzzled: puzzled,
 	onSubmit: (form: HaC.Components.Form) => {
 		return new Promise((resolve, reject) => {
-			resolve();
+			resolve(null);
 			console.log(form.results());
 		});
 	},

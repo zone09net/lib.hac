@@ -1,5 +1,5 @@
 import * as Paperless from '@zone09.net/paperless';
-import * as HaC from '@zone09.net/hac';
+import * as HaC from './lib.hac.js';
 //import * as Addons from '../../app.brained/src/app.brained/ui/UI.js'
 
 
