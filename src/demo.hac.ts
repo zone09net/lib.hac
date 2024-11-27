@@ -1,6 +1,6 @@
 
 import * as Paperless from '@zone09.net/paperless';
-import * as HaC from '@zone09.net/hac';
+import * as HaC from './lib.hac.js';
 // @ts-ignore
 import CodeMirror from '../../extlib/codemirror';
 

@@ -1,4 +1,5 @@
 import * as Paperless from '@zone09.net/paperless';
+import {Form} from '../../form/components/Form.js';
 import {Puzzled} from '../../puzzled/components/Puzzled.js';
 import {EntityCoreControl} from '../../puzzled/controls/EntityCoreControl.js';
 import {EntityCoreDrawable} from '../../puzzled/drawables/EntityCoreDrawable.js';
@@ -19,6 +20,8 @@ export class Fuzzynotes extends Paperless.Component
 	private _guids: Array<string> = [];
 	private _drawables: Array<string> = [];
 	private _eventWheel: any = null;
+	private _formMain: Form;
+	private _formHeader: Form;
 	//---
 
 	public constructor(attributes: IComponentFuzzynotesAttributes = {})
@@ -51,6 +54,9 @@ export class Fuzzynotes extends Paperless.Component
 		this.width = width;
 		this.height = window.innerHeight;
 		this.sticky = sticky;
+
+		this._formMain = new Form();
+		this._formHeader = new Form();
 	}
 
 	public initialize(): void
@@ -103,6 +109,9 @@ export class Fuzzynotes extends Paperless.Component
 		this._guids.push(group.guid);
 		
 		group.attach([this._puzzled, this._header]);
+
+		this._formMain.puzzled = this._puzzled;
+		this._formHeader.puzzled = this._header;
 
 		this._eventWheel = this.handleWheel.bind(null, this._puzzled, this);
 		this.context.canvas.addEventListener("wheel", this._eventWheel, {passive: true});
@@ -220,8 +229,10 @@ export class Fuzzynotes extends Paperless.Component
 		this._resetter.onLeftClick();
 	}
 
-	public new(entities: Array<{point?: Paperless.Point, size?: Paperless.Size, control: typeof EntityCoreControl, drawable: typeof EntityCoreDrawable, header?: boolean, attributes?: any, backdoor?: any, transpose?: boolean}>): void
+	public new(entities: Array<{point?: Paperless.Point, size?: Paperless.Size, minimum?: {width?: number, height?: number}, control: typeof EntityCoreControl, drawable: typeof EntityCoreDrawable, header?: boolean, attributes?: any, backdoor?: any, transpose?: boolean}>): EntityCoreControl
 	{
+		let control: EntityCoreControl;
+
 		for(let entity of entities)
 		{
 			const {
@@ -231,29 +242,31 @@ export class Fuzzynotes extends Paperless.Component
 
 			if(entity.header === true)
 			{
-				this._header.new([{
+				control = this._header.new([{
 					point: entity.point,
 					size: entity.size,
+					minimum: entity.minimum,
 					control: entity.control,
 					drawable: entity.drawable,
-					transpose: entity.transpose,
 					attributes: { ...attributes, ...{sticky: true} },
 					backdoor: entity.backdoor
 				}]);
 			}
 			else
 			{
-				this._puzzled.new([{
+				control = this._puzzled.new([{
 					point: entity.point,
 					size: entity.size,
+					minimum: entity.minimum,
 					control: entity.control,
 					drawable: entity.drawable,
-					transpose: entity.transpose,
 					attributes: { ...attributes, ...{sticky: this.sticky} },
 					backdoor: entity.backdoor
 				}]);
 			}
 		}
+
+		return control;
 	}
 
 	public onAttach(): void
@@ -266,6 +279,8 @@ export class Fuzzynotes extends Paperless.Component
 		this.context.canvas.removeEventListener("wheel", this._eventWheel, {});
 		this.context.detach(this._drawables);
 		this.context.detach(this._guids);
+		this.context.detach(this._formMain.guid);
+		this.context.detach(this._formHeader.guid)
 		this._guids = [];
 		this._drawables = [];
 	}
@@ -364,10 +379,7 @@ export class Fuzzynotes extends Paperless.Component
 			}
 
 			if(puzzled.getMarker())
-			{
 				puzzled.removeMarker();
-				puzzled.detach(puzzled.getIcons());
-			}
 
 			puzzled.context.refresh();
 		}
@@ -407,4 +419,10 @@ export class Fuzzynotes extends Paperless.Component
 	{
 		return this._attributes;
 	}
+
+	public get form(): {main: Form, header: Form}
+	{
+		return {main: this._formMain, header: this._formHeader};
+	}
 }
+

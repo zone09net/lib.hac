@@ -1,173 +1,331 @@
 
-import * as Paperless from '@zone09.net/paperless';
-import * as HaC from '@zone09.net/hac';
 import * as Foundation from '@zone09.net/foundation';
+import * as Paperless from '@zone09.net/paperless';
+import * as HaC from './lib.hac.js';
 
 
 
-const colors: Array<string> = ["#815556", "#436665", "#9a6c27", "#769050", "#c8af55"];
-const wss: Foundation.WebSocketSecure = new Foundation.WebSocketSecure({
-	link: 'wss://www.zone09.net:2222',
-	//parser: { callback: Messaging.parser, smuggler: {context: this._context, brained: this} },
-	//closer: { callback: Messaging.closer, smuggler: {context: this._context, brained: this} }
-});
+class Console extends Paperless.Component
+{
+	private _wss: Foundation.WebSocketSecure;
+	private _catalog: any = {};
+	private _history: string[] = [];
+	//---
 
-wss.send({route: 'datacenter', query: 'get catalog token ? end', placeholders: {token: localStorage.getItem("zone09.net#token")} }).then(
-	(response: any) => { 
-		let key: string = 'root';
-		const catalog: any = response.data;
-		const context: Paperless.Context = new Paperless.Context({autosize: true});
-		const prompt: HaC.Components.Editable = new HaC.Components.Editable({
-			point: {x: 32, y: 32},
-			size: {width: window.innerWidth - 64, height: window.innerHeight - 64},
-			focuscolor: colors[1],
-			maxline: 3, 
-			label: {
-				content: '> ',
-				font: '12px CPMono-v07-Light',
-				padding: {top: 5, left: 5, right: 8},
-				strokecolor: colors[0],
-				wrapping: true,
-				multiline: true,
-				nostroke: true,
-			},
-			cursor: {
-				fillcolor: '#45ce06',
-				blink: true,
-				alpha: 0.5,
-				width: 9
-			},
+	// @ts-ignore
+	public constructor(attributes: Paperless.Interfaces.IComponentAttributes = {})
+	{
+		const context: Paperless.Context = attributes.context;
 
-			onAttach: () =>
-			{
-				prompt.attachBackground(); 
-				prompt.attachCursor();
-				prompt.initialize();
-			},
+		super({
+			...attributes, 
+			...{
+				context: null,
+				layer: null,
+			}
+		});
 
-			onEscape: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
-				event.preventDefault();
+		const {
+			layer = null,
+		} = attributes;
 
-				self.clear();
-				self.insertStringAt('> ', self.position.global);
-				self.moveLast();
-				self.update();
-			},
+		context ? context.attach(this, layer) : null;
+	}
 
-			onUp: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
-				event.preventDefault();
-			},
+	public onAttach(): void
+	{
+		this.editable();
 
-			onDown: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
-				event.preventDefault();
-			},
+		this._wss = new Foundation.WebSocketSecure({
+			link: 'wss://www.zone09.net:3333',
+			initier: { callback: this.initier, smuggler: {catalog: this._catalog} },
+			parser: { callback: this.parser, smuggler: {} },
+			closer: { callback: this.closer, smuggler: {console: this} }
+		});
 
-			onLeft: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
-				event.preventDefault();
+		this._wss.connect();
+	}
 
-				if(self.position.cursor.column > 2)
-				{
-					self.moveLeft(1);
-					self.update(false);
-				}
-			},
-
-			onBackspace: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
-				event.preventDefault();
-
-				if(self.position.cursor.column > 2)
-				{
-					self.removeStringAt(self.position.global - 1, self.position.global);
-					self.moveLeft(1);
-					self.update();
-				}
-			},
-
-			onEnter: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
-				event.preventDefault();
-
-				if(self.isInsertable(6))
-				{
-					self.insertStringAt('\nexec\n', self.position.global);
-					self.moveLast();
-					self.update();
-				}
-			},
-
-			onKey: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
-				event.preventDefault();
-
-				if(self.isInsertable(1) && self.restrict.test(event.key))
-				{
-					self.insertStringAt(event.key, self.position.global)
-					self.moveRight(1);
-					self.update();
-				}
-			},
-
-			onTab: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
-				event.preventDefault();
-
-				function help(current: any[], query: string = '')
-				{
-					let append: string = '\n';
-					
-					for(let j: number = 0; j < current.length; j++)
-					{
-						append += current[j].name.padEnd(20, ' ');
-						append += current[j].brief.padEnd(50, ' ');
-						append += '\n';
+	private editable(): void
+	{
+		this.enroll(
+			new HaC.Components.Editable({
+				context: this.context,
+				point: {x: 16, y: 16},
+				size: {width: window.innerWidth - 32, height: window.innerHeight - 32},
+				maxline: 3, 
+				label: {
+					content: '> ',
+					font: '12px CPMono-v07-Light',
+					padding: {top: 5, left: 5, right: 8},
+					fillcolor: '#999999',
+					wrapping: true,
+					multiline: true,
+					nostroke: true,
+					filter: {
+						0: {
+							0: {fillcolor: '#666666'},
+							1: {fillcolor: '#999999'}
+						}
 					}
-
-					self.insertStringAt(append + '> ' + query, self.position.global);
-					self.moveLast();
-				}
-
-				self.moveLast();
-
-				if(prompt.childs.label.contentAs.splitted[self.position.cursor.row] == '> ')
-					help(catalog['root']);
-
-				else
+				},
+				cursor: {
+					fillcolor: '#476E20',
+					blink: true,
+					alpha: 0.5,
+					width: 7
+				},
+		
+				onAttach: (self: HaC.Components.Editable) =>
 				{
-					const splitted: string[] = prompt.childs.label.contentAs.splitted[self.position.cursor.row].replace(/\s+/gm,' ').split(' ');
+					self.attachBackground(); 
+					self.attachCursor();
+					self.initialize();
+		
+					self.context.setFocus(self.childs.control.guid);
+		
+					self.childs.control.movable = false;
+					self.moveLast();
+					self.update();
+				},
+		
+				onEscape: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
+					event.preventDefault();
+		
+					self.clear();
+					self.insertStringAt('> ', self.position.global);
+					self.moveLast();
+		
+					self.childs.label.filter = {
+						0: {
+							0: {fillcolor: '#666666'},
+							1: {fillcolor: '#999999'}
+						}
+					};
+		
+					self.update();
+				},
+		
+				onHome: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
+					self.moveLeft(self.position.cursor.column - 2);
+					self.update(false);
+
+					event.preventDefault();
+				},
+
+				onCtrlHome: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
+					self.moveLeft(self.position.cursor.column - 2);
+					self.update(false);
+
+					event.preventDefault();
+				},
+		
+				onUp: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
+					event.preventDefault();
+
+					if(this._history.length > 0)
+					{
+						this._history.unshift(this._history.pop());
+
+						self.removeStringAt(self.position.global - self.position.cursor.column + 2, self.position.global);
+						self.insertStringAt(this._history[0], self.position.global);
+						self.moveLast();
+						self.update();
+					}
+				},
+
+				onDown: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
+					event.preventDefault();
+
+					if(this._history.length > 0)
+					{
+						this._history.push(this._history.shift());
+
+						self.removeStringAt(self.position.global - self.position.cursor.column + 2, self.position.global);
+						self.insertStringAt(this._history[0], self.position.global);
+						self.moveLast();
+						self.update();
+					}			
+				},
+		
+				onLeft: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
+					event.preventDefault();
+		
+					if(self.position.cursor.column > 2)
+					{
+						self.moveLeft(1);
+						self.update(false);
+					}
+				},
+		
+				onBackspace: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
+					event.preventDefault();
+		
+					if(self.position.cursor.column > 2)
+					{
+						self.removeStringAt(self.position.global - 1, self.position.global);
+						self.moveLeft(1);
+						self.update();
+					}
+				},
+		
+				onEnter: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
+					event.preventDefault();
+		
+					const splitted: string[] = self.childs.label.contentAs.splitted[self.position.cursor.row].substring(2).trim().replace(/\s+/gm,' ').split(' ');
 					let hop: string = 'root';
 					let current: any = undefined;
-					let incomplete: boolean = false;
-					let input: boolean = false;
+					let placeholders: any = {};
+					let query: string = '';
+					let route: string;
 
-					// remove '> ' at the beginning
-					splitted.shift();
-
-					// find the last hop
 					for(let i: number = 0; i < splitted.length; i++)
 					{
-						incomplete = true;
-						current = catalog[hop];
-
+						current = this._catalog[hop];
+	
 						if(current)
 						{
-							console.log(current)
+							for(let j: number = 0; j < current.length; j++)
+							{
+								if(current[j].name ==  'end')
+									route = current[j].catalog;
 
+								if((splitted[i] == current[j].name) || (current[j].name ==  '?' && splitted[i]))
+								{
+									if(current[j].name ==  '?')
+									{
+										placeholders[current[j].brief] = splitted[i];
+										splitted[i] = '?';
+									}
+
+									if(current[j].next)
+										hop = current[j].next.replace(/\/([0-9]+)/, (a: any, b: any) => { return '/' + splitted[b]; });
+									else
+										hop = undefined;
+	
+									break;
+								}	 
+							}
+						}
+
+						query += splitted[i] + ' ';
+					}
+
+					// not working ???
+					//self.childs.keyboard.disable();
+
+					this._history.push(self.childs.label.contentAs.splitted[self.position.cursor.row].substring(2).trim());
+
+					self.childs.label.filter[self.position.cursor.row + 1] = {
+						0: {fillcolor: '#666666'},
+						1: {fillcolor: '#999999'}
+					};
+
+					if(route)
+					{
+						this._wss.send({route: route, query: query.trim(), placeholders: placeholders}).then(
+							(success: any) => {
+								console.log(success);
+								self.childs.label.filter[self.position.cursor.row] = {
+									0: {fillcolor: '#45ce06'},
+									1: {fillcolor: '#999999'}		
+								};	
+			
+								self.moveLast();
+								self.insertStringAt('\n> ', self.position.global);
+								self.moveLast();
+								self.update();
+							},
+							(fail: any) => {
+								self.childs.label.filter[self.position.cursor.row + 1] = {
+									0: {fillcolor: '#ff0000'},
+									1: {fillcolor: '#ff0000cc'},
+								};
+								self.childs.label.filter[self.position.cursor.row + 2] = {
+									0: {fillcolor: '#666666'},
+									1: {fillcolor: '#999999'}		
+								};
+								
+								self.moveLast();
+								self.insertStringAt('\n> ' + fail.message + '\n> ', self.position.global);
+								self.moveLast();
+								self.update();
+							}
+						);	
+					}
+					else
+					{
+						self.moveLast();
+						self.insertStringAt('\n> ', self.position.global);
+						self.moveLast();
+						self.update();
+					}
+				},
+		
+				onKey: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
+					event.preventDefault();
+		
+					if(self.isInsertable(1) && self.restrict.test(event.key))
+					{
+						self.insertStringAt(event.key, self.position.global)
+						self.moveRight(1);
+						self.update();
+					}
+				},
+		
+				onTab: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
+					event.preventDefault();
+		
+					let min: number;
+					let max: number;
+		
+					function help(current: any[], query: string = '')
+					{
+						if(!current)
+							return;
+		
+						let append: string = '\n';
+						
+						for(let j: number = 0; j < current.length; j++)
+						{
+							append += current[j].name.padEnd(20, ' ');
+							append += current[j].brief.padEnd(50, ' ');
+							append += '\n';
+						}
+		
+						self.insertStringAt(append + '> ' + query, self.position.global);
+						self.moveLast();
+		
+						min = self.position.cursor.row + 1;
+						max = self.position.cursor.row + current.length + 1;
+					}
+		
+					self.moveLast();
+		
+					if(self.childs.label.contentAs.splitted[self.position.cursor.row] == '> ')
+						help(this._catalog['root']);
+		
+					else
+					{
+						const splitted: string[] = self.childs.label.contentAs.splitted[self.position.cursor.row].replace(/\s+/gm,' ').split(' ');
+						let hop: string = 'root';
+						let current: any = undefined;
+						let incomplete: boolean = false;
+		
+						// remove '> ' at the beginning
+						splitted.shift();
+		
+						// find the last hop
+						for(let i: number = 0; i < splitted.length; i++)
+						{
+							incomplete = true;
+							current = this._catalog[hop];
+		
+							if(current)
 							{
 								for(let j: number = 0; j < current.length; j++)
 								{
-									if(current.length == 1 && current[0].name == '?' && splitted[i] != '')
-									{
-										input = true;
-
-										// le space la cause erreur
-										self.insertStringAt(' ' , self.position.global);
-										self.moveLast();
-
-										if(current[0].next)
-											hop = current[0].next.replace(/\/([0-9]+)/, (a: any, b: any) => { return '/' + splitted[b]; });
-										else
-											hop = undefined;
-
-										break;
-									}
-									if(splitted[i] == current[j].name)
+									if((splitted[i] == current[j].name) || (current[j].name ==  '?' && splitted[i]))
 									{
 										incomplete = false;
 
@@ -175,69 +333,147 @@ wss.send({route: 'datacenter', query: 'get catalog token ? end', placeholders: {
 											hop = current[j].next.replace(/\/([0-9]+)/, (a: any, b: any) => { return '/' + splitted[b]; });
 										else
 											hop = undefined;
-
+		
 										break;
 									}
 								}
 							}
 						}
-					}
-
-					if(!incomplete && !input)
-						help(catalog[hop], (prompt.childs.label.contentAs.splitted[self.position.cursor.row] + ' ').replace(/^> /,''));
-					else
-					{
-						current = catalog[hop];
-
-						if(current)
+		
+						if(!incomplete)
+							help(this._catalog[hop], (self.childs.label.contentAs.splitted[self.position.cursor.row] + ' ').replace(/^> /,''));
+						else
 						{
-							let list: any = [];
-
-							for(let j: number = 0; j < current.length; j++)
+							current = this._catalog[hop];
+		
+							if(current)
 							{
-								const regex: RegExp = new RegExp('^' + splitted[splitted.length - 1]);
-
-								if(regex.test(current[j].name))
-									list.push(current[j]);
-							}
-							
-							if(list.length == 1)
-							{
-								if(list[0].name == '?')
-									help(list, prompt.childs.label.contentAs.splitted[self.position.cursor.row].replace(/^> /,''));
-								else
+								let list: any = [];
+		
+								for(let j: number = 0; j < current.length; j++)
 								{
-									const incomplete: string = list[0].name.substring(splitted[splitted.length - 1].length);
-
-									self.insertStringAt(incomplete + ' ' , self.position.global);
-									self.moveLast();
+									const regex: RegExp = new RegExp('^' + splitted[splitted.length - 1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+		
+									if(regex.test(current[j].name))
+										list.push(current[j]);
 								}
-							}
-							else if(list.length > 1)
-								help(list, prompt.childs.label.contentAs.splitted[self.position.cursor.row].replace(/^> /,''));
 
-								console.log(splitted)
+								if(list.length == 1)
+								{
+									if(list[0].name == '?')
+										help(this._catalog[hop], (self.childs.label.contentAs.splitted[self.position.cursor.row] + '').replace(/^> /,''));
+									else
+									{
+										const incomplete: string = list[0].name.substring(splitted[splitted.length - 1].length);
+			
+										self.insertStringAt(incomplete + ' ' , self.position.global);
+										self.moveLast();
+									}
+								}
+								else if(list.length > 1)
+									help(list, self.childs.label.contentAs.splitted[self.position.cursor.row].replace(/^> /,''));
+							}
 						}
 					}
+		
+					if(max)
+					{
+						for(let i: number = min; i < max; i++)
+						{
+							self.childs.label.filter[i] = {
+								0: {fillcolor: '#c8af55'},
+								20: {fillcolor: '#666666'},	
+							};
+						}
+		
+						self.childs.label.filter[max] = {
+							0: {fillcolor: '#666666'},
+							1: {fillcolor: '#999999'}		
+						};
+					}
+		
+					self.update();
 				}
+			})
+		);
+	}
 
-				self.update();
-			}
+	private initier(raw: Foundation.IWebSocketSecureRaw, smuggler: any): Foundation.IWebSocketSecureCallback
+	{
+		const catalog: any = smuggler.catalog;
+
+		if(Foundation.WebSocketSecure.undefined([raw, raw.guid, raw.response, raw.response.message]))
+			return {success: false, response: {status: 0, data: null, message: 'Data received from the server seems incorrect.'}};
+	
+		Object.entries(raw.response.message.catalogs).forEach(([key0, value0]: any) => {
+			Object.entries(value0).forEach(([key1, value1]: any) => {
+				Object.entries(value1).forEach(([key2, value2]: any) => {
+					value2.catalog = key0;
+				});
+			});
 		});
 
-		context.attach(document.body);
-		context.attach(prompt);
-		context.setFocus(prompt.childs.control.guid);
+		Object.entries(raw.response.message.catalogs).forEach(([key0, value0]: any) => {
+			Object.entries(value0).forEach(([key1, value1]: any) => {
+				Object.entries(value1).forEach(([key2, value2]: any) => {
+					if(!catalog[key1])
+						catalog[key1] = [];
+	
+					let filter = catalog[key1].filter((entry: any) => entry.name == value2.name);
+	
+					if(filter.length <= 0)
+						catalog[key1].push(value2);
+				});
+			});
+		});
 
-		prompt.childs.control.movable = false;
-		prompt.moveLast();
-		prompt.update();
-	},
+		return {success: true, response: raw.response};
+	}
 
-	(error: any) => { }
-);	
+	private parser(raw: Foundation.IWebSocketSecureRaw, smuggler: any): Foundation.IWebSocketSecureCallback
+	{
+		if(Foundation.WebSocketSecure.undefined([raw, raw.guid, raw.response, raw.response.message]))
+			return {success: false, response: {status: 0, data: null, message: 'Data received from the server seems incorrect.'}};
+	
+		switch(raw.response.status)
+		{
+			case 'wrong':
+				return {success: false, response: raw.response};
+				break;
+		}
+	
+		return {success: true, response: raw.response};
+	}
+
+	private closer(raw: Foundation.IWebSocketSecureRaw, smuggler: any): Foundation.IWebSocketSecureCallback
+	{
+		if(Foundation.WebSocketSecure.undefined([raw, raw.response]))
+			return {success: false, response: {status: 0, data: null, message: 'Data received from the server seems incorrect.'}};
+	
+		const editable: HaC.Components.Editable = smuggler.console.getComponents()[0];
+
+		editable.childs.label.filter[editable.position.cursor.row + 1] = {
+			0: {fillcolor: '#ff0000'},
+			1: {fillcolor: '#ff0000cc'},
+		};
+		editable.childs.label.filter[editable.position.cursor.row + 2] = {
+			0: {fillcolor: '#666666'},
+			1: {fillcolor: '#999999'}		
+		};
+		
+		editable.insertStringAt('\n> ' + raw.response + '\n> ', editable.position.global);
+		editable.moveLast();
+		editable.update();
+
+		return {success: false, response: raw.response};
+	}
+}
 
 
+const context: Paperless.Context = new Paperless.Context({autosize: true});
 
+context.attach(document.body);
 
-
+new Console({
+	context: context	
+});

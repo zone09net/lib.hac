@@ -1,0 +1,15 @@
+{
+	"extends": "./tsconfig.main.json",
+
+	"compilerOptions": {
+		"outDir": "../www.zone09.net/public/js/dev"
+	},
+	
+	"include": [
+		"./src/**/*"
+	]
+
+	//"exclude": [
+	//	"./src/demo.puzzled.ts"
+	//]
+}

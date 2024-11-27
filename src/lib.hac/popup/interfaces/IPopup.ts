@@ -1,8 +1,9 @@
 import * as Paperless from '@zone09.net/paperless';
+import {Popup} from '../components/Popup.js';
 
 
 
-export interface IComponentPopopAttributes extends Paperless.Interfaces.IComponentAttributes
+export interface IComponentPopupAttributes extends Paperless.Interfaces.IComponentAttributes
 {
 	title?: Paperless.Interfaces.IDrawableLabelAttributes,
 	detail?: Paperless.Interfaces.IDrawableLabelAttributes,
@@ -10,4 +11,8 @@ export interface IComponentPopopAttributes extends Paperless.Interfaces.ICompone
 	width?: number,
 	noclick?: boolean,
 	passthrough?: boolean,
+	autoopen?: boolean,
+
+	onOpen?: (self?: Popup) => void,
+	onClose?: (self?: Popup) => void,
 }

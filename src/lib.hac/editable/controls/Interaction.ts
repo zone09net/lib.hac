@@ -39,8 +39,8 @@ export class Interaction extends Paperless.MouseAction
 	{
 		if(this._editable.childs.control.guid == this.context.states.pointer.control && this.context.states.focussed == this._editable.childs.control.guid)
 		{
-			let x: number = this.context.states.pointer.clicked.x - this._editable.childs.label.x - this._editable.childs.label.padding.left - this._editable.childs.label.offset.x;
-			let y: number = this.context.states.pointer.clicked.y - this._editable.childs.label.y - this._editable.childs.label.padding.top - this._editable.childs.label.offset.y;
+			let x: number = this.context.states.pointer.clicked.x - this._editable.childs.label.x - this._editable.childs.label.padding.left - this._editable.childs.label.offset1.x;
+			let y: number = this.context.states.pointer.clicked.y - this._editable.childs.label.y - this._editable.childs.label.padding.top - this._editable.childs.label.offset1.y;
 			let boundingbox: {width: number, height: number} = this._editable.childs.label.boundingbox('[j');
 			let row: number = Math.floor(y / (boundingbox.height + this._editable.childs.label.spacing));
 

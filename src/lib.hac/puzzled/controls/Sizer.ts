@@ -2,6 +2,7 @@ import * as Paperless from '@zone09.net/paperless';
 import {Puzzled} from '../components/Puzzled.js';
 import {EntityCoreControl} from './EntityCoreControl.js';
 import {Slider} from '../drawables/Slider.js';
+import {IControlIconAttributes} from '../interfaces/IPuzzled.js';
 
 
 
@@ -13,14 +14,18 @@ export class Sizer extends Paperless.Controls.Button
 	private _ghost: Slider;
 	//---
 
-	public constructor(puzzled: Puzzled, entity: EntityCoreControl, attributes: Paperless.Interfaces.IControlButtonAttributes = {})
+	public constructor(attributes: IControlIconAttributes = {})
 	{
 		super(attributes);
 
 		this.focusable = false;
-		this._puzzled = puzzled;
-		this._entity = entity;
-		this._ghost = new Slider(puzzled);
+		this._puzzled = attributes.puzzled;
+		this._entity = attributes.entity;
+
+		this._ghost = new Slider({
+			puzzled: attributes.puzzled,
+			layer: attributes.puzzled.layer
+		});
 	}
 
 	public onInside(): void
@@ -36,9 +41,8 @@ export class Sizer extends Paperless.Controls.Button
 	
 	public onDragBegin() : void
 	{
-		this._puzzled.removeMarker();
 		this._entity.drawable.generate();
-		
+
 		if(this.drawable.x == this._entity.drawable.x)
 		{
 			this._side = 'left';
@@ -65,6 +69,7 @@ export class Sizer extends Paperless.Controls.Button
 
 		this._ghost.width = this._entity.drawable.width - this._puzzled.spacing;
 		this._ghost.height = this._entity.drawable.height - this._puzzled.spacing;
+		this._ghost.offset1 = {x: this._puzzled.x, y: this._puzzled.y};
 		this._ghost.generate();
 	}
 

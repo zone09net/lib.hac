@@ -2,11 +2,12 @@
 	"compileOnSave": true,
 
 	"compilerOptions": {
-		"target": "es2017",
+		"target": "es2018",
 		"module": "es6",
 		"moduleResolution": "node",
 		"lib": [
 			"dom", 
+			"dom.iterable",
 			"es2018"
 		],
 		
@@ -14,8 +15,7 @@
 		"removeComments": true,
 		"preserveConstEnums": true,
 		"noEmitOnError": false,
-		"allowJs": false,
-		//"watch": true,
+		"allowJs": true,
 		"declaration": true,
 		"declarationMap": true,
 		"outDir": "./.dist",
@@ -23,8 +23,10 @@
 		"paths": {
 			"@zone09.net/foundation": ["lib.foundation/src/lib.foundation.ts"],
 			"@zone09.net/paperless": ["lib.paperless/src/lib.paperless.ts"],
-			"@zone09.net/hac": ["lib.hac/src/lib.hac.ts"],
-			"@extlib/codemirror": ["extlib/CodeMirror.js"]
+			"@extlib/matter": ["extlib/matter-0.20.0.min.js"],
+			"@extlib/poly-decomp": ["extlib/poly-decomp-0.2.1.min.js"],
+			"@extlib/intersects": ["extlib/intersects-2.7.1.min.js"],
+			"@extlib/codemirror": ["extlib/codemirror-5.63.0.min.js"]
 		},
 		"typeRoots": ["./types"],
 		"types": ["OffscreenCanvas"]

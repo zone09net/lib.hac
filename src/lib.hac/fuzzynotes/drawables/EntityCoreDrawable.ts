@@ -12,7 +12,7 @@ export class EntityCoreDrawable extends Drawable
 
 	public constructor(puzzled: Puzzled, attributes: Paperless.Interfaces.IDrawableAttributes = {})
 	{
-		super(puzzled, attributes);
+		super(attributes);
 	}
 
 

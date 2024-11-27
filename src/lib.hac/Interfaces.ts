@@ -5,3 +5,4 @@ export * as Puzzled from './puzzled/interfaces/Interfaces.js';
 export * as Fuzzynotes from './fuzzynotes/interfaces/Interfaces.js';
 export * as Window from './window/interfaces/Interfaces.js';
 export * as Editable from './editable/interfaces/Interfaces.js';
+export * as Form from './form/interfaces/Interfaces.js';

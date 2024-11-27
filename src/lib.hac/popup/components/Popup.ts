@@ -1,28 +1,41 @@
 import * as Paperless from '@zone09.net/paperless';
-import {IComponentPopopAttributes} from '../interfaces/IPopup.js';
+import {IComponentPopupAttributes} from '../interfaces/IPopup.js';
 
 
 
 export class Popup extends Paperless.Component
 {
-	private _attributes: IComponentPopopAttributes;
+	private _attributes: IComponentPopupAttributes;
 	private _dark: Paperless.Drawables.Rectangle;
 	private _title: Paperless.Drawables.Label;
 	private _detail: Paperless.Drawables.Label;
 	private _control: Paperless.Controls.Button;
 	//---
 
-	public constructor(attributes: IComponentPopopAttributes = {})
+	// @ts-ignore
+	public constructor(attributes: IComponentPopupAttributes = {})
 	{
-		super(attributes);
+		const context: Paperless.Context = attributes.context;
+
+		super({
+			...attributes,
+			...{
+				context: null,
+			}
+		});
 
 		const {
 			title = {},
 			detail = {},
 			dark = {},
 			width = 300,
+			autoopen = false,
 			noclick = false,
 			passthrough = false,
+			layer = null,
+
+			onOpen = null,
+			onClose = null,
 		} = attributes;
 
 		this._attributes = {
@@ -35,7 +48,7 @@ export class Popup extends Paperless.Component
 				...{ autosize: true, multiline: true, wrapping: true, corner: true, sticky: true, generate: false, hoverable: false} 
 			},
 			dark: {
-				...{ fillcolor: '#000000',  alpha: 0.90 },
+				...{ fillcolor: '#000000',  alpha: 0.95 },
 				...dark,
 				...{ nostroke: true, sticky: true}
 			},
@@ -43,14 +56,20 @@ export class Popup extends Paperless.Component
 			noclick: noclick,
 			passthrough: passthrough
 		};
+
+		context ? context.attach(this, layer) : null;
+
+		onOpen ? this.onOpen = onOpen : null;
+		onClose ? this.onClose = onClose : null;
+
+		if(autoopen)
+			this.open();
 	}
 
 	public onAttach(): void
 	{
-		this.width = this.context.canvas.width;
-		this.height = this.context.canvas.height;
-		this.x = this.width / 2;
-		this.y = this.height / 2;
+		this.x = this.context.canvas.width / 2;
+		this.y = this.context.canvas.height / 2;
 
 		this._dark = new Paperless.Drawables.Rectangle({...this._attributes.dark, ...{point: {x: this.x, y: this.y}, size: {width: this.context.canvas.width, height: this.context.canvas.height}}});
 		this._title = new Paperless.Drawables.Label({...this._attributes.title, ...{point: {x: this.x, y: this.y}}});
@@ -59,6 +78,8 @@ export class Popup extends Paperless.Component
 		this._control = new Paperless.Controls.Button({
 			movable: false,
 			callbackLeftClick: (resolve) => {
+				this.onClose(this);
+
 				this.context.detach([
 					this._title.guid,
 					this._detail.guid,
@@ -73,46 +94,40 @@ export class Popup extends Paperless.Component
 
 	public onResize(): void
 	{
+		const width: number = Math.max(this._title.width, this._attributes.width);
 		let height: number = 0;
-		
-		this.width = this.context.canvas.width;
-		this.height = this.context.canvas.height;
-		this.x = this.width / 2;
-		this.y = this.height / 2;
 
-		this._detail.x = this.x - (this._title.width / 2);
+		this.x = this.context.canvas.width / 2;
+		this.y = this.context.canvas.height / 2;
+
+		this._title.x = this.x - (width / 2);
+		this._title.y = this.y - (this._title.height / 2);
+
+		this._detail.x = this.x - (width / 2);
 		this._detail.y = this.y - (this._detail.height / 2);
 
-		let top = this._title.height + 20;
+		const top = this._title.height + 20;
 
 		if(this._title.content && this._detail.content)
 		{
 			height = top + this._detail.height;
 			this._detail.y = this.y + ((height / 2) - this._detail.height);
+			this._title.y = this.y - (height / 2);
 		}
-		else
-			height = top;
-
-		this._title.x = this.x - (this._title.width / 2);
-		this._title.y = this.y -  (height / 2);
 
 		this._dark.x = this.x;
 		this._dark.y = this.y;
 		this._dark.width = this.context.canvas.width;
 		this._dark.height = this.context.canvas.height;
 		this._dark.generate();
-
 	}
 
 	private generate(): number
 	{
 		this._title.generate();
 
-		let width: number = this._title.width;
+		const width: number = Math.max(this._title.width, this._attributes.width);
 		let height: number = 0;
-
-		if(!this._title.content)
-			width = this._attributes.width;
 
 		this._title.x = this.x - (width / 2);
 		this._title.y = this.y - (this._title.height / 2);
@@ -122,7 +137,7 @@ export class Popup extends Paperless.Component
 		this._detail.generate();
 		this._detail.y = this.y - (this._detail.height / 2);
 
-		let top = this._title.height + 20;
+		const top = this._title.height + 20;
 
 		if(this._title.content && this._detail.content)
 		{
@@ -136,22 +151,26 @@ export class Popup extends Paperless.Component
 		return height;
 	}
 
-	public open(): Promise<unknown>
+	public open(): Promise<void>
 	{
-		this.context.attach(this._dark);
+		const layer: number = Paperless.Layer.decode(this.guid);
+
+		this.context.attach(this._dark, layer);
 		if(this._title.content)
-			this.context.attach(this._title);
+			this.context.attach(this._title, layer);
 		if(this._detail.content)
-			this.context.attach(this._detail);
-		this.context.attach(this._control);
+			this.context.attach(this._detail, layer);
+		this.context.attach(this._control, layer);
 		this._control.attach(this._dark);
 		this._control.enabled = !this._attributes.noclick;
 
-		let height = this.generate();
+		const height = this.generate();
+
+		this.onOpen(this);
 
 		return new Promise((resolve, reject) => {
 			if(this._attributes.passthrough)
-				resolve(true);
+				resolve();
 			else
 			{
 				this._control.smugglerLeftClick = resolve;
@@ -194,6 +213,10 @@ export class Popup extends Paperless.Component
 		this._control.callbackLeftClick(this._control.smugglerLeftClick);
 		this.context.refresh();
 	}
+
+	public onOpen(self?: Popup): void {}
+
+	public onClose(self?: Popup): void {}
 
 
 

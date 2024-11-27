@@ -1,12 +1,12 @@
 import * as Paperless from '@zone09.net/paperless';
 import {IComponentWindowAttributes} from '../interfaces/IWindow.js';
+import {IComponentPuzzledEntity} from '../../puzzled/interfaces/IPuzzled.js';
 import {Close} from '../controls/Close.js';
 import {Header} from '../controls/Header.js';
-import {Background} from '../controls/Background.js';
-import {Assets} from '../../puzzled/drawables/Assets.js';
+import {Assets} from '../drawables/Assets.js';
 import {Puzzled} from '../../puzzled/components/Puzzled.js';
 import {EntityCoreControl} from '../../puzzled/controls/EntityCoreControl.js';
-import {EntityCoreDrawable} from '../../puzzled/drawables/EntityCoreDrawable.js';
+import {Form} from '../../form/components/Form.js';
 
 
 
@@ -18,10 +18,13 @@ export class Window extends Paperless.Component
 	private _close: Close;
 	private _attributes: IComponentWindowAttributes;
 	private _entities: Paperless.Group;
+	private _form: Form;
 	//---
 
 	public constructor(attributes: IComponentWindowAttributes = {})
 	{
+		const context: Paperless.Context = attributes.context;
+
 		super({
 			...{
 				size: {width: 512, height: 256},
@@ -33,92 +36,226 @@ export class Window extends Paperless.Component
 			...attributes, 
 			...{
 				linewidth: 1, 
-				nostroke: false 
+				nostroke: false,
+				context: null,
+				layer: null,
 			}
 		});
 
 		const {
-			padding = 5,
+			autoopen = false,
+			padding = {},
 			header = {},
 			rectangle = {},
 			close = {},
 			puzzled = {},
-			sticky= true,
+			sticky = true,
+			layer = null,
+
+			onOpen = null,
+			onClose = null,
+			onCancel = null,
+			onSubmit = null,
+			onNoSubmit = null,
 		} = attributes;
 
-		this.sticky = sticky;
 		this._attributes = {
-			padding: padding,
-			rectangle: {...{fillcolor: '#151515', strokecolor: '#815556', linewidth: 2}, ...rectangle, ...{sticky: sticky}},
-			header: {...{visible: true, padding: {top: 5, left: 5}, content:'Window', fillcolor: '#151515', strokecolor: '#151515', fillbackground: '#815556'}, ...header, ...{sticky: sticky, nostroke: false}},
-			close: {...{visible: true, content: Assets.delete, shadowcolor: '#151515', showdow: 5, hoverable: true, offset: {x: -2, y: 1}}, ...close, ...{sticky: sticky, autosize: true}},
-			puzzled: {...{spacing: 5}, ...puzzled, ...{sticky: sticky, expandable: false}}
+			padding: {...{top: 0, bottom: 0, left: 0, right: 0}, ...padding},
+			rectangle: {
+				...{
+					fillcolor: '#151515', 
+					strokecolor: '#815556', 
+					linewidth: 2
+				}, 
+				...rectangle, 
+				...{
+					sticky: sticky
+				}
+			},
+			header: {
+				...{
+					thickness: 26,
+					visible: true, 
+					padding: {top: 5, left: 5}, 
+					content:'Window', 
+					fillcolor: '#151515', 
+					strokecolor: '#151515', 
+					fillbackground: '#815556'
+				}, 
+				...header, 
+				...{
+					linewidth: 1,
+					sticky: sticky, 
+					nostroke: false
+				}
+			},
+			close: {
+				...{
+					visible: true, 
+					content: Assets.close, 
+					shadowcolor: '#151515', 
+					shadow: 5, 
+					hoverable: true, 
+					offset1: {x: 1, y: 1}
+				}, 
+				...close, 
+				...{
+					sticky: sticky, 
+					autosize: true
+				}
+			},
+			puzzled: {
+				...{
+					spacing: 0,
+					nostroke: true,
+				}, 
+				...puzzled, 
+				...{
+					sticky: sticky, 
+					expandable: false
+				}
+			}
 		}
+
+		this.sticky = sticky;
+
+		this._form = new Form();
+
+		onOpen ? this.onOpen = onOpen : null;
+		onClose ? this.onClose = onClose : null;
+		onCancel ? this.onCancel = onCancel : null;
+		onSubmit ? this._form.onSubmit = onSubmit : null;
+		onNoSubmit ? this._form.onNoSubmit = onNoSubmit : null;
+
+		context ? context.attach(this, layer) : null;
+
+		if(autoopen)
+			this.open().then(() => { this.onClose(this) });
 	}
 	
 	public onAttach(): void
 	{
-		let drawable: Paperless.Drawable;
-		let header: number = 0;
+		const layer: number = Paperless.Layer.decode(this.guid);
 
-		if(this._attributes.header.visible)
-			header = 26;
+		if(!this._attributes.header.visible)
+			this._attributes.header.thickness = 0;
 
-		this._entities = this.context.attach(new Paperless.Group());
-		this._background = this.context.attach(new Background());
+		this._entities = new Paperless.Group({
+			context: this.context,
+			layer: layer
+		});
 
-		this._puzzled = this.context.attach(new Puzzled({
+		this._puzzled = new Puzzled({
 			...this._attributes.puzzled,
 			...{
-				size: {width: this.width, height: this.height}
-			}
-		}));
-		this._puzzled.x = this.x - ((this._puzzled.width + this._attributes.puzzled.spacing) / 2);
-		this._puzzled.y = this.y - ((this._puzzled.height + this._attributes.puzzled.spacing) / 2) + (header / 2);
-
-		drawable = this.context.attach(new Paperless.Drawables.Rectangle({
-			...this._attributes.rectangle,
-			...{
-				point: {x: this.x, y: this.y},
+				point: {
+					x: this.x + this._attributes.padding.left, 
+					y: this.y + this._attributes.padding.top + this._attributes.header.thickness
+				},
 				size: {
-					width: this._puzzled.width + (this._attributes.padding * 2),
-					height: this._puzzled.height + (this._attributes.padding * 2) + header + (header > 0 ? 3 : 0)
+					width: this.width - this._attributes.padding.left - this._attributes.padding.right, 
+					height: this.height - this._attributes.padding.top - this._attributes.padding.bottom - this._attributes.header.thickness
 				}
-			}
-		}));
+			},
+			context: this.context,
+			layer: layer,
+		});
 
-		this._background.attach(drawable);
+		this._form.puzzled = this._puzzled;
+
+		this._background = new Paperless.Controls.Button({
+			context: this.context,
+			layer: layer,
+			movable: false,
+			drawable: new Paperless.Drawables.Rectangle({
+				...this._attributes.rectangle,
+				...{
+					context: this.context,
+					layer: layer,
+					point: {x: this.x, y: this.y},
+					size: {width: this.width, height: this.height},
+					offset1: {x: (this.width / 2), y: (this.height / 2)}
+				}
+			}),
+		});
+
 		this._entities.attach(this._background.drawable);
 
 		if(this._attributes.header.visible)
 		{
-			this._header = this.context.attach(new Header());
+			this._header = new Header({
+				context: this.context,
+				layer: layer,
+				drawable: new Paperless.Drawables.Label({
+					...this._attributes.header, 
+					...{
+						context: this.context,
+						layer: layer,
+						point: {x: this.x, y: this.y + (this._attributes.header.thickness / 2)},
+						size: {width: this.width - 3, height: this._attributes.header.thickness - 3},
+						offset1: {x: (this.width / 2), y: 0}
+					}
+				}),
+				onDragBegin: () => { 
+					const layer: number = Paperless.Layer.decode(this.guid);
 
-			drawable = this.context.attach(new Paperless.Drawables.Label({
-				...this._attributes.header, 
-				...{
-					point: {x: this.x, y: this.y},
-					size: {width: this._puzzled.width - 3 + (this._attributes.padding * 2), height: header},
-					offset: {x: 0, y: ((-this._puzzled.height) / 2) - this._attributes.padding}
+					this.puzzled.removeMarkerAll();
+
+					/*
+					this.context.getAllComponents()
+						.filter((component: Paperless.Component) => component instanceof Puzzled)
+						.forEach((puzzled: Puzzled) => {
+							puzzled.removeMarker();
+						});
+					*/
+
+					for(let drawable of this._puzzled.getDrawables())
+						drawable.toFront(Paperless.Enums.Restrict.norefresh);
+
+					this.context.getDrawables(layer).sort();
+					this.context.getControls(layer).reverse();
+					this.context.states.sorted = true
+				},
+				onDrag: () => {
+					this.x = this._background.drawable.x;
+					this.y = this._background.drawable.y;
+					this._puzzled.x = this._background.drawable.x + this._attributes.padding.left;
+					this._puzzled.y = this._background.drawable.y + + this._attributes.padding.top + this._attributes.header.thickness;
+				},
+				onDragEnd: () => {
+					this.x = this._background.drawable.x;
+					this.y = this._background.drawable.y;
+					this._puzzled.x = this._background.drawable.x + this._attributes.padding.left;
+					this._puzzled.y = this._background.drawable.y + + this._attributes.padding.top + this._attributes.header.thickness;
 				}
-			}));
-			this._header.attach(drawable);
+			});
+
 			this._entities.attach(this._header.drawable);
 
 			if(this._attributes.close.visible)
 			{
-				this._close = this.context.attach(new Close({
-					callbackLeftClick: () => { this.context.detach(this.guid); }
-				}));
-	
-				drawable = this.context.attach(new Paperless.Drawables.Artwork({
-					...this._attributes.close, 
-					...{
-						point: {x: this.x, y: this.y},
-						offset: {x: (this._background.drawable.width / 2) - 13 + this._attributes.close.offset.x, y: (-this._background.drawable.height / 2) + 13 + this._attributes.close.offset.y}
+				this._close = new Close({
+					context: this.context,
+					layer: layer,
+					drawable: new Paperless.Drawables.Artwork({
+						...this._attributes.close, 
+						...{
+							context: this.context,
+							layer: layer,
+							point: {x: this.x, y: this.y},
+							offset1: {
+								x: this._header.drawable.width + (this._header.drawable.linewidth * 2) - 
+									(this._attributes.header.thickness / 2) + this._attributes.close.offset1.x, 
+								y: (this._attributes.header.thickness / 2) - this._header.drawable.linewidth + this._attributes.close.offset1.y
+							}
+						}
+					}),
+					callbackLeftClick: () => { 
+						this.onCancel(this);
+						this.context.detach(this.guid);
 					}
-				}));
-				this._close.attach(drawable);
+				});
+
 				this._entities.attach(this._close.drawable);
 			}
 		}
@@ -130,7 +267,8 @@ export class Window extends Paperless.Component
 			this._entities.guid,
 			this._background.drawable.guid, 
 			this._background.guid, 
-			this._puzzled.guid
+			this._puzzled.guid,
+			this._form.guid
 		]);
 
 		if(this._attributes.header.visible)
@@ -150,19 +288,43 @@ export class Window extends Paperless.Component
 		}
 	}
 
-	public open(): Promise<any>
+	public open(): Promise<unknown>
 	{
+		const norefresh: boolean = this.context.states.norefresh;
+		
+		this.context.states.norefresh = true;
+		this.onOpen(this);
+
+		if(!norefresh)
+			this.context.states.norefresh = false;
+
 		return new Promise((resolve, reject) => {
-			resolve(null);
+			const submit: EntityCoreControl = this._form.getSubmit();
+
+			if(submit)
+			{
+				submit.onLeftClick = () => {
+					this._form.onSubmit(this._form).then(
+						(success) => { resolve(success); },
+						(error) => { this._form.onNoSubmit(error); }
+					);
+				}
+			}
 		});
 	}
+
+	public onOpen(self?: Window): void {}
+
+	public onClose(self?: Window): void {}
+
+	public onCancel(self?: Window): void {}
 
 	public close(): void
 	{
 		this.context.detach(this.guid, Paperless.Enums.Restrict.none);
 	}
 
-	public new(entities: Array<{point?: Paperless.Point, size?: Paperless.Size, control: typeof EntityCoreControl, drawable: typeof EntityCoreDrawable, attributes?: any, backdoor?: any, transpose?: boolean}>): EntityCoreControl
+	public new(entities: IComponentPuzzledEntity[]): EntityCoreControl
 	{
 		let control: EntityCoreControl;
 
@@ -176,15 +338,12 @@ export class Window extends Paperless.Component
 			control = this._puzzled.new([{
 				point: entity.point,
 				size: entity.size,
+				minimum: entity.minimum,
 				control: entity.control,
 				drawable: entity.drawable,
-				transpose: entity.transpose,
 				attributes: { ...attributes, ...{sticky: this.sticky} },
-				backdoor: entity.backdoor
+				backdoor: attributes.backdoor
 			}]);
-
-			if(control)
-				this._entities.attach(control.drawable);
 		}
 
 		return control;
@@ -199,4 +358,10 @@ export class Window extends Paperless.Component
 	{
 		return this._puzzled;
 	}
+
+	public get form(): Form
+	{
+		return this._form;
+	}
 }
+

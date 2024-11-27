@@ -20,12 +20,8 @@ export class Cursor extends Paperless.Drawables.Rectangle
 
 	public onAttach(): void
 	{
-	}
-
-	public on(): void
-	{
 		this.visible = true;
-		
+
 		if(this._blink)
 		{
 			this._id = setInterval(() => { 
@@ -39,14 +35,9 @@ export class Cursor extends Paperless.Drawables.Rectangle
 		}
 	}
 
-	public off(): void
-	{
-		this.visible = false;
-		clearInterval(this._id);
-	}
-
 	public onDetach(): void 
 	{
+		this.visible = false;
 		clearInterval(this._id);
 	}
 }

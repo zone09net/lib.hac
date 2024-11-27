@@ -7,9 +7,9 @@ import {EntityCoreControl as Control} from '../../puzzled/controls/EntityCoreCon
 
 export class EntityCoreControl extends Control
 {
-	public constructor(puzzled: Puzzled)
+	public constructor()
 	{
-		super(puzzled);
+		super();
 	}
 
 	public attachPalette(): void

@@ -1,6 +1,6 @@
 
 import * as Paperless from '@zone09.net/paperless';
-import * as HaC from '@zone09.net/hac';
+import * as HaC from './lib.hac.js';
 
 
 
@@ -8,6 +8,7 @@ const colors: Array<string> = ["#815556", "#436665", "#9a6c27", "#769050", "#c8a
 const context: Paperless.Context = new Paperless.Context({autosize: true});
 
 const popup: HaC.Components.Popup = new HaC.Components.Popup({
+	context: context,
 	dark: {
 		fillcolor: '#111111',
 	},
@@ -21,15 +22,48 @@ const popup: HaC.Components.Popup = new HaC.Components.Popup({
 			}
 		}
 	},
+	detail: {
+		content: 'Simply... simple!',
+		fillcolor: '#666666'
+	},
+	onOpen: (self: HaC.Components.Popup) => {
+		console.log('opened');
+
+					//popup.open().then(() => {
+					//	popup.childs.detail.content = '';
+					//	popup.childs.title.content = '';
+					//	popup.noclick = true;
+					//	popup.open();
+
+						const window: HaC.Components.Window = new HaC.Components.Window({
+							context: context,
+								onCancel: (selfa: HaC.Components.Window) => {
+									console.log('ksdh');
+									self.close();
+								},
+							});
+
+						window.open().then(() => { 
+							console.log('**',self);
+							self.close();
+							window.close();
+						});
+					//});
+	},
+	onClose: (self: HaC.Components.Popup) => {
+		console.log('closed');
+	},
+	noclick: true,
+	autoopen: true,
+	width: 100
 });
 
 context.attach(document.body);
-context.attach(popup);
-
+//context.attach(popup);
+/*
 popup.open().then(() => {
-	popup.childs.title.font = '40px CPMono-v07-Bold';
-	popup.open();
+	//popup.close();
 });
-
+*/
 
 

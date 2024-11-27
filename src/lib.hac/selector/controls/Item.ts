@@ -1,5 +1,6 @@
 import * as Paperless from '@zone09.net/paperless';
 import {Selector} from '../components/Selector.js';
+import {IControlItemAttributes} from '../interfaces/ISelector.js';
 
 
 
@@ -8,22 +9,35 @@ export class Item extends Paperless.Control
 	private _selector: Selector;
 	//---
 
-	public constructor()
+	public constructor(attributes: IControlItemAttributes = {})
 	{
-		super();
+		const context: Paperless.Context = attributes.context;
+		const drawable: Paperless.Drawable = attributes.drawable;
 
-		this.movable = false;
-		this.focusable = false;
+		super({
+			...attributes,
+			  ...{
+			  	  movable: false,
+			  	  focusable: false,
+			  	  context: null,
+			  	  drawable: null,
+			  }
+		});
+
+		const {
+			onBeforeSelection = null,
+			onSelection = null,
+			onAfterSelection = null,
+			layer = null
+		} = attributes;
+
+		onBeforeSelection ? this.onBeforeSelection = onBeforeSelection : null;
+		onSelection  ? this.onSelection  = onSelection  : null;
+		onAfterSelection ? this.onAfterSelection = onAfterSelection : null;
+
+		context ? context.attach(this, layer) : null;
+		drawable ? this.attach(drawable) : null;
 	}
-
-	public onLoading(): Promise<unknown>
-	{
-		return new Promise((resolve, reject) => {
-			resolve(null);
-		})
-	}
-
-	public onLoaded(): void {}
 
 	public onLeftClick(): void 
 	{
