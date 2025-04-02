@@ -72,16 +72,16 @@ export class Puzzled extends Paperless.Component
 			drawable: drawable,
 			color: {
 				...{
-					fill: '#000000',
-					stroke: '#666666',
-					marked: '#c8af55',
-					iconshadow: '#ffffff',
-					move: '#00ff00',
-					nomove: '#c22a1f',
-					sizer: '#666666',
-					splitter: '#666666',
-					highlight: '#ffffff',
-					faked: '#000000',
+					fill: '#000000', 
+					stroke: '#815556', 
+					marked: '#815556', 
+					iconshadow: '#815556',
+					move: '#476e20',
+					nomove: '#6e2020', 
+					sizer: '#436665', 
+					splitter: '#436665', 
+					highlight: '#ffffff', 
+					faked: '#151515'
 				},
 				...color
 			}

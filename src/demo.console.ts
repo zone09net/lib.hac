@@ -48,15 +48,17 @@ class Console extends Paperless.Component
 
 	private editable(): void
 	{
+		let instring: number = 0;
+
 		this.enroll(
 			new HaC.Components.Editable({
 				context: this.context,
-				point: {x: 16, y: 16},
-				size: {width: window.innerWidth - 32, height: window.innerHeight - 32},
+				point: {x: 8, y: 8},
+				size: {width: window.innerWidth - 16, height: window.innerHeight - 16},
 				maxline: 3, 
 				label: {
 					content: '> ',
-					font: '12px CPMono-v07-Light',
+					font: '14px CPMono-v07-Light',
 					padding: {top: 5, left: 5, right: 8},
 					fillcolor: '#999999',
 					wrapping: true,
@@ -163,6 +165,9 @@ class Console extends Paperless.Component
 		
 					if(self.position.cursor.column > 2)
 					{
+						if(self.content[self.position.global - 1] == '"' || self.content[self.position.global - 1] == "'")
+							instring ^= 1;
+
 						self.removeStringAt(self.position.global - 1, self.position.global);
 						self.moveLeft(1);
 						self.update();
@@ -172,12 +177,19 @@ class Console extends Paperless.Component
 				onEnter: (event: HTMLElementEventMap['keydown'], self: HaC.Components.Editable) => {
 					event.preventDefault();
 		
-					const splitted: string[] = self.childs.label.contentAs.splitted[self.position.cursor.row].substring(2).trim().replace(/\s+/gm,' ').split(' ');
+					if(instring == 1)
+						return;
+
+					let splitted: string[] = self.childs.label.contentAs.splitted[self.position.cursor.row].substring(2).trim().replace(/\s+/gm,' ').split(/ |("[^"]+")|('[^']+')/);
 					let hop: string = 'root';
 					let current: any = undefined;
 					let placeholders: any = {};
 					let query: string = '';
-					let route: string;
+					let route: string;			
+
+					splitted = splitted.filter((word) => {
+						return word !== undefined && word !== '';
+					});
 
 					for(let i: number = 0; i < splitted.length; i++)
 					{
@@ -190,11 +202,11 @@ class Console extends Paperless.Component
 								if(current[j].name ==  'end')
 									route = current[j].catalog;
 
-								if((splitted[i] == current[j].name) || (current[j].name ==  '?' && splitted[i]))
+								if((splitted[i] == current[j].name) || (current[j].name == '?' && splitted[i]))
 								{
 									if(current[j].name ==  '?')
 									{
-										placeholders[current[j].brief] = splitted[i];
+										placeholders[current[j].brief] = splitted[i].replace(/^["']|["']$/g, '');
 										splitted[i] = '?';
 									}
 
@@ -267,6 +279,16 @@ class Console extends Paperless.Component
 		
 					if(self.isInsertable(1) && self.restrict.test(event.key))
 					{
+						if(event.key == '"' || event.key == "'")
+							instring ^= 1;
+
+						/*
+						if(instring == 1)
+							self.childs.label.filter[self.position.cursor.row][self.position.cursor.column] = {fillcolor: '#666666'};
+						else
+							self.childs.label.filter[self.position.cursor.row][self.position.cursor.column + 1] = {fillcolor: '#999999'};
+						*/
+
 						self.insertStringAt(event.key, self.position.global)
 						self.moveRight(1);
 						self.update();
@@ -279,39 +301,53 @@ class Console extends Paperless.Component
 					let min: number;
 					let max: number;
 		
+					if(instring == 1)
+						return;
+
 					function help(current: any[], query: string = '')
 					{
 						if(!current)
 							return;
 		
-						let append: string = '\n';
-						
-						for(let j: number = 0; j < current.length; j++)
+						if(current.length == 1 && current[0].name != '?')
 						{
-							append += current[j].name.padEnd(20, ' ');
-							append += current[j].brief.padEnd(50, ' ');
-							append += '\n';
+							self.insertStringAt(((self.childs.label.contentAs.splitted[self.position.cursor.row]).slice(-1) == ' ' ? '' : ' ') + current[0].name, self.position.global);
+							self.moveLast();
 						}
-		
-						self.insertStringAt(append + '> ' + query, self.position.global);
-						self.moveLast();
-		
-						min = self.position.cursor.row + 1;
-						max = self.position.cursor.row + current.length + 1;
+						else
+						{
+							let append: string = '\n';
+							
+							for(let j: number = 0; j < current.length; j++)
+							{
+								append += current[j].name.padEnd(20, ' ');
+								append += current[j].brief.padEnd(50, ' ');
+								append += '\n';
+							}
+
+							self.insertStringAt(append + '> ' + query, self.position.global);
+							self.moveLast();
+			
+							min = self.position.cursor.row + 1;
+							max = self.position.cursor.row + current.length + 1;
+						}
 					}
 		
 					self.moveLast();
-		
+
 					if(self.childs.label.contentAs.splitted[self.position.cursor.row] == '> ')
 						help(this._catalog['root']);
-		
 					else
 					{
-						const splitted: string[] = self.childs.label.contentAs.splitted[self.position.cursor.row].replace(/\s+/gm,' ').split(' ');
+						let splitted: string[] = self.childs.label.contentAs.splitted[self.position.cursor.row].replace(/\s+/gm,' ').split(/ |("[^"]+")|('[^']+')/);
 						let hop: string = 'root';
 						let current: any = undefined;
 						let incomplete: boolean = false;
 		
+						splitted = splitted.filter((word) => {
+							return word !== undefined && word !== '';
+						});
+	
 						// remove '> ' at the beginning
 						splitted.shift();
 		
@@ -333,7 +369,7 @@ class Console extends Paperless.Component
 											hop = current[j].next.replace(/\/([0-9]+)/, (a: any, b: any) => { return '/' + splitted[b]; });
 										else
 											hop = undefined;
-		
+
 										break;
 									}
 								}
@@ -341,15 +377,15 @@ class Console extends Paperless.Component
 						}
 		
 						if(!incomplete)
-							help(this._catalog[hop], (self.childs.label.contentAs.splitted[self.position.cursor.row] + ' ').replace(/^> /,''));
+							help(this._catalog[hop], (self.childs.label.contentAs.splitted[self.position.cursor.row] + ' ').replace(/^> /,'').replace(/\s+$/, ' '));
 						else
 						{
 							current = this._catalog[hop];
-		
+
 							if(current)
 							{
 								let list: any = [];
-		
+
 								for(let j: number = 0; j < current.length; j++)
 								{
 									const regex: RegExp = new RegExp('^' + splitted[splitted.length - 1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
@@ -366,12 +402,12 @@ class Console extends Paperless.Component
 									{
 										const incomplete: string = list[0].name.substring(splitted[splitted.length - 1].length);
 			
-										self.insertStringAt(incomplete + ' ' , self.position.global);
+										self.insertStringAt(incomplete + ' ', self.position.global);
 										self.moveLast();
 									}
 								}
 								else if(list.length > 1)
-									help(list, self.childs.label.contentAs.splitted[self.position.cursor.row].replace(/^> /,''));
+									help(list, (self.childs.label.contentAs.splitted[self.position.cursor.row] + '').replace(/^> /,''));
 							}
 						}
 					}

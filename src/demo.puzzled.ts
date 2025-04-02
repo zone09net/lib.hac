@@ -23,15 +23,16 @@ let puzzled1: HaC.Components.Puzzled = new HaC.Components.Puzzled({
 	shadow: 5,
 	alpha: 0.1,
 	color: {
-		fill: '#000000',
-		stroke: '#666666',
-		//marked: '#ddbb44',
-		move: '#9047a4',
-		nomove: '#ff0000',
-		sizer: '#666666',
-		splitter: '#ffffff',
-		highlight: '#ffffff',
-		faked: '#151515',
+		fill: '#000000', 
+		stroke: '#815556', 
+		marked: '#815556', 
+		iconshadow: '#815556',
+		move: '#476e20',
+		nomove: '#6e2020', 
+		sizer: '#436665', 
+		splitter: '#436665', 
+		highlight: '#ffffff', 
+		faked: '#151515'
 	}
 });
 

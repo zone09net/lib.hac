@@ -7,6 +7,47 @@ import * as HaC from './lib.hac.js';
 const context: Paperless.Context = new Paperless.Context({autosize: true});
 const colors: Array<string> = ["#815556", "#436665", "#9a6c27", "#769050", "#c8af55"];
 
+
+
+new HaC.Components.Window({
+	context: context,
+	layer: 6,
+	autoopen: true,
+	point: {x: 400, y: 400},
+	size: {width: 256, height: 256},
+	header: {
+		font: '13px CPMono-v07-Bold',
+		content: 'window 1',
+		padding: {left: 5, top: 3}
+	},
+});
+
+new HaC.Components.Window({
+	context: context,
+	layer: 6,
+	autoopen: true,
+	point: {x: 500, y: 300},
+	size: {width: 256, height: 256},
+	header: {
+		font: '13px CPMono-v07-Bold',
+		content: 'window 2',
+		padding: {left: 5, top: 3}
+	},
+});
+
+new HaC.Components.Window({
+	context: context,
+	layer: 6,
+	autoopen: true,
+	point: {x: 600, y: 200},
+	size: {width: 256, height: 256},
+	header: {
+		font: '13px CPMono-v07-Bold',
+		content: 'window 3',
+		padding: {left: 5, top: 3}
+	},
+});
+
 new HaC.Components.Window({
 	context: context,
 	layer: 5,

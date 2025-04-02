@@ -10,7 +10,7 @@ const context: Paperless.Context = new Paperless.Context({autosize: true});
 const popup: HaC.Components.Popup = new HaC.Components.Popup({
 	context: context,
 	dark: {
-		fillcolor: '#111111',
+		fillcolor: '#0b0b0b',
 	},
 	title: { 
 		content: 'paperless',
@@ -27,6 +27,7 @@ const popup: HaC.Components.Popup = new HaC.Components.Popup({
 		fillcolor: '#666666'
 	},
 	onOpen: (self: HaC.Components.Popup) => {
+		/*
 		console.log('opened');
 
 					//popup.open().then(() => {
@@ -49,20 +50,22 @@ const popup: HaC.Components.Popup = new HaC.Components.Popup({
 							window.close();
 						});
 					//});
+		*/
 	},
 	onClose: (self: HaC.Components.Popup) => {
-		console.log('closed');
+		//console.log('closed');
 	},
-	noclick: true,
+	noclick: false,
 	autoopen: true,
 	width: 100
 });
 
 context.attach(document.body);
 //context.attach(popup);
+
 /*
 popup.open().then(() => {
-	//popup.close();
+	popup.close();
 });
 */
 
