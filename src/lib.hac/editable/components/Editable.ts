@@ -500,6 +500,16 @@ export class Editable extends Paperless.Component
 		}
 	}
 
+	public moveHome(): void
+	{
+		this._position.global = 0;
+	}
+
+	public moveEnd(): void
+	{
+		this._position.global = this._label.content.length;
+	}
+
 	public isInsertable(length: number): boolean
 	{
 		return this._attributes.maxchar != 0 ? this._label.content.length + length <= this._attributes.maxchar : true;
@@ -655,7 +665,7 @@ export class Editable extends Paperless.Component
 
 	private onCtrlHome(event: HTMLElementEventMap['keydown'], self: Editable)
 	{
-		self._position.global = 0;
+		self.moveHome();
 		self.update(false);
 
 		event.preventDefault();
@@ -671,7 +681,7 @@ export class Editable extends Paperless.Component
 
 	private onCtrlEnd(event: HTMLElementEventMap['keydown'], self: Editable)
 	{
-		self._position.global = self._label.content.length + 1;
+		self.moveEnd();
 		self.update(false);
 
 		event.preventDefault();
