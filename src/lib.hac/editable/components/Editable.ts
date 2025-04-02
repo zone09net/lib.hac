@@ -20,6 +20,7 @@ export class Editable extends Paperless.Component
 	private _Cbackground: Background;
 	private _interaction: Interaction;
 	private _position: {global: number, cursor: {row: number, column: number}} = {global: 0, cursor: {row: 0, column: 0}};
+	private _content: string = '';
 	//---
 
 	// @ts-ignore
@@ -54,6 +55,7 @@ export class Editable extends Paperless.Component
 			customgenerate = true,
 			label = {},
 			cursor = {},
+			password = false,
 			/*
 			{
 				0: { 
@@ -104,7 +106,8 @@ export class Editable extends Paperless.Component
 				...{ width: 2, blink: true, fillcolor: '#ddbb44' }, 
 				...cursor, 
 				...{ sticky: sticky} 
-			}
+			},
+			password: password
 		};
 
 		this._keyboard.setKeydownCallbacks(
@@ -421,7 +424,9 @@ export class Editable extends Paperless.Component
 
 	public clear(): void
 	{
+		this._content = '';
 		this._label.content = '';
+		this._position.global = 0;
 		this.update();
 	}
 
@@ -502,11 +507,20 @@ export class Editable extends Paperless.Component
 
 	public insertStringAt(string: string, index: number): void
 	{
+		if(this._attributes.password)
+		{
+			this._content = this._content.substring(0, index) + string + this._content.substr(index);
+			string = '●'.repeat(string.length);
+		}
+		
 		this._label.content = this._label.content.substring(0, index) + string + this._label.content.substr(index);
 	}
 
 	public removeStringAt(from: number, end: number)
 	{
+		if(this._attributes.password)
+			this._content = this._content.slice(0, from) + this._content.slice(end);
+
 		this._label.content = this._label.content.slice(0, from) + this._label.content.slice(end);
 	}
 
@@ -709,11 +723,20 @@ export class Editable extends Paperless.Component
 
 	get content(): string
 	{
-		return this._label.content;
+		if(this._attributes.password)
+			return this._content;
+		else
+			return this._label.content;
 	}
 	set content(content: string)
 	{
-		this._label.content = content;
+		if(this._attributes.password)
+		{
+			this._content = content;
+			this._label.content = content;
+		}
+		else
+			this._label.content = content;
 	}
 
 	get position(): {global: number, cursor: {row: number, column: number}}

@@ -20,6 +20,7 @@ export interface IComponentEditableAttributes extends Paperless.Interfaces.IComp
 	customgenerate?: boolean,
 	label?: Paperless.Interfaces.IDrawableLabelAttributes,
 	cursor?: IDrawableCursorAttributes,
+	password?: boolean,
 
 	onEscape?: (event: HTMLElementEventMap['keydown'], self: Editable) => void,
 	onKey?: (event: HTMLElementEventMap['keydown'], self: Editable) => void,

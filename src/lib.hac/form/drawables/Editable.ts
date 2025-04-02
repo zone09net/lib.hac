@@ -26,6 +26,7 @@ export class Editable extends EntityCoreDrawable
 			restrict = /./,
 			label = {},
 			cursor = {},
+			password = false
 		} = attributes;
 
 		this._editable = new Child({
@@ -58,7 +59,8 @@ export class Editable extends EntityCoreDrawable
 					offset2: {x: this.puzzled.spacing, y: this.puzzled.spacing},
 					matrix: this.matrix
 				}
-			}
+			},
+			password: password
 		});
 
 		this.context.enroll(this._editable);

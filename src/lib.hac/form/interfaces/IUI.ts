@@ -20,7 +20,8 @@ export interface IDrawableUIEditableAttributes extends IEntityCoreDrawableAttrib
 	maxline?: number,
 	restrict?: RegExp,
 	label?: Paperless.Interfaces.IDrawableLabelAttributes,
-	cursor?: IDrawableCursorAttributes
+	cursor?: IDrawableCursorAttributes,
+	password?: boolean
 }
 
 export interface IDrawableUILabelAttributes extends IEntityCoreDrawableAttributes

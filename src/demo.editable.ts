@@ -64,7 +64,8 @@ const editable2: HaC.Components.Editable = new HaC.Components.Editable({
 		alpha: 0.5,
 		width: 9
 	},
-	customlabel: label
+	customlabel: label,
+	password: true
 });
 
 
