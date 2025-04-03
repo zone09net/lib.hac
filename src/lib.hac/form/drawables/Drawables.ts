@@ -13,4 +13,4 @@ export {Codemirror} from './Codemirror.js';
 export {Gantt} from './Gantt.js';
 export {Mindmap} from './Mindmap.js';
 export {Whiteboard} from './Whiteboard.js';
-
+export {Console} from './Console.js';

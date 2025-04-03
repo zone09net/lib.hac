@@ -62,6 +62,10 @@ export class Form extends Paperless.Component
 			field: template.field ? template.field : {},
 			dropzone: template.dropzone ? template.dropzone : {},
 			drawio: template.drawio ? template.drawio : {},
+			gantt: template.gantt ? template.gantt : {},
+			mindmap: template.mindmap ? template.mindmap : {},
+			whiteboard: template.whiteboard ? template.whiteboard : {},
+			console: template.console ? template.console : {},
 		}
 	}
 
@@ -369,6 +373,23 @@ export class Form extends Paperless.Component
 					attributes: this.merge(this._template.whiteboard, entity.attributes),
 					control: entity.control || Controls.Whiteboard,
 					drawable: entity.drawable || Drawables.Whiteboard,
+				}
+			});
+		}
+
+		return this;
+	}
+
+	public console(entities: IComponentPuzzledEntity[]): Form
+	{
+		for(let entity of entities)
+		{
+			this._last = this.new({
+				...entity,
+				...{
+					attributes: this.merge(this._template.console, entity.attributes),
+					control: entity.control || Controls.Editable,
+					drawable: entity.drawable || Drawables.Console,
 				}
 			});
 		}

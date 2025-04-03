@@ -14,6 +14,7 @@ export {IDrawableUICodemirrorAttributes} from './IUI.js';
 export {IDrawableUIGanttAttributes} from './IUI.js';
 export {IDrawableUIMindmapAttributes} from './IUI.js';
 export {IDrawableUIWhiteboardAttributes} from './IUI.js';
+export {IDrawableUIConsoleAttributes} from './IUI.js';
 export {IDropzoneFile} from './IUI.js';
 export {IDrawio} from './IUI.js';
 export {IGantt} from './IUI.js';

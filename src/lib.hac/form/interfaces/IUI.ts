@@ -1,4 +1,5 @@
 import * as Paperless from '@zone09.net/paperless';
+import * as Foundation from '@zone09.net/foundation';
 import {IEntityCoreDrawableAttributes} from '../../puzzled/interfaces/IPuzzled.js';
 import {IComponentEditableAttributes} from '../../editable/interfaces/IEditable.js';
 import {IDrawableCursorAttributes} from '../../editable/interfaces/IEditable.js';
@@ -106,6 +107,20 @@ export interface IDrawableUIWhiteboardAttributes extends IEntityCoreDrawableAttr
 	board?: string
 	content?: string,
 	artwork?: Paperless.Interfaces.IDrawableArtworkAttributes
+}
+
+export interface IDrawableUIConsoleAttributes extends IDrawableUIEditableAttributes
+{
+	wss?: Foundation.WebSocketSecure,
+	catalog?: any,
+	palette?: {
+		grey1?: string,
+		grey2?: string,
+		grey3?: string,
+		red?: string,
+		green?: string,
+		yellow?: string
+	}
 }
 
 export interface IDropzoneFile
@@ -252,6 +267,7 @@ export interface IFormUITemplate
 	gantt?: IDrawableUIGanttAttributes,
 	mindmap?: IDrawableUIMindmapAttributes,
 	whiteboard?: IDrawableUIWhiteboardAttributes,
+	console?: IDrawableUIConsoleAttributes,
 	//codemirror?: IDrawableUICodemirrorAttributes
 }
 

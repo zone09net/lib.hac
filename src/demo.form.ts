@@ -7,7 +7,7 @@ const context: Paperless.Context = new Paperless.Context({autosize: true});
 const puzzled: HaC.Components.Puzzled = new HaC.Components.Puzzled({
 	context: context,
 	point: {x: 16, y: 16},
-	size: {width: 512, height: 768},
+	size: {width: window.innerWidth, height: window.innerHeight - 32},
 	hop: 32, 
 	expandable: false,
 	nofill: false,
@@ -273,6 +273,15 @@ form
 		{
 			name: 'witeboard',
 			size: new Paperless.Size(128, 128),
+			attributes: {
+				strokecolor: '#436665',
+				fillcolor: '#000000'
+			}
+		}
+	])
+	.console([
+		{
+			size: new Paperless.Size(512, 192),
 			attributes: {
 				strokecolor: '#436665',
 				fillcolor: '#000000'
