@@ -7,6 +7,9 @@ import {Editable as Drawable} from '../drawables/Editable.js'
 
 export class Editable extends EntityCoreControl
 {
+	private _cursor: boolean;
+	//---
+
 	public constructor(attributes: IEntityCoreControlAttributes)
 	{
 		const {
@@ -31,6 +34,8 @@ export class Editable extends EntityCoreControl
 				stackable: stackable,
 			}
 		});
+
+		this._cursor = false;
 	}
 
 	public onCancel(): void 
@@ -62,10 +67,11 @@ export class Editable extends EntityCoreControl
 	{
 		(<Drawable>this.drawable).childs.editable.update(false);
 
-		if((<Drawable>this.drawable).childs.editable.childs.cursor)
+		if(!this._cursor)
 		{
 			this.context.attach((<Drawable>this.drawable).childs.editable.childs.cursor, Paperless.Layer.decode(this.guid));
 			(<Drawable>this.drawable).childs.editable.childs.cursor.matrix = (<Drawable>this.drawable).matrix;
+			this._cursor = true;
 		}
 
 		(<Drawable>this.drawable).childs.editable.childs.element.focus();
@@ -73,8 +79,11 @@ export class Editable extends EntityCoreControl
 
 	public onUnmarked(): void
 	{
-		if((<Drawable>this.drawable).childs.editable.childs.cursor)
+		if(this._cursor)
+		{
 			this.context.detach((<Drawable>this.drawable).childs.editable.childs.cursor.guid);
+			this._cursor = false;
+		}
 
 		(<Drawable>this.drawable).childs.editable.childs.element.blur();
 	}
