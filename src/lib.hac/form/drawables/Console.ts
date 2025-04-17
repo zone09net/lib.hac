@@ -355,7 +355,7 @@ export class Console extends EntityCoreDrawable
 								}
 
 								if(current[j].next)
-									hop = current[j].next.replace(/\/([0-9]+)/, (a: any, b: any) => { return '/' + splitted[b]; });
+									hop = current[j].next.replace(/\/([0-9]+)/g, (a: any, b: any) => { return '/' + splitted[b]; });
 								else
 									hop = undefined;
 
@@ -488,7 +488,7 @@ export class Console extends EntityCoreDrawable
 									incomplete = false;
 
 									if(current[j].next)
-										hop = current[j].next.replace(/\/([0-9]+)/, (a: any, b: any) => { return '/' + splitted[b]; });
+										hop = current[j].next.replace(/\/([0-9]+)/g, (a: any, b: any) => { return '/' + splitted[b]; });
 									else
 										hop = undefined;
 
