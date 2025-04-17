@@ -10,7 +10,7 @@ const context: Paperless.Context = new Paperless.Context({autosize: true});
 const palette: HaC.Components.Palette = new HaC.Components.Palette(
 	{
 		point: {x: window.innerWidth / 2, y: window.innerHeight / 2},
-		callback: (fillcolor: string, strokecolor: string) => {
+		onColor: (fillcolor: string, strokecolor: string) => {
 			console.log('fillcolor', fillcolor, 'strokecolor', strokecolor);
 		}
 	}
