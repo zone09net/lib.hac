@@ -514,14 +514,14 @@ export class Form extends Paperless.Component
 		while(args.length > 0) 
 		{
 			sources = args.splice(0, 1)[0];
-	  
+
 			if(toString.call(sources) == '[object Object]') 
 			{
 				for(let property in sources) 
 				{
 					if(sources.hasOwnProperty(property)) 
 					{
-						if(toString.call(sources[property]) == '[object Object]')
+						if(toString.call(sources[property]) == '[object Object]' && !Object.getPrototypeOf(sources[property]).constructor.toString().includes('class'))
 							destination[property] = this.merge(destination[property] || {}, sources[property]);
 						else
 							destination[property] = sources[property];
