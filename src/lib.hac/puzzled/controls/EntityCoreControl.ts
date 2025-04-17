@@ -118,6 +118,8 @@ export class EntityCoreControl extends Paperless.Control
 			(Math.round((this._pointCurrent.x - this.context.states.pointer.dragdiff.x) / this._puzzled.hop) * this._puzzled.hop),
 			(Math.round((this._pointCurrent.y - this.context.states.pointer.dragdiff.y) / this._puzzled.hop) * this._puzzled.hop)
 		);
+		this._pointCurrent.x /= window.devicePixelRatio * this.context.scale;
+		this._pointCurrent.y /= window.devicePixelRatio * this.context.scale;
 
 		const guid: string = this._puzzled.getGuid(new Paperless.Point(this._pointCurrent.x, this._pointCurrent.y), [this.guid]);
 
