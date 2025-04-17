@@ -8,17 +8,13 @@ export class Separator extends EntityCoreDrawable
 {
 	private _line: Paperless.Drawables.Line;
 	private _padding: number;
+	private _direction: Paperless.Enums.Direction.vertical | Paperless.Enums.Direction.horizontal;
 	//---
 
 	public constructor(attributes: IDrawableUISeparatorAttributes = {})
 	{
-		super({
-			...{
-				nofill: true,
-				nostroke: true
-			},
-			...attributes
-		});
+		super(attributes);
+		
 		const {
 			padding = 0,
 		} = attributes;
@@ -26,11 +22,11 @@ export class Separator extends EntityCoreDrawable
 		this._padding = padding;
 		this._line = new Paperless.Drawables.Line({
 			...{
-				linewidth: 4
+				linewidth: 4,
+				strokecolor: this.strokecolor,
 			}, 
 			...attributes.line, 
 			...{
-				strokecolor: this.strokecolor,
 				point0: {x: this.x, y: this.y},
 				point1: {x: this.x, y: this.y},
 				hoverable: false, 
@@ -57,11 +53,13 @@ export class Separator extends EntityCoreDrawable
 		{
 			this._line.point0 = new Paperless.Point(this.x - (this.width / 2) + this._padding, this.y - (this.puzzled.spacing / 2));
 			this._line.point1 = new Paperless.Point(this.x + (this.width / 2) - this._padding - this.puzzled.spacing, this.y - (this.puzzled.spacing / 2));
+			this._direction = Paperless.Enums.Direction.horizontal;
 		}
 		else
 		{
 			this._line.point0 = new Paperless.Point(this.x - (this.puzzled.spacing / 2), this.y - (this.height / 2) + this._padding);
 			this._line.point1 = new Paperless.Point(this.x - (this.puzzled.spacing / 2), this.y + (this.height / 2) - this._padding - this.puzzled.spacing);
+			this._direction = Paperless.Enums.Direction.vertical;
 		}
 
 		this._line.generate();
@@ -89,5 +87,10 @@ export class Separator extends EntityCoreDrawable
 	public set padding(padding: number)
 	{
 		this._padding = padding;
+	}
+
+	public get direction(): Paperless.Enums.Direction.vertical | Paperless.Enums.Direction.horizontal
+	{
+		return this._direction;
 	}
 }
