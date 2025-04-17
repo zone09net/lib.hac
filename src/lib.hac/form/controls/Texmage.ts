@@ -35,7 +35,7 @@ export class Texmage extends EntityCoreControl
 		});
 	}
 
-	public onIconsRefresh(): void
+	public onIconsRefresh(self?: EntityCoreControl): void
 	{
 		const pointBottomLeft: Paperless.Point = new Paperless.Point(this.drawable.x + this.puzzled.spacing + 9, this.drawable.y + this.drawable.height);
 

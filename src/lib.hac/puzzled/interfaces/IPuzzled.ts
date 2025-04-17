@@ -74,6 +74,23 @@ export interface IEntityCoreControlAttributes extends Paperless.Interfaces.ICont
 	splittable?: boolean;
 	stackable?: boolean;
 	minimum?: {width?: number, height?: number},
+
+	onLoading?: (self?: EntityCoreControl) => Promise<unknown>,
+	onLoaded?: (self?: EntityCoreControl) => void,
+	onRemoving?: (self?: EntityCoreControl) => Promise<unknown>,
+	onRemoved?: (self?: EntityCoreControl) => void,
+	onMoving?: (point: Paperless.Point, self?: EntityCoreControl) => Promise<unknown>,
+	onMoved?: (point: Paperless.Point, self?: EntityCoreControl) => void,
+	onSwapping?: (point: Paperless.Point, self?: EntityCoreControl) => Promise<unknown>,
+	onSwapped?: (point: Paperless.Point, self?: EntityCoreControl) => void,
+	onMarked?: (self?: EntityCoreControl) => void,
+	onUnmarked?: (self?: EntityCoreControl) => void,
+	onSplitted?: (self?: EntityCoreControl) => void,
+	onExpanded?: (self?: EntityCoreControl) => void,
+	onShrinked?: (self?: EntityCoreControl) => void,
+	onIconsDefault?: (self?: EntityCoreControl) => void,
+	onIconsRefresh?: (self?: EntityCoreControl) => void,
+	onCancel?: (self?: EntityCoreControl) => void,
 }
 
 export interface IComponentPuzzledEntity 

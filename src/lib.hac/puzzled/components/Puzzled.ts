@@ -257,7 +257,7 @@ export class Puzzled extends Paperless.Component
 		{
 			if(this._entities[guid].removable)
 			{
-				const promise = this._entities[guid].onRemoving();
+				const promise = this._entities[guid].onRemoving(this._entities[guid]);
 
 				promise.then(
 					success => {
@@ -265,7 +265,7 @@ export class Puzzled extends Paperless.Component
 							this._marker = null;
 			
 						this.context.detach(this._entities[guid].drawable.guid);
-						this._entities[guid].onRemoved();
+						this._entities[guid].onRemoved(this._entities[guid]);
 						this.context.detach(this._entities[guid].guid);
 						delete this._entities[guid];
 
@@ -295,7 +295,7 @@ export class Puzzled extends Paperless.Component
 
 		this._marker = guid;
 		(<EntityCoreDrawable>control.drawable).generate(control.expandable);
-		control.onMarked();
+		control.onMarked(control);
 	}
 
 	public getMarker(): string
@@ -320,7 +320,7 @@ export class Puzzled extends Paperless.Component
 					{
 						this.detach(this.getIcons());
 						control.drawable.generate();
-						control.onUnmarked();
+						control.onUnmarked(control);
 					}
 				}
 			});
@@ -335,7 +335,7 @@ export class Puzzled extends Paperless.Component
 			{
 				this.detach(this.getIcons());
 				control.drawable.generate();
-				control.onUnmarked();
+				control.onUnmarked(control);
 			}
 		}
 	}
@@ -507,9 +507,9 @@ export class Puzzled extends Paperless.Component
 				});
 			}
 
-			control.onLoading().then(
+			control.onLoading(control).then(
 				success => {
-					control.onLoaded();
+					control.onLoaded(control);
 				},
 				error => {}
 			);
@@ -614,7 +614,7 @@ export class Puzzled extends Paperless.Component
 		this._entities[guid].drawable.x += this._attributes.hop;
 		this._entities[guid].drawable.width -= this._attributes.hop;
 		this._entities[guid].drawable.generate();
-		this._entities[guid].onSplitted();
+		this._entities[guid].onSplitted(this._entities[guid]);
 
 		this.new([data]);
 	}
@@ -632,7 +632,7 @@ export class Puzzled extends Paperless.Component
 
 		this._entities[guid].drawable.width -= this._attributes.hop;
 		this._entities[guid].drawable.generate();
-		this._entities[guid].onSplitted();
+		this._entities[guid].onSplitted(this._entities[guid]);
 
 		this.new([data]);
 	}
@@ -651,7 +651,7 @@ export class Puzzled extends Paperless.Component
 		this._entities[guid].drawable.y += this._attributes.hop;
 		this._entities[guid].drawable.height -= this._attributes.hop;
 		this._entities[guid].drawable.generate();
-		this._entities[guid].onSplitted();
+		this._entities[guid].onSplitted(this._entities[guid]);
 
 		this.new([data]);
 	}
@@ -669,7 +669,7 @@ export class Puzzled extends Paperless.Component
 
 		this._entities[guid].drawable.height -= this._attributes.hop;
 		this._entities[guid].drawable.generate();
-		this._entities[guid].onSplitted();
+		this._entities[guid].onSplitted(this._entities[guid]);
 
 		this.new([data]);
 	}
@@ -749,7 +749,7 @@ export class Puzzled extends Paperless.Component
 			this._entities[guid].drawable.x -= this._attributes.hop;
 			this._entities[guid].drawable.width += this._attributes.hop;
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onExpanded();
+			this._entities[guid].onExpanded(this._entities[guid]);
 		}
 	}
 
@@ -766,7 +766,7 @@ export class Puzzled extends Paperless.Component
 		if(expanded)
 		{
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onExpanded();
+			this._entities[guid].onExpanded(this._entities[guid]);
 		}
 	}
 
@@ -776,7 +776,7 @@ export class Puzzled extends Paperless.Component
 		{
 			this._entities[guid].drawable.width += this._attributes.hop;
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onExpanded();
+			this._entities[guid].onExpanded(this._entities[guid]);
 		}
 	}
 
@@ -790,7 +790,7 @@ export class Puzzled extends Paperless.Component
 		if(expanded)
 		{
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onExpanded();
+			this._entities[guid].onExpanded(this._entities[guid]);
 		}
 	}
 
@@ -801,7 +801,7 @@ export class Puzzled extends Paperless.Component
 			this._entities[guid].drawable.y -= this._attributes.hop;
 			this._entities[guid].drawable.height += this._attributes.hop;
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onExpanded();
+			this._entities[guid].onExpanded(this._entities[guid]);
 		}
 	}
 
@@ -818,7 +818,7 @@ export class Puzzled extends Paperless.Component
 		if(expanded)
 		{
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onExpanded();
+			this._entities[guid].onExpanded(this._entities[guid]);
 		}
 	}
 
@@ -828,7 +828,7 @@ export class Puzzled extends Paperless.Component
 		{
 			this._entities[guid].drawable.height += this._attributes.hop;
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onExpanded();
+			this._entities[guid].onExpanded(this._entities[guid]);
 
 			if(this._attributes.expandable)
 				this.resize();
@@ -849,7 +849,7 @@ export class Puzzled extends Paperless.Component
 			if(expanded)
 			{
 				this._entities[guid].drawable.generate();
-				this._entities[guid].onExpanded();
+				this._entities[guid].onExpanded(this._entities[guid]);
 			}
 		}
 		else
@@ -860,7 +860,7 @@ export class Puzzled extends Paperless.Component
 				this._entities[guid].drawable.height += this._attributes.hop;
 
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onExpanded();
+			this._entities[guid].onExpanded(this._entities[guid]);
 
 			this.resize();
 		}
@@ -901,7 +901,7 @@ export class Puzzled extends Paperless.Component
 			this._entities[guid].drawable.x += this._attributes.hop;
 			this._entities[guid].drawable.width -= this._attributes.hop;
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onShrinked();
+			this._entities[guid].onShrinked(this._entities[guid]);
 		}
 	}
 
@@ -918,7 +918,7 @@ export class Puzzled extends Paperless.Component
 		if(shrinked)
 		{
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onShrinked();
+			this._entities[guid].onShrinked(this._entities[guid]);
 		}
 	}
 
@@ -928,7 +928,7 @@ export class Puzzled extends Paperless.Component
 		{
 			this._entities[guid].drawable.width -= this._attributes.hop;
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onShrinked();
+			this._entities[guid].onShrinked(this._entities[guid]);
 		}
 	}
 
@@ -942,7 +942,7 @@ export class Puzzled extends Paperless.Component
 		if(shrinked)
 		{
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onShrinked();
+			this._entities[guid].onShrinked(this._entities[guid]);
 		}
 	}
 
@@ -953,7 +953,7 @@ export class Puzzled extends Paperless.Component
 			this._entities[guid].drawable.y += this._attributes.hop;
 			this._entities[guid].drawable.height -= this._attributes.hop;
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onShrinked();
+			this._entities[guid].onShrinked(this._entities[guid]);
 		}
 	}
 
@@ -970,7 +970,7 @@ export class Puzzled extends Paperless.Component
 		if(shrinked)
 		{
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onShrinked();
+			this._entities[guid].onShrinked(this._entities[guid]);
 		}
 	}
 
@@ -980,7 +980,7 @@ export class Puzzled extends Paperless.Component
 		{
 			this._entities[guid].drawable.height -= this._attributes.hop;
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onShrinked();
+			this._entities[guid].onShrinked(this._entities[guid]);
 
 			if(this._attributes.expandable)
 				this.resize();
@@ -999,7 +999,7 @@ export class Puzzled extends Paperless.Component
 		if(shrinked)
 		{
 			this._entities[guid].drawable.generate();
-			this._entities[guid].onShrinked();
+			this._entities[guid].onShrinked(this._entities[guid]);
 
 			if(this._attributes.expandable)
 				this.resize();

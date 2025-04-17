@@ -43,6 +43,23 @@ export class EntityCoreControl extends Paperless.Control
 			expandable = true,
 			stackable = false,
 			minimum = {width: 0, height: 0},
+
+			onLoading = null,
+			onLoaded = null,
+			onRemoving = null,
+			onRemoved = null,
+			onMoving = null,
+			onMoved = null,
+			onSwapping = null,
+			onSwapped = null,
+			onMarked = null,
+			onUnmarked = null,
+			onSplitted = null,
+			onExpanded = null,
+			onShrinked = null,
+			onIconsDefault = null,
+			onIconsRefresh = null,
+			onCancel = null,
 		} = attributes;
 
 		this._puzzled = attributes.puzzled;
@@ -52,6 +69,23 @@ export class EntityCoreControl extends Paperless.Control
 		this._shrinkable = shrinkable;
 		this._stackable = stackable;
 		this._minimum = {width: minimum.width, height: minimum.height};
+
+		onLoading ? this.onLoading = onLoading : null;
+		onLoaded ? this.onLoaded = onLoaded : null;
+		onRemoving ? this.onRemoving = onRemoving : null;
+		onRemoved ? this.onRemoved = onRemoved : null;
+		onMoving ? this.onMoving = onMoving : null;
+		onMoved ? this.onMoved = onMoved : null;
+		onSwapping ? this.onSwapping = onSwapping : null;
+		onSwapped ? this.onSwapped = onSwapped : null;
+		onMarked ? this.onMarked = onMarked : null;
+		onUnmarked ? this.onUnmarked = onUnmarked : null;
+		onSplitted ? this.onSplitted = onSplitted : null;
+		onExpanded ? this.onExpanded = onExpanded : null;
+		onShrinked ? this.onShrinked = onShrinked : null;
+		onIconsDefault ? this.onIconsDefault = onIconsDefault : null;
+		onIconsRefresh ? this.onIconsRefresh = onIconsRefresh : null;
+		onCancel ? this.onCancel = onCancel : null;
 	}
 
 	public onDragBegin(): void
@@ -132,12 +166,12 @@ export class EntityCoreControl extends Paperless.Control
 		{
 			this.drawable.x = this._highlightOrigin.x;
 			this.drawable.y = this._highlightOrigin.y;
-			this.onCancel();
+			this.onCancel(this);
 		}
 
 		else if(this._isSwappable)
 		{
-			const promise = this.onSwapping(new Paperless.Point(this.drawable.x, this.drawable.y));
+			const promise = this.onSwapping(new Paperless.Point(this.drawable.x, this.drawable.y), this);
 
 			promise.then(
 				success => {
@@ -150,13 +184,13 @@ export class EntityCoreControl extends Paperless.Control
 					control.drawable.x = this._highlightOrigin.x;
 					control.drawable.y = this._highlightOrigin.y;
 
-					control.onSwapped(new Paperless.Point(this._highlightMoving.x, this._highlightMoving.y));
-					this.onSwapped(this._highlightOrigin.point);
+					control.onSwapped(new Paperless.Point(this._highlightMoving.x, this._highlightMoving.y), control);
+					this.onSwapped(this._highlightOrigin.point, this);
 				},
 				error => {
 					this.drawable.x = this._highlightOrigin.x;
 					this.drawable.y = this._highlightOrigin.y;
-					this.onCancel();
+					this.onCancel(this);
 				}
 			);
 		}
@@ -166,19 +200,19 @@ export class EntityCoreControl extends Paperless.Control
 			this.drawable.x = this._highlightMoving.x;
 			this.drawable.y = this._highlightMoving.y;
 
-			const promise: Promise<unknown> = this.onMoving(new Paperless.Point(this.drawable.x, this.drawable.y));
+			const promise: Promise<unknown> = this.onMoving(new Paperless.Point(this.drawable.x, this.drawable.y), this);
 
 			promise.then(
 				success => {
 					if(this._puzzled.expandable)
 						this._puzzled.resize();
 
-					this.onMoved(this._highlightOrigin.point);
+					this.onMoved(this._highlightOrigin.point, this);
 				},
 				error => {
 					this.drawable.x = this._highlightOrigin.x;
 					this.drawable.y = this._highlightOrigin.y;
-					this.onCancel();
+					this.onCancel(this);
 				}
 			);
 		}
@@ -186,66 +220,66 @@ export class EntityCoreControl extends Paperless.Control
 		this.context.detach(this._highlightMoving.guid);
 	}
 
-	public onLoading(): Promise<unknown>
+	public onLoading(self?: EntityCoreControl): Promise<unknown>
 	{
 		return new Promise((resolve, reject) => {
 			resolve(null);
 		})
 	}
 
-	public onLoaded(): void {}
+	public onLoaded(self?: EntityCoreControl): void {}
 
-	public onLeftClick(): void
+	public onLeftClick(self?: EntityCoreControl): void
 	{
 		this.toggleMarker();
 	}
 
-	public onRightClick(): void {}
+	public onRightClick(self?: EntityCoreControl): void {}
 
-	public onRemoving(): Promise<unknown>
+	public onRemoving(self?: EntityCoreControl): Promise<unknown>
 	{
 		return new Promise((resolve, reject) => {
 			resolve(null);
 		})
 	}
 
-	public onRemoved(): void {}
+	public onRemoved(self?: EntityCoreControl): void {}
 
-	public onCancel(): void {}
+	public onCancel(self?: EntityCoreControl): void {}
 
-	public onMoving(pointDestination: Paperless.Point): Promise<unknown>
+	public onMoving(pointDestination: Paperless.Point, self?: EntityCoreControl): Promise<unknown>
 	{
 		return new Promise((resolve, reject) => {
 			resolve(null);
 		})
 	}
 
-	public onMoved(pointSource: Paperless.Point): void {}
+	public onMoved(pointSource: Paperless.Point, self?: EntityCoreControl): void {}
 
-	public onSwapping(pointDestination: Paperless.Point): Promise<unknown>
+	public onSwapping(pointDestination: Paperless.Point, self?: EntityCoreControl): Promise<unknown>
 	{
 		return new Promise((resolve, reject) => {
 			resolve(null);
 		})
 	}
 
-	public onSwapped(pointSource: Paperless.Point): void {}
+	public onSwapped(pointSource: Paperless.Point, self?: EntityCoreControl): void {}
 
 	public onFocus(): void {}
 
 	public onLostFocus(): void {}
 
-	public onMarked(): void {}
+	public onMarked(self?: EntityCoreControl): void {}
 
-	public onUnmarked(): void {}
+	public onUnmarked(self?: EntityCoreControl): void {}
 
-	public onSplitted(): void {}
+	public onSplitted(self?: EntityCoreControl): void {}
 
-	public onExpanded(): void {}
+	public onExpanded(self?: EntityCoreControl): void {}
 
-	public onShrinked(): void {}
+	public onShrinked(self?: EntityCoreControl): void {}
 
-	public onIconsDefault(): void
+	public onIconsDefault(self?: EntityCoreControl): void
 	{
 		const pointBottomRight: Paperless.Point = new Paperless.Point(this.drawable.x + this.drawable.width - 9, this.drawable.y + this.drawable.height);
 
@@ -256,7 +290,7 @@ export class EntityCoreControl extends Paperless.Control
 		});
 	}
 
-	public onIconsRefresh(): void {}
+	public onIconsRefresh(self?: EntityCoreControl): void {}
 
 	public toggleMarker(restrict: Restrict = Restrict.none): void
 	{
@@ -317,7 +351,8 @@ export class EntityCoreControl extends Paperless.Control
 				offset1: this._puzzled.point, 
 				size: {width: size.width, height: size.height}, 
 				content: object, 
-				hoverable: true
+				hoverable: true,
+				sticky: true
 			});
 		}
 		else
@@ -405,8 +440,8 @@ export class EntityCoreControl extends Paperless.Control
 			}
 		}
 
-		this.onIconsDefault();
-		this.onIconsRefresh();
+		this.onIconsDefault(this);
+		this.onIconsRefresh(this);
 	}
 
 	private addSizer(point: Paperless.Point, angle1: number, angle2: number, leftClickCallback: string, rightClickCallback: string, redraw: boolean): void
