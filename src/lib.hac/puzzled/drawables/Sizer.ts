@@ -14,12 +14,12 @@ export class Sizer extends Paperless.Drawables.Circle
 		super({
 			...attributes,
 			...{
-				linewidth: 2,
+				linewidth: 3,
 				size: {width: 9, height: 9},
 				fillcolor: attributes.puzzled.color.marked, 
 				strokecolor: attributes.puzzled.color.faked,
 				sticky: attributes.puzzled.sticky,
-				nostroke: true,
+				nostroke: false,
 				generate: false,
 			}
 		});

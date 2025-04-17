@@ -14,12 +14,13 @@ export class Splitter extends Paperless.Drawable
 		super({
 			...attributes,
 			...{
-				linewidth: 2, 
+				linewidth: 3, 
 				size: {width: 5, height: 20},
 				fillcolor: attributes.puzzled.color.marked, 
 				sticky: attributes.puzzled.sticky,
 				generate: false,
-				nostroke: true
+				nostroke: false,
+				strokecolor: attributes.puzzled.color.faked,
 			}
 		});
 

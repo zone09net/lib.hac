@@ -32,11 +32,14 @@ export class Sizer extends Paperless.Controls.Button
 	{
 		this.drawable.toFront();
 		this.drawable.fillcolor = this._puzzled.color.sizer;
+		this.drawable.shadowcolor = '#000000';
+		this.drawable.shadow = this._puzzled.shadow;
 	}
 
 	public onOutside(): void
 	{
 		this.drawable.fillcolor = this._puzzled.color.marked;
+		this.drawable.shadow = 0;
 	}
 	
 	public onDragBegin() : void

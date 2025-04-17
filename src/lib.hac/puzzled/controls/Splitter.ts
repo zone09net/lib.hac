@@ -8,11 +8,14 @@ export class Splitter extends Icon
 	{
 		this.drawable.toFront();
 		this.drawable.fillcolor = this.puzzled.color.splitter;
+		this.drawable.shadowcolor = '#000000';
+		this.drawable.shadow = this.puzzled.shadow;
 	}
 
 	public onOutside(): void
 	{
 		this.drawable.fillcolor = this.puzzled.color.marked;
+		this.drawable.shadow = 0;
 	}
 }
 
