@@ -454,6 +454,7 @@ export class Puzzled extends Paperless.Component
 				if(!free)
 				{
 					console.log('Puzzled entity out of boundaries')
+					this.context.states.norefresh = false;
 					return null;
 				}
 
