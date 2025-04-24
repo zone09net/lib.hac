@@ -253,7 +253,7 @@ export class Editable extends Paperless.Component
 						y: this._label.offset1.y + (cursorHeight / 2) + this._label.padding.top - 1
 					},
 					sticky: this.sticky,
-					//context: this.context
+					context: this.context
 				}
 			});
 		}
@@ -288,10 +288,10 @@ export class Editable extends Paperless.Component
 
 			this.context.attach(this._grouped);
 
+			this._grouped.attach(this._label);
+
 			if(this._cursor)
 				this._grouped.attach(this._cursor);
-
-			this._grouped.attach(this._label);
 		}
 		else
 		{
@@ -399,6 +399,8 @@ export class Editable extends Paperless.Component
 
 			let metrics = this._label.context.context2D.measureText(this._label.contentAs.splitted[row].slice(0, this._position.global - lastLength));
 
+			this._cursor.height = this._label.boundingbox('[j').height + 2;
+			this._cursor.generate();
 			this._cursor.offset1 = {
 				x: metrics.width + this._label.padding.left + this._label.offset1.x + Math.ceil(this._cursor.size.width / 2),
 				y: ((this._cursor.size.height - 2 + this._label.spacing) * row) +

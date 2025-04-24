@@ -57,7 +57,8 @@ export class Editable extends EntityCoreDrawable
 				...{
 					offset1: this.puzzled.point,
 					offset2: {x: this.puzzled.spacing, y: this.puzzled.spacing},
-					matrix: this.matrix
+					matrix: this.matrix,
+					sticky: this.sticky,
 				}
 			},
 			password: password
@@ -69,7 +70,7 @@ export class Editable extends EntityCoreDrawable
 		this._editable.attachCursor();
 		this._editable.initialize();
 	}
-
+	
 	public update(): void
 	{
 		this._editable.width = this.width - this.puzzled.spacing;
@@ -87,6 +88,9 @@ export class Editable extends EntityCoreDrawable
 	public onDraw(context2D: OffscreenCanvasRenderingContext2D): void
 	{
 		this._editable.childs.label.draw(context2D);
+
+		if(this._editable.childs.cursor.visible)
+			this._editable.childs.cursor.draw(context2D);
 	}
 
 

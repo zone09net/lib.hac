@@ -164,6 +164,9 @@ export class Field extends EntityCoreDrawable
 			this._right.draw(context2D);
 
 		this._editable.childs.label.draw(context2D);
+		
+		if(this._editable.childs.cursor.visible)
+			this._editable.childs.cursor.draw(context2D);
 	}
 
 

@@ -6,7 +6,6 @@ import {IDrawableCursorAttributes} from '../interfaces/IEditable.js';
 export class Cursor extends Paperless.Drawables.Rectangle
 {
 	private _id: number;
-	private _blink: boolean;
 	//---
 
 	public constructor(attributes: IDrawableCursorAttributes)
@@ -15,20 +14,16 @@ export class Cursor extends Paperless.Drawables.Rectangle
 
 		this.visible = false;
 		this.nostroke = true;
-		this._blink = attributes.blink;
-	}
 
-	public onAttach(): void
-	{
-		this.visible = true;
+		let alpha: number = this.alpha;
 
-		if(this._blink)
+		if(attributes.blink)
 		{
 			this._id = setInterval(() => { 
 				if(this.visible)
-					this.visible = false;
+					(this.alpha == 0 ? this.alpha = alpha : this.alpha = 0);
 				else
-					this.visible = true;
+					this.alpha = 0;
 
 				this.context.refresh();
 			}, 350);
@@ -37,7 +32,6 @@ export class Cursor extends Paperless.Drawables.Rectangle
 
 	public onDetach(): void 
 	{
-		this.visible = false;
 		clearInterval(this._id);
 	}
 }

@@ -63,32 +63,32 @@ export class Editable extends EntityCoreControl
 		(<Drawable>this.drawable).update();
 	}
 
+	/*
+	public onInside(): void
+	{
+		if(this.puzzled.getMarker() == this.guid)
+			document.body.style.cursor = 'text';
+	}
+
+	public onOutside(): void
+	{
+		document.body.style.cursor = 'auto';
+	}
+	*/
+
 	public onMarked(): void 
 	{
 		(<Drawable>this.drawable).childs.editable.update(false);
-
-		if(!this._cursor)
-		{
-			this.context.attach((<Drawable>this.drawable).childs.editable.childs.cursor, Paperless.Layer.decode(this.guid));
-			(<Drawable>this.drawable).childs.editable.childs.cursor.matrix = (<Drawable>this.drawable).matrix;
-			this._cursor = true;
-		}
-
+		(<Drawable>this.drawable).childs.editable.childs.cursor.visible = true;
 		(<Drawable>this.drawable).childs.editable.childs.element.focus();
+
+		//document.body.style.cursor = 'text';
 	}
 
 	public onUnmarked(): void
 	{
-		if(this._cursor)
-		{
-			this.context.detach((<Drawable>this.drawable).childs.editable.childs.cursor.guid);
-			this._cursor = false;
-		}
-
+		(<Drawable>this.drawable).childs.editable.childs.cursor.visible = false;
 		(<Drawable>this.drawable).childs.editable.childs.element.blur();
 	}
-
-	public onIconsDefault(): void {}
-	public onIconsRefresh(): void {}
 }
 
