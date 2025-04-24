@@ -31,8 +31,11 @@ export class Interaction extends Paperless.MouseAction
 
 	public onMouseUp(): void 
 	{
-		if(this._editable.childs.control.guid == this.context.states.pointer.control && !this.context.states.drag)
+		if(this._editable.childs.control.guid == this.context.states.pointer.control /*&& !this.context.states.drag*/)
+		{
+			this.context.removeFocus();
 			this.context.setFocus(this._editable.childs.control.guid);
+		}
 	}
 
 	public onMouseDown(): void
