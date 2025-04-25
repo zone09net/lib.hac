@@ -111,12 +111,13 @@ export class EntityCoreControl extends Paperless.Control
 	public onDrag(): void
 	{
 		const context2D: OffscreenCanvasRenderingContext2D = this.context.context2D;
+		const hop: number = this._puzzled.hop * window.devicePixelRatio / this.context.scale
 
 		this._pointCurrent = this.context.states.pointer.current;
 
 		this._pointCurrent = new Paperless.Point(
-			(Math.round((this._pointCurrent.x - this.context.states.pointer.dragdiff.x) / this._puzzled.hop) * this._puzzled.hop),
-			(Math.round((this._pointCurrent.y - this.context.states.pointer.dragdiff.y) / this._puzzled.hop) * this._puzzled.hop)
+			(Math.round((this._pointCurrent.x - this.context.states.pointer.dragdiff.x) / hop) * hop),
+			(Math.round((this._pointCurrent.y - this.context.states.pointer.dragdiff.y) / hop) * hop)
 		);
 		this._pointCurrent.x /= window.devicePixelRatio * this.context.scale;
 		this._pointCurrent.y /= window.devicePixelRatio * this.context.scale;

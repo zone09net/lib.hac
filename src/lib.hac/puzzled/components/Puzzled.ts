@@ -359,7 +359,7 @@ export class Puzzled extends Paperless.Component
 	{
 		let x: number;
 		let y: number;
-console.log(this.size);
+
 		for(y = 0; y < this.height - 1; y += this._attributes.hop)
 		{
 			for(x = 0; x < this.width - 1; x += this._attributes.hop)
@@ -799,8 +799,6 @@ console.log(this.size);
 
 			if(this._attributes.expandable.width)
 				this.resize();
-			//else
-			//	this.context.refresh();
 		}
 	}
 
@@ -871,8 +869,6 @@ console.log(this.size);
 
 			if(this._attributes.expandable.height)
 				this.resize();
-			//else
-			//	this.context.refresh();
 		}
 	}
 
@@ -971,8 +967,6 @@ console.log(this.size);
 			
 			if(this._attributes.expandable.width)
 				this.resize();
-			//else
-			//	this.context.refresh();
 		}
 	}
 
@@ -990,8 +984,6 @@ console.log(this.size);
 
 			if(this._attributes.expandable.height)
 				this.resize();
-			//else
-			//	this.context.refresh();
 		}
 	}
 
@@ -1033,8 +1025,6 @@ console.log(this.size);
 
 			if(this._attributes.expandable.height)
 				this.resize();
-			//else
-			//	this.context.refresh();
 		}
 	}
 
@@ -1052,8 +1042,6 @@ console.log(this.size);
 
 			if(this._attributes.expandable.height)
 				this.resize();
-			//else
-			//	this.context.refresh();
 		}
 	}
 		
@@ -1069,8 +1057,6 @@ console.log(this.size);
 
 			if(this._attributes.expandable.width)
 				this.resize();
-			//else
-			//	this.context.refresh();
 		}
 
 	}
@@ -1108,8 +1094,6 @@ console.log(this.size);
 
 			if(this._attributes.expandable.height)
 				this.resize();
-			//else
-			//	this.context.refresh();
 		}
 	}
 
