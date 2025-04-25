@@ -8,7 +8,7 @@ import {Puzzled} from '../components/Puzzled.js';
 export interface IComponentPuzzledAttributes extends Paperless.Interfaces.IComponentAttributes 
 {
 	hop?: number,
-	expandable?: boolean,
+	expandable?: {width?: boolean, height?: boolean},
 	nostroke?: boolean,
 	nofill?: boolean,
 	linewidth?: number,

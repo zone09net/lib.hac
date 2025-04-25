@@ -112,7 +112,7 @@ export class Window extends Paperless.Component
 				...puzzled, 
 				...{
 					sticky: sticky, 
-					expandable: false
+					expandable: {width: false, height: false}
 				}
 			}
 		}

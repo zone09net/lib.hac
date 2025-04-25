@@ -15,7 +15,7 @@ let puzzled1: HaC.Components.Puzzled = new HaC.Components.Puzzled({
 	point: {x: 16, y: 16},
 	size: {width: (window.innerWidth ) - 16, height: window.innerHeight - 16},
 	hop: 64, 
-	expandable: false,
+	expandable: {width: false, height: false},
 	nofill: false,
 	nostroke: false,
 	linewidth: 2,

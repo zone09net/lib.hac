@@ -325,7 +325,7 @@ new HaC.Components.Window({
 					},
 					cursor: {
 						fillcolor: '#436665',
-						blink: false,
+						blink: true,
 						width: 9,
 						alpha: 0.7
 					}

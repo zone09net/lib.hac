@@ -206,7 +206,7 @@ export class EntityCoreControl extends Paperless.Control
 
 			promise.then(
 				success => {
-					if(this._puzzled.expandable)
+					if(this._puzzled.expandable.width || this._puzzled.expandable.height)
 						this._puzzled.resize();
 
 					this.onMoved(this._highlightOrigin.point, this);

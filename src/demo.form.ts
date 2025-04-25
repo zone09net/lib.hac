@@ -9,7 +9,6 @@ const puzzled: HaC.Components.Puzzled = new HaC.Components.Puzzled({
 	point: {x: 16, y: 16},
 	size: {width: window.innerWidth, height: window.innerHeight - 32},
 	hop: 32, 
-	expandable: false,
 	nofill: false,
 	nostroke: false,
 	linewidth: 2,
@@ -285,9 +284,13 @@ form
 			attributes: {
 				strokecolor: '#436665',
 				fillcolor: '#000000'
+			},
+			backdoor: {
+				movable: true
 			}
 		}
-	])
+	]);
+	/*
 	.codemirror([
 		{
 			name: 'codemirror',
@@ -309,6 +312,7 @@ form
 			}
 		},
 	]);
+	*/
 
 form.submit({
 	size: new Paperless.Size(512, 32),

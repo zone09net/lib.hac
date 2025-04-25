@@ -41,7 +41,7 @@ export class Fuzzynotes extends Paperless.Component
 		} = attributes;
 
 		this._attributes = {
-			puzzled: {...{hop: 19, strokecolor: '#666666', fillcolor: '#000000'}, ...puzzled, ...{sticky: sticky, expandable: true}},
+			puzzled: {...{hop: 19, strokecolor: '#666666', fillcolor: '#000000'}, ...puzzled, ...{sticky: sticky, expandable: {width: false, height: true}}},
 			background: {...{fillcolor: '#151515', visible: false}, ...background, ...{sticky: sticky, nostroke: true}},
 			borders: {...{strokecolor: '#ffffff', linewidth: 2, visible: false}, ...borders, ...{sticky: sticky}},
 			resetter: {...{fillcolor: '#ffffff', shadowcolor: '#ffffff', visible: false, hoverable: true}, ...resetter, ...{sticky: true, nostroke: true, scale: {x: 0.07, y: 1}}},
