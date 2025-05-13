@@ -9,5 +9,6 @@ export interface IComponentPaletteAttributes extends Paperless.Interfaces.ICompo
 	radius?: number,
 	spacing?: number,
 	colors?: string[][],
+	movable?: boolean,
 	onColor?: (fillcolor: string, strokecolor: string) => void
 }

@@ -33,6 +33,7 @@ export class Palette extends Paperless.Component
 				['#999999', '#815277', '#3979b0', '#a92317', '#bb4c11', '#ba9018', '#68491a', '#438b35', '#829228', '#151515'],
 				['#666666', '#4c2d46', '#21435c', '#8b180e', '#a7380a', '#856815', '#453011', '#2c6221', '#5a6b00', '#333333'],
 			],
+			movable = false,
 			sticky = false,
 			layer = null,
 			onColor = (fillcolor: string, strokecolor: string) => {}
@@ -45,6 +46,7 @@ export class Palette extends Paperless.Component
 			radius: radius <= 60 ? 60 : radius,
 			spacing: spacing * colors.length > radius ? (radius - 30) / colors.length : spacing,
 			colors: colors,
+			movable: movable
 		};
 
 		this.width = radius * 2;
@@ -92,6 +94,7 @@ export class Palette extends Paperless.Component
 			new Paperless.Control({
 				context: this.context,
 				drawable: fill,
+				movable: this._attributes.movable,
 				onLeftClick: (self: Paperless.Control) => {
 					this._selected = 'fillcolor';
 					self.drawable.toFront();
@@ -103,6 +106,7 @@ export class Palette extends Paperless.Component
 			new Paperless.Control({
 				context: this.context,
 				drawable: stroke,
+				movable: this._attributes.movable,
 				onLeftClick: (self: Paperless.Control) => {
 					this._selected = 'strokecolor';
 					self.drawable.toFront();
@@ -131,6 +135,7 @@ export class Palette extends Paperless.Component
 					new Paperless.Control({
 						context: this.context,
 						drawable: drawable,
+						movable: this._attributes.movable,
 						onLeftClick: (self: Paperless.Control) => {
 							if(this._selected == 'fillcolor')
 							{
