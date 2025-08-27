@@ -45,6 +45,7 @@ export class Puzzled extends Paperless.Component
 			spacing = 5,
 			shadow = 2,
 			alpha = 0.5,
+			rounded = {topLeft: 0, topRight: 0, bottomLeft: 0, bottomRight: 0},
 			control = EntityCoreControl,
 			drawable = EntityCoreDrawable,
 			color = {},
@@ -69,6 +70,7 @@ export class Puzzled extends Paperless.Component
 			spacing: spacing,
 			shadow: shadow,
 			alpha: alpha,
+			rounded: rounded,
 			control: control,
 			drawable: drawable,
 			color: {
@@ -1172,6 +1174,15 @@ export class Puzzled extends Paperless.Component
 	public set alpha(alpha: number)
 	{
 		this._attributes.alpha = alpha;
+	}
+
+	public get rounded(): {topLeft: number, topRight: number, bottomLeft: number, bottomRight: number}
+	{
+		return this._attributes.rounded;
+	}
+	public set rounded(rounded: {topLeft: number, topRight: number, bottomLeft: number, bottomRight: number})
+	{
+		this._attributes.rounded = rounded;
 	}
 
 	public get color(): { fill?: string, stroke?: string, marked?: string, iconshadow?: string, move?: string, nomove?: string, sizer?: string, splitter?: string, highlight?: string, faked?: string }

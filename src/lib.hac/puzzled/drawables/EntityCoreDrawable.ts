@@ -17,7 +17,7 @@ export class EntityCoreDrawable extends Paperless.Drawable
 				strokecolor: attributes.puzzled.color.stroke,
 				nostroke: attributes.puzzled.nostroke,
 				nofill: attributes.puzzled.nofill,
-				linewidth: attributes.puzzled.linewidth,
+				linewidth: attributes.puzzled.linewidth
 			},
 			...attributes,
 			...{
@@ -56,43 +56,66 @@ export class EntityCoreDrawable extends Paperless.Drawable
 			points[3] = new Paperless.Point(points[1].x + this._puzzled.spacing, points[1].y - ((this.height - this._puzzled.spacing) / 2) + this._puzzled.spacing);	// middle right
 			points[4] = new Paperless.Point(points[0].x + ((this.width - this._puzzled.spacing) / 2), points[1].y + this._puzzled.spacing);									// middle bottom
 			points[5] = new Paperless.Point(points[0].x, points[1].y - ((this.height - this._puzzled.spacing) / 2) + this._puzzled.spacing);									// middle left
+			points[1].x += this._puzzled.spacing;
+			points[1].y += this._puzzled.spacing;
 
 			this.path = new Path2D();
-			this.path.moveTo(points[5].x, points[2].y);
+			this.path.moveTo(points[0].x + this._puzzled.rounded.topLeft, points[0].y);
+
 			this.path.lineTo(points[2].x - 10, points[2].y);
 			if(top == -1)
 				this.path.lineTo(points[2].x + 10, points[2].y);
 			else
 				this.path.arc(points[2].x, points[2].y, 10, Math.PI, 0, <boolean>top);
-			this.path.lineTo(points[3].x, points[2].y);
+
+			this.path.lineTo(points[1].x - this._puzzled.rounded.topRight, points[0].y);
+			this.path.quadraticCurveTo(points[1].x, points[0].y, points[1].x, points[0].y + this._puzzled.rounded.topRight);
 
 			this.path.lineTo(points[3].x, points[3].y - 10);
 			if(right == -1)
 				this.path.lineTo(points[3].x, points[3].y + 10);
 			else
 				this.path.arc(points[3].x, points[3].y, 10, 1.5 * Math.PI, 0.5 * Math.PI, <boolean>right);
-			this.path.lineTo(points[3].x, points[4].y);
+
+			this.path.lineTo(points[1].x, points[1].y - this._puzzled.rounded.bottomRight);
+			this.path.quadraticCurveTo(points[1].x, points[1].y, points[1].x - this._puzzled.rounded.bottomRight, points[1].y);
 			
 			this.path.lineTo(points[4].x + 10, points[4].y);
 			if(bottom == -1)
 				this.path.lineTo(points[4].x - 10, points[4].y);
 			else
 				this.path.arc(points[4].x, points[4].y, 10, 0, Math.PI, <boolean>bottom);
-			this.path.lineTo(points[5].x, points[4].y);
+
+			this.path.lineTo(points[0].x + this._puzzled.rounded.bottomLeft, points[1].y);
+			this.path.quadraticCurveTo(points[0].x, points[1].y, points[0].x, points[1].y - this._puzzled.rounded.bottomLeft);
 
 			this.path.lineTo(points[5].x, points[5].y + 10);
 			if(left == -1)
 				this.path.lineTo(points[5].x, points[5].y - 10);
 			else
 				this.path.arc(points[5].x, points[5].y, 10, 0.5 * Math.PI, 1.5 * Math.PI, <boolean>left);
-			this.path.lineTo(points[5].x, points[2].y);
+
+			this.path.lineTo(points[0].x, points[0].y + this._puzzled.rounded.topLeft);
+			this.path.quadraticCurveTo(points[0].x, points[0].y, points[0].x + this._puzzled.rounded.topLeft, points[0].y);
 			
 			this.path.closePath();
 		}
 		else
 		{
+			points[1].x += this._puzzled.spacing;
+			points[1].y += this._puzzled.spacing;
+
 			this.path = new Path2D();
-			this.path.rect(points[0].x, points[0].y, points[1].x, points[1].y);
+			this.path.moveTo(points[0].x + this._puzzled.rounded.topLeft, points[0].y);
+			this.path.lineTo(points[1].x - this._puzzled.rounded.topRight, points[0].y);
+			this.path.quadraticCurveTo(points[1].x, points[0].y, points[1].x, points[0].y + this._puzzled.rounded.topRight);
+			this.path.lineTo(points[1].x, points[1].y - this._puzzled.rounded.bottomRight);
+			this.path.quadraticCurveTo(points[1].x, points[1].y, points[1].x - this._puzzled.rounded.bottomRight, points[1].y);
+			this.path.lineTo(points[0].x + this._puzzled.rounded.bottomLeft, points[1].y);
+			this.path.quadraticCurveTo(points[0].x, points[1].y, points[0].x, points[1].y - this._puzzled.rounded.bottomLeft);
+			this.path.lineTo(points[0].x, points[0].y + this._puzzled.rounded.topLeft);
+			this.path.quadraticCurveTo(points[0].x, points[0].y, points[0].x + this._puzzled.rounded.topLeft, points[0].y);
+			this.path.closePath();
 		}
 
 		this.points = points;

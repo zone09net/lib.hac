@@ -15,6 +15,7 @@ export interface IComponentPuzzledAttributes extends Paperless.Interfaces.ICompo
 	spacing?: number,
 	shadow?: number,
 	alpha?: number,
+	rounded?: {topLeft: number, topRight: number, bottomLeft: number, bottomRight: number},
 	drawable?: typeof EntityCoreDrawable,
 	control?: typeof EntityCoreControl,
 	color?: {

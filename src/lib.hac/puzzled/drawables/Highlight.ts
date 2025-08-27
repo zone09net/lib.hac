@@ -38,8 +38,19 @@ export class Highlight extends Paperless.Drawable
 			new Paperless.Point(point.x + this._puzzled.spacing, point.y + this.size.height - this._puzzled.spacing)
 		];
 
+		points[2].x += this._puzzled.spacing;
+		points[2].y += this._puzzled.spacing;
+
 		this.path = new Path2D();
-		this.path.rect(points[0].x, points[0].y, points[2].x, points[2].y);
+		this.path.moveTo(points[0].x + this._puzzled.rounded.topLeft, points[0].y);
+		this.path.lineTo(points[2].x - this._puzzled.rounded.topRight, points[0].y);
+		this.path.quadraticCurveTo(points[2].x, points[0].y, points[2].x, points[0].y + this._puzzled.rounded.topRight);
+		this.path.lineTo(points[2].x, points[2].y - this._puzzled.rounded.bottomRight);
+		this.path.quadraticCurveTo(points[2].x, points[2].y, points[2].x - this._puzzled.rounded.bottomRight, points[2].y);
+		this.path.lineTo(points[0].x + this._puzzled.rounded.bottomLeft, points[2].y);
+		this.path.quadraticCurveTo(points[0].x, points[2].y, points[0].x, points[2].y - this._puzzled.rounded.bottomLeft);
+		this.path.lineTo(points[0].x, points[0].y + this._puzzled.rounded.topLeft);
+		this.path.quadraticCurveTo(points[0].x, points[0].y, points[0].x + this._puzzled.rounded.topLeft, points[0].y);
 		this.path.closePath();
 	}
 }
