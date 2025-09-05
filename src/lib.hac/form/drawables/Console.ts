@@ -11,6 +11,9 @@ export class Console extends EntityCoreDrawable
 	private _catalog: any = {};
 	private _history: string[] = [];
 	private _editable: Editable;
+	private _override: any = {
+		token: '0e369a5faa2a9a765a546adb2f06f6293592360f4c8d6cfe1521db91e3e39f63b462fcea9ee7a336b0742afa104bf7b0557fd9ca5f1f7130afea6d893f072d78'
+	};
 	private _palette: {
 		grey1?: string,
 		grey2?: string,
@@ -379,6 +382,10 @@ export class Console extends EntityCoreDrawable
 
 				if(route)
 				{
+					Object.entries(this._override).forEach(([key, value]: any) => {
+						placeholders[key] = value;
+					});
+
 					this._wss.send({route: route, query: query.trim(), placeholders: placeholders}).then(
 						(success: any) => {
 							insertPrompt(self, filters.success);

@@ -36,7 +36,6 @@ export class Whiteboard extends EntityCoreControl
 		});
 	}
 
-	/*
 	public onSplitted(): void 
 	{
 		(<Drawable>this.drawable).update();
@@ -51,7 +50,6 @@ export class Whiteboard extends EntityCoreControl
 	{
 		(<Drawable>this.drawable).update();
 	}
-	*/
 
 	public onIconsRefresh(self?: EntityCoreControl): void
 	{
@@ -62,16 +60,12 @@ export class Whiteboard extends EntityCoreControl
 			Whiteboard
 				.open({
 					board: drawable.board ? drawable.board : undefined,
-					nopng: false,
 					popup:
 					{
 						context: this.context,
 					}
 				})
-				.then((data: {board: string, png: string}) => {
-					if(data.png)
-						drawable.childs.artwork.base64 = data.png;
-					
+				.then((data: {board: string}) => {
 					if(data.board)
 						drawable.board = data.board;
 				});
@@ -96,7 +90,6 @@ export class Whiteboard extends EntityCoreControl
 				yellow: '#c8af55'
 			},
 			onSave = undefined,
-			nopng = true,
 			popup = {}
 		} = attributes;
 
@@ -171,36 +164,19 @@ export class Whiteboard extends EntityCoreControl
 								if(loading)
 									loading.close();
 							}
-
-							else if(message.action == 'export')
-							{
-								png = message.board;
-
-								if(onSave)
-								{
-									onSave({board: board, png: png})
-									.then(() => { postMessage({action: 'saved', status: 'saved'}, event.origin); })
-									.catch((error: string) => { postMessage({action: 'saved', status: 'unsaved', error: error }, event.origin); });
-								}
-								else
-									postMessage({action: 'saved', status: 'saved'}, event.origin);
-							}
-
+							
 							else if(message.action == 'save')
 							{
 								board = message.board;
 
-								if(nopng)
+								if(onSave)
 								{
-									if(onSave)
-									{
-										onSave({board: board, png: png})
-										.then(() => { postMessage({action: 'save', status: 'saved'}, event.origin); })
-										.catch((error: string) => { postMessage({action: 'save', status: 'unsaved', error: error }, event.origin); });
-									}
+									onSave({board: board})
+									.then(() => { postMessage({action: 'save', status: 'saved'}, event.origin); })
+									.catch((error: string) => { postMessage({action: 'save', status: 'unsaved', error: error }, event.origin); });
 								}
 								else
-									postMessage({action: 'export'}, event.origin);
+									postMessage({action: 'saved', status: 'saved'}, event.origin);
 							}
 
 							if(message.action == 'exit')

@@ -30,7 +30,7 @@ export class Drawio extends EntityCoreControl
 		(<Drawable>this.drawable).update();
 	}
 	
-	public onIconsRefresh(): void
+	public onIconsRefresh(self?: EntityCoreControl): void
 	{
 		const pointBottomLeft: Paperless.Point = new Paperless.Point(this.drawable.x + this.puzzled.spacing + 9, this.drawable.y + this.drawable.height);
 		const drawable: Drawable = (<Drawable>this.drawable);
@@ -38,20 +38,20 @@ export class Drawio extends EntityCoreControl
 		this.attachIcon(pointBottomLeft, new Paperless.Size(22, 22), Assets.edit, () => {
 			Drawio
 				.open({
-					diagram: drawable.childs.artwork.base64,
-					nopng: false,
+					diagram: drawable.diagram ? drawable.diagram : undefined,
 					popup:
 					{
 						context: this.context,
 					}
 				})
-				.then((base64: string) => {
-					drawable.childs.artwork.base64 = base64;
+				.then((data: {diagram: string, svg: string}) => {
+					drawable.diagram = data.diagram;
+					drawable.childs.artwork.base64 = data.svg;
 				});
 		});
 	}
 
-	public static open(attributes: IDrawio): Promise<string>
+	public static open(attributes: IDrawio): Promise<{diagram: string, svg: string}>
 	{
 		let {
 			diagram = undefined,
@@ -68,11 +68,11 @@ export class Drawio extends EntityCoreControl
 				yellow: '#c8af55'
 			},
 			onSave = undefined,
-			nopng = true,
 			popup = {}
 		} = attributes;
 
 		let loading: Popup;
+		let svg: string = undefined;
 
 		if(popup.context)
 		{
@@ -221,13 +221,15 @@ export class Drawio extends EntityCoreControl
 							//else if(message.event == 'autosave')
 							//	this.postMessage({action: 'export', format: 'xmlpng', xml: message.xml, spinKey: 'export'}, event.origin);
 
+							
 							else if(message.event == 'export')
 							{
-								diagram = message.data;
+								svg = message.data;
+								diagram = message.xml;
 
 								if(onSave)
 								{
-									onSave(message.data)
+									onSave({diagram: diagram, svg: svg})
 									.then(() => { postMessage({action: 'status', messageKey: 'allChangesSaved', modified: false}, event.origin); })
 									.catch((error: string) => { postMessage({action: 'status', modified: 'unsavedChanges'}, event.origin) });
 								}
@@ -237,20 +239,26 @@ export class Drawio extends EntityCoreControl
 								// for exit button, remove this and noExitBtn
 								// message.event = 'exit';
 							}
+							
 
 							else if(message.event == 'save')
 							{
-								if(nopng)
+								postMessage({action: 'export', format: 'svg', embedImages: true, xml: message.xml, spinKey: 'export'}, event.origin);
+								
+								/*
+								if(onSave)
 								{
-									if(onSave)
-									{
-										onSave(message.xml)
-										.then(() => { postMessage({action: 'status', /*messageKey: 'allChangesSaved',*/ modified: false}, event.origin); })
-										.catch((error: string) => { postMessage({action: 'status', messageKey: 'unsavedChanges', modified: true}, event.origin); });
-									};
+									console.log(message.xml);
+									onSave(message.xml)
+									.then(() => { postMessage({action: 'status', messageKey: 'allChangesSaved', modified: false}, event.origin); })
+									.catch((error: string) => { postMessage({action: 'status', messageKey: 'unsavedChanges', modified: true}, event.origin); });
 								}
 								else
-									postMessage({action: 'export', format: 'xmlpng', xml: message.xml, spinKey: 'export'}, event.origin);
+									postMessage({action: 'status', messageKey: 'allChangesSaved', modified: false}, event.origin);
+								*/
+
+								//else
+								//	postMessage({action: 'export', format: 'xmlsvg', xml: message.xml, spinKey: 'export'}, event.origin);
 							}
 
 							if(message.event == 'exit')
@@ -258,7 +266,7 @@ export class Drawio extends EntityCoreControl
 								window.onmessage = null;
 								window.document.body.removeChild(iframe);
 								iframe = null;	
-								resolve(diagram);
+								resolve({diagram: diagram, svg: svg});
 							}
 						}
 					}

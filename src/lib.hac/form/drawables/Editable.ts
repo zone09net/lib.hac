@@ -1,12 +1,15 @@
+import * as Paperless from '@zone09.net/paperless';
 import {EntityCoreDrawable} from '../../puzzled/drawables/EntityCoreDrawable.js';
 import {IDrawableUIEditableAttributes} from '../interfaces/IUI.js';
 import {Editable as Child} from '../../editable/components/Editable.js';
+import { EntityCoreControl } from '../../puzzled/controls/EntityCoreControl.js';
 
 
 
 export class Editable extends EntityCoreDrawable
 {
 	private _editable: Child;
+	private _index: number;
 	//---
 
 	public constructor(attributes: IDrawableUIEditableAttributes = {})
@@ -14,8 +17,8 @@ export class Editable extends EntityCoreDrawable
 		super({
 			...attributes, 
 			...{
-				nostroke: false, 
-				nofill: false,
+				//nostroke: false, 
+				//nofill: false,
 			}
 		});
 
@@ -36,7 +39,8 @@ export class Editable extends EntityCoreDrawable
 				sticky: this.sticky,
 				maxchar: maxchar,
 				maxline: maxline,
-				restrict: restrict
+				restrict: restrict,
+				layer: Paperless.Layer.decode(this.guid),
 			},
 			label: { 
 				...{ 
@@ -61,7 +65,31 @@ export class Editable extends EntityCoreDrawable
 					sticky: this.sticky,
 				}
 			},
-			password: password
+			password: password,
+			onTab: () => {
+				let current: number = 0;
+				const filtered: EntityCoreControl[] = this.puzzled.getControls().filter((value: EntityCoreControl, index: number) => value.drawable instanceof Editable);
+
+				filtered.forEach((control: EntityCoreControl, index: number) => {
+					console.log('index', index);
+					if(control.drawable.guid == this.guid)
+					{
+						//current = Number(index);
+						console.log('current', index);
+					}
+				});
+
+				console.log('***', current); 
+				//if(filtered[current + 1])
+					filtered[current].toggleMarker();
+				/*
+				if(current == filtered.length - 1)
+					filtered[0].toggleMarker();
+				else
+					filtered[current + 1].toggleMarker();*/
+
+
+			}
 		});
 
 		this.context.enroll(this._editable);

@@ -252,8 +252,9 @@ export class Editable extends Paperless.Component
 						x: this._label.offset1.x + this._label.padding.left + Math.ceil(this._attributes.cursor.width / 2), 
 						y: this._label.offset1.y + (cursorHeight / 2) + this._label.padding.top - 1
 					},
-					sticky: this.sticky,
-					context: this.context
+					sticky: true,//this.sticky,
+					context: this.context,
+					//layer: Paperless.Layer.decode(this.guid)
 				}
 			});
 		}

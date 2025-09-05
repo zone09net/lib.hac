@@ -11,7 +11,7 @@ export interface IComponentWindowAttributes extends Paperless.Interfaces.ICompon
 	autoopen?: boolean,
 	padding?: Paperless.Interfaces.IPadding,
 	header?: IDrawableHeaderAttributes,
-	rectangle?: Paperless.Interfaces.IDrawableAttributes,
+	rectangle?: Paperless.Interfaces.IDrawableRectangleAttributes,
 	close?: Paperless.Interfaces.IDrawableArtworkAttributes,
 	puzzled?: IComponentPuzzledAttributes,
 	

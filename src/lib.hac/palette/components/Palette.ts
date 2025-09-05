@@ -95,6 +95,7 @@ export class Palette extends Paperless.Component
 				context: this.context,
 				drawable: fill,
 				movable: this._attributes.movable,
+				focusable: false,
 				onLeftClick: (self: Paperless.Control) => {
 					this._selected = 'fillcolor';
 					self.drawable.toFront();
@@ -107,6 +108,7 @@ export class Palette extends Paperless.Component
 				context: this.context,
 				drawable: stroke,
 				movable: this._attributes.movable,
+				focusable: false,
 				onLeftClick: (self: Paperless.Control) => {
 					this._selected = 'strokecolor';
 					self.drawable.toFront();
@@ -136,6 +138,7 @@ export class Palette extends Paperless.Component
 						context: this.context,
 						drawable: drawable,
 						movable: this._attributes.movable,
+						focusable: false,
 						onLeftClick: (self: Paperless.Control) => {
 							if(this._selected == 'fillcolor')
 							{

@@ -218,6 +218,17 @@ export class Popup extends Paperless.Component
 
 	public onClose(self?: Popup): void {}
 
+	public onDetach(): void
+	{
+		this.context.detach([
+			this._title.guid,
+			this._detail.guid,
+			this._dark.guid,
+			this._control.guid,
+			//this.guid
+		]);
+	}
+
 
 
 	// Accessors
@@ -244,6 +255,7 @@ export class Popup extends Paperless.Component
 	public set noclick(noclick: boolean)
 	{
 		this._attributes.noclick = noclick;
+		this._control.enabled = !noclick;
 	}
 
 	public get passthrough(): boolean

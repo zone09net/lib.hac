@@ -90,5 +90,8 @@ export class Editable extends EntityCoreControl
 		(<Drawable>this.drawable).childs.editable.childs.cursor.visible = false;
 		(<Drawable>this.drawable).childs.editable.childs.element.blur();
 	}
+
+	public onIconsDefault(self?: EntityCoreControl): void  {}
+	public onIconsRefresh(self?: EntityCoreControl): void  {}
 }
 

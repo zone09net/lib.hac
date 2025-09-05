@@ -12,8 +12,8 @@ import {Form} from '../../form/components/Form.js';
 
 export class Window extends Paperless.Component
 {
-	private _background: Paperless.Controls.Blank;
-	private _header: Paperless.Controls.Blank;
+	private _background: Paperless.Control;
+	private _header: Paperless.Control;
 	private _puzzled: Puzzled;
 	private _close: Close;
 	private _attributes: IComponentWindowAttributes;
@@ -163,7 +163,7 @@ export class Window extends Paperless.Component
 
 		this._form.puzzled = this._puzzled;
 
-		this._background = new Paperless.Controls.Button({
+		this._background = new Paperless.Control({
 			context: this.context,
 			layer: layer,
 			movable: false,
@@ -201,13 +201,9 @@ export class Window extends Paperless.Component
 
 					this.puzzled.removeMarkerAll();
 
-					/*
-					this.context.getAllComponents()
-						.filter((component: Paperless.Component) => component instanceof Puzzled)
-						.forEach((puzzled: Puzzled) => {
-							puzzled.removeMarker();
-						});
-					*/
+					// ?????
+					if(this._attributes.close.visible)
+						this._close.drawable.toFront(Paperless.Enums.Restrict.norefresh);
 
 					for(let drawable of this._puzzled.getDrawables())
 						drawable.toFront(Paperless.Enums.Restrict.norefresh);
@@ -220,13 +216,13 @@ export class Window extends Paperless.Component
 					this.x = this._background.drawable.x;
 					this.y = this._background.drawable.y;
 					this._puzzled.x = this._background.drawable.x + this._attributes.padding.left;
-					this._puzzled.y = this._background.drawable.y + + this._attributes.padding.top + this._attributes.header.thickness;
+					this._puzzled.y = this._background.drawable.y + this._attributes.padding.top + this._attributes.header.thickness;
 				},
 				onDragEnd: () => {
 					this.x = this._background.drawable.x;
 					this.y = this._background.drawable.y;
 					this._puzzled.x = this._background.drawable.x + this._attributes.padding.left;
-					this._puzzled.y = this._background.drawable.y + + this._attributes.padding.top + this._attributes.header.thickness;
+					this._puzzled.y = this._background.drawable.y + this._attributes.padding.top + this._attributes.header.thickness;
 				}
 			});
 
@@ -362,6 +358,11 @@ export class Window extends Paperless.Component
 	public get form(): Form
 	{
 		return this._form;
+	}
+
+	public get background(): Paperless.Control
+	{
+		return this._background;
 	}
 }
 

@@ -357,14 +357,25 @@ export class Puzzled extends Paperless.Component
 		this.context.refresh();
 	}
 
-	public nextFreePosition(size: Paperless.Size): {point: Paperless.Point, size: Paperless.Size}
+	public nextFreePosition(size: Paperless.Size, offset?: Paperless.Point): {point: Paperless.Point, size: Paperless.Size}
 	{
 		let x: number;
 		let y: number;
 
-		for(y = 0; y < this.height - 1; y += this._attributes.hop)
+		if(offset)
 		{
-			for(x = 0; x < this.width - 1; x += this._attributes.hop)
+			x = offset.x;
+			y = offset.y;
+		}
+		else
+		{
+			x = 0;
+			y = 0;
+		}
+
+		for(y = (offset ? offset.y : 0); y < this.height - 1; y += this._attributes.hop)
+		{
+			for(x = (offset ? offset.x : 0); x < this.width - 1; x += this._attributes.hop)
 			{
 				if(!this.getGuid(new Paperless.Point(x, y)))
 				{
@@ -374,7 +385,7 @@ export class Puzzled extends Paperless.Component
 						size: new Paperless.Size(size.width, size.height)
 					};
 
-					if((destination.point.x + destination.size.width - 1 >= this._minimum.width || destination.point.x < 0) && (!this._attributes.expandable.width || this._attributes.expandable.height))
+					if((destination.point.x + destination.size.width - 1 >= this._minimum.width + (offset ? offset.x : 0) || destination.point.x < 0) && (!this._attributes.expandable.width || this._attributes.expandable.height))
 					{
 						bBreak = true;
 						break;
@@ -497,6 +508,7 @@ export class Puzzled extends Paperless.Component
 				layer: layer,
 				context: this.context,
 				minimum: entity.minimum ? entity.minimum : undefined,
+				focusable: true,
 				drawable: new entity.drawable({
 					...entity.attributes, 
 					...{
@@ -509,7 +521,6 @@ export class Puzzled extends Paperless.Component
 						sticky: this.sticky,
 					}
 				}),
-
 			});
 
 			if(entity.backdoor)

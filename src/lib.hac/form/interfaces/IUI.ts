@@ -76,6 +76,8 @@ export interface IDrawableUIDropzoneAttributes extends IEntityCoreDrawableAttrib
 export interface IDrawableUIDrawioAttributes extends IEntityCoreDrawableAttributes
 {
 	content?: string,
+	diagram?: string,
+	svg?: string,
 	artwork?: Paperless.Interfaces.IDrawableArtworkAttributes
 }
 
@@ -136,8 +138,8 @@ export interface IDrawio
 {
 	context?: Paperless.Context,
 	diagram?: string,
-	onSave?: (diagram: string) => Promise<void>,
-	nopng?: boolean,
+	svg?: string,
+	onSave?: (data: {diagram: string, svg: string}) => Promise<void>,
 	palette?: {
 		black: string,
 		grey0: string,
@@ -222,8 +224,7 @@ export interface IWhiteboard
 	context?: Paperless.Context,
 	name?: string,
 	board?: string,
-	onSave?: (data: {board: string, png: string}) => Promise<void>,
-	nopng?: boolean,
+	onSave?: (data: {board: string}) => Promise<void>,
 	palette?: {
 		black: string,
 		grey0: string,
