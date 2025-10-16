@@ -13,12 +13,12 @@ export class Button extends EntityCoreDrawable
 	public constructor(attributes: IDrawableUIButtonAttributes = {})
 	{
 		super({
-			...attributes, 
 			...{
 				nostroke: false, 
 				nofill: false,
 				shadowcolor: attributes.fillcolor,
-			}
+			},
+			...attributes, 
 		});
 
 		const {
@@ -52,6 +52,11 @@ export class Button extends EntityCoreDrawable
 		});
 
 		this._rectangle = new Paperless.Drawables.Rectangle({
+			...{
+				fillcolor: this.strokecolor, 
+				nostroke: true, 
+				nofill: false,
+			},
 			...rectangle,
 			...{ 
 				point: {x: this.x, y: this.y},
@@ -64,9 +69,6 @@ export class Button extends EntityCoreDrawable
 					y: ((this.height - this.puzzled.spacing) / 2) + this.puzzled.spacing
 				},
 				matrix: this.matrix,
-				fillcolor: this.strokecolor, 
-				nostroke: true, 
-				nofill: false,
 				linewidth: 1
 			}
 		});

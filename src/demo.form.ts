@@ -34,7 +34,6 @@ const form: HaC.Components.Form = new HaC.Components.Form({
 	onSubmit: (form: HaC.Components.Form) => {
 		return new Promise((resolve, reject) => {
 			resolve(null);
-			console.log(form.results());
 		});
 	},
 	onNoSubmit: (form: HaC.Components.Form) => {
@@ -156,6 +155,7 @@ form
 			},
 		}
 	])
+	
 	.editable([
 		{
 			name: 'editable',
@@ -179,6 +179,7 @@ form
 			}
 		},
 	])
+	
 	.dropzone([
 		{
 			name: 'dropzone',
@@ -211,6 +212,7 @@ form
 			}
 		},
 	])
+	/*
 	.field([
 		{
 			name: 'field',
@@ -248,6 +250,7 @@ form
 			},
 		},
 	])
+	*/
 	.gantt([
 		{
 			name: 'gantt',
@@ -258,6 +261,7 @@ form
 			}
 		}
 	])
+	
 	.mindmap([
 		{
 			name: 'mindmap',
@@ -268,6 +272,7 @@ form
 			}
 		}
 	])
+	
 	.whiteboard([
 		{
 			name: 'witeboard',
@@ -278,6 +283,7 @@ form
 			}
 		}
 	])
+	
 	.console([
 		{
 			size: new Paperless.Size(512, 192),
@@ -290,6 +296,7 @@ form
 			}
 		}
 	]);
+	
 	/*
 	.codemirror([
 		{
@@ -313,7 +320,7 @@ form
 		},
 	]);
 	*/
-
+	
 form.submit({
 	size: new Paperless.Size(512, 32),
 	attributes: {

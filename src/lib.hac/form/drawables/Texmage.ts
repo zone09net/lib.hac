@@ -29,10 +29,11 @@ export class Texmage extends EntityCoreDrawable
 			}
 		};
 
-		this._label = new Paperless.Drawables.Label( {			
+		this._label = new Paperless.Drawables.Label({			
 			...{ 
 				multiline: true, 
-				wrapping: true 
+				wrapping: true,
+				corner: true, 
 			},
 			...label,
 			...{ 
@@ -42,7 +43,6 @@ export class Texmage extends EntityCoreDrawable
 				},
 				content: content || label.content,
 				hoverable: false, 
-				corner: true, 
 				sticky: this.sticky, 
 				offset1: this.puzzled.point, 
 				offset2: {x: this.puzzled.spacing, y: this.puzzled.spacing},
@@ -58,7 +58,7 @@ export class Texmage extends EntityCoreDrawable
 					width: this.width - this.puzzled.spacing - (artwork.padding ? artwork.padding : 0), 
 					height: this.height - this.puzzled.spacing - (artwork.padding ? artwork.padding : 0)
 				},
-				content: content || artwork.content,
+				content: (type == 'artwork' ? (content || artwork.content) : ''),
 				hoverable: false, 
 				autosize: false, 
 				sticky: this.sticky, 

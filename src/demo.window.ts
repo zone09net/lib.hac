@@ -274,6 +274,7 @@ new HaC.Components.Window({
 			//},
 			//
 			
+			/*
 			// field/field
 			{
 				size: new Paperless.Size(384, 128),
@@ -311,6 +312,7 @@ new HaC.Components.Window({
 					},
 				},
 			},
+			*/
 		]);
 
 		self.form.editable([

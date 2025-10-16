@@ -24,10 +24,16 @@ export class Close extends Paperless.Controls.Button
 	public onInside(): void
 	{
 		this.drawable.shadow = this._shadow;
+
+		if(this.context)
+			this.context.canvas.style['cursor'] = 'pointer';
 	}
 
 	public onOutside(): void
 	{
 		this.drawable.shadow = 0;
+
+		if(this.context)
+			this.context.canvas.style['cursor'] = 'auto';
 	}
 }

@@ -244,14 +244,16 @@ export class Editable extends Paperless.Component
 			const cursorHeight = this._label.boundingbox('[j').height + 2;
 
 			this._cursor = new Cursor({
-				...this._attributes.cursor,
 				...{
 					point: {x: this._label.x, y: this._label.y},
-					size: {width: this._attributes.cursor.width, height: cursorHeight},
 					offset1: {
 						x: this._label.offset1.x + this._label.padding.left + Math.ceil(this._attributes.cursor.width / 2), 
 						y: this._label.offset1.y + (cursorHeight / 2) + this._label.padding.top - 1
-					},
+					}
+				},
+				...this._attributes.cursor,
+				...{
+					size: {width: this._attributes.cursor.width, height: cursorHeight},
 					sticky: true,//this.sticky,
 					context: this.context,
 					//layer: Paperless.Layer.decode(this.guid)
@@ -556,7 +558,7 @@ export class Editable extends Paperless.Component
 
 	private onEnter(event: HTMLElementEventMap['keydown'], self: Editable)
 	{
-		if(self.isInsertable(1) && self.childs.label.multiline)
+		if(self.isInsertable(1) && self.childs.label.multiline /*&& self._label.contentAs.splitted.length < self._attributes.maxline*/)
 		{
 			self.insertStringAt('\n', self._position.global)
 			self.moveRight(1);

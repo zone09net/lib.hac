@@ -155,6 +155,13 @@ export class Puzzled extends Paperless.Component
 		}
 	}
 
+	public clear(): void
+	{
+		this.removeMarker();
+		this.detach(this.getIcons());
+		this.detach(this.getControls());
+	}
+
 	public getIcons(restrict: Restrict = Restrict.none): Array<Icon | Sizer | Splitter>
 	{
 		let icons: (Icon | Sizer | Splitter)[] = [];

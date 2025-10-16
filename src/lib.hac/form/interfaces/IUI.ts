@@ -255,6 +255,7 @@ export interface IEditableRestrict
 
 export interface IFormUITemplate
 {
+	submit?: any,
 	button?: IDrawableUIButtonAttributes,
 	editable?: IDrawableUIEditableAttributes,
 	label?: IDrawableUILabelAttributes,

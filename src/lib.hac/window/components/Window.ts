@@ -93,15 +93,15 @@ export class Window extends Paperless.Component
 				...{
 					visible: true, 
 					content: Assets.close, 
-					shadowcolor: '#151515', 
-					shadow: 5, 
 					hoverable: true, 
 					offset1: {x: 1, y: 1}
 				}, 
 				...close, 
 				...{
 					sticky: sticky, 
-					autosize: true
+					autosize: true,
+					shadowcolor: '#151515', 
+					shadow: 5, 
 				}
 			},
 			puzzled: {
@@ -124,8 +124,8 @@ export class Window extends Paperless.Component
 		onOpen ? this.onOpen = onOpen : null;
 		onClose ? this.onClose = onClose : null;
 		onCancel ? this.onCancel = onCancel : null;
-		onSubmit ? this._form.onSubmit = onSubmit : null;
-		onNoSubmit ? this._form.onNoSubmit = onNoSubmit : null;
+		onSubmit ? this._form.onSubmit = onSubmit : this._form.onSubmit = this.onSubmit;
+		onNoSubmit ? this._form.onNoSubmit = onNoSubmit : this._form.onNoSubmit = this.onNoSubmit;
 
 		context ? context.attach(this, layer) : null;
 
@@ -133,6 +133,20 @@ export class Window extends Paperless.Component
 			this.open().then(() => { this.onClose(this) });
 	}
 	
+	public onSubmit(self?: Window): Promise<void>
+	{
+		return new Promise((resolve, reject) => {
+			resolve();
+		});
+	}
+
+	public onNoSubmit(self?: Window): Promise<void>
+	{
+		return new Promise((resolve, reject) => {
+			resolve();
+		});
+	}
+
 	public onAttach(): void
 	{
 		const layer: number = Paperless.Layer.decode(this.guid);
@@ -248,7 +262,6 @@ export class Window extends Paperless.Component
 					}),
 					callbackLeftClick: () => { 
 						this.onCancel(this);
-						this.context.detach(this.guid);
 					}
 				});
 
@@ -287,7 +300,7 @@ export class Window extends Paperless.Component
 	public open(): Promise<unknown>
 	{
 		const norefresh: boolean = this.context.states.norefresh;
-		
+
 		this.context.states.norefresh = true;
 		this.onOpen(this);
 
@@ -300,7 +313,7 @@ export class Window extends Paperless.Component
 			if(submit)
 			{
 				submit.onLeftClick = () => {
-					this._form.onSubmit(this._form).then(
+					this._form.onSubmit(this).then(
 						(success) => { resolve(success); },
 						(error) => { this._form.onNoSubmit(error); }
 					);
@@ -311,9 +324,15 @@ export class Window extends Paperless.Component
 
 	public onOpen(self?: Window): void {}
 
-	public onClose(self?: Window): void {}
+	public onClose(self?: Window): void 
+	{
+		this.close();
+	}
 
-	public onCancel(self?: Window): void {}
+	public onCancel(self?: Window): void
+	{
+		this.close();
+	}
 
 	public close(): void
 	{
@@ -345,6 +364,36 @@ export class Window extends Paperless.Component
 		return control;
 	}
 
+	public clear(): void
+	{
+		this._form.clear();
+		this._puzzled.clear();
+	}
+
+	public hide(): void
+	{
+		this._puzzled.removeMarker();
+		this._puzzled.getDrawables().forEach((drawable: Paperless.Drawable) => {
+			drawable.visible = false;
+		});
+
+		this._background.drawable.visible = false;
+		this._header.drawable.visible = false;
+		this._close.drawable.visible = false;
+		this.context.refresh();
+	}
+
+	public show(): void
+	{
+		this._puzzled.getDrawables().forEach((drawable: Paperless.Drawable) => {
+			drawable.visible = true;
+		});
+		this._background.drawable.visible = true;
+		this._header.drawable.visible = true;
+		this._close.drawable.visible = true;
+		this.context.refresh();
+	}
+	
 
 
 	// Accessors
@@ -363,6 +412,16 @@ export class Window extends Paperless.Component
 	public get background(): Paperless.Control
 	{
 		return this._background;
+	}
+
+	public get header(): Paperless.Control
+	{
+		return this._header;
+	}
+
+	public get cancel(): Paperless.Control
+	{
+		return this._close;
 	}
 }
 

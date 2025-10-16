@@ -69,16 +69,23 @@ export class Form extends Paperless.Component
 		}
 	}
 
-	public onSubmit(self?: Form): Promise<void>
+	public onSubmit(self?: any): Promise<void>
 	{
 		return new Promise((resolve, reject) => {
 			resolve();
 		})
 	}
 
-	public onNoSubmit(self?: Form): void {}
+	public onNoSubmit(self?: any): void {}
+	
+	public clear(): void
+	{
+		this._puzzled.clear()
+		this._entities.clear();
+		this._values = {};
+	}
 
-	private new(entity: IComponentPuzzledEntity): EntityCoreControl
+	public new(entity: IComponentPuzzledEntity): EntityCoreControl
 	{
 		const {
 			attributes = {},
@@ -115,7 +122,8 @@ export class Form extends Paperless.Component
 			}
 		});
 
-		this._entities.set(entity.name, control);
+		if(this._values.hasOwnProperty(entity.name) && typeof this._values[entity.name] == 'string')
+			this._entities.set(entity.name, control);
 
 		return control;
 	}
@@ -155,7 +163,6 @@ export class Form extends Paperless.Component
 
 	public label(entities: IComponentPuzzledEntity[]): Form
 	{
-
 		for(let entity of entities)
 		{
 			this._last = this.new({
@@ -241,7 +248,6 @@ export class Form extends Paperless.Component
 
 	public editable(entities: IComponentFormEntity[]): Form
 	{
-
 		for(let entity of entities)
 		{
 			this._last = this.string({
@@ -259,7 +265,6 @@ export class Form extends Paperless.Component
 
 	public codemirror(entities: IComponentFormEntity[]): Form
 	{
-
 		for(let entity of entities)
 		{
 			this._last = this.string({
@@ -397,20 +402,22 @@ export class Form extends Paperless.Component
 		return this;
 	}
 
-	public submit(entity: IComponentPuzzledEntity): Promise<unknown>
+	public submit(entity: IComponentPuzzledEntity, smuggler?: any): Promise<unknown>
 	{
 		this._submit = this.new({
-			...entity,
 			...{
-				attributes: this.merge(this._template.button, entity.attributes),
 				control: entity.control || Controls.Button,
 				drawable: entity.drawable || Drawables.Button,
+			},
+			...entity,
+			...{
+				attributes: this.merge(this._template.submit, entity.attributes),
 			}
 		});
 
 		return new Promise((resolve, reject) => {
 			this._submit.onLeftClick = () => {
-				this.onSubmit(this).then(
+				this.onSubmit(smuggler || this).then(
 					(success) => { resolve(success); },
 					(error) => { this.onNoSubmit(error); }
 				);

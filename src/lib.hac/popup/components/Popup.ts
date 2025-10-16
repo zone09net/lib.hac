@@ -48,7 +48,7 @@ export class Popup extends Paperless.Component
 				...{ autosize: true, multiline: true, wrapping: true, corner: true, sticky: true, generate: false, hoverable: false} 
 			},
 			dark: {
-				...{ fillcolor: '#000000',  alpha: 0.95 },
+				...{ fillcolor: '#000000',  alpha: 0.8 },
 				...dark,
 				...{ nostroke: true, sticky: true}
 			},

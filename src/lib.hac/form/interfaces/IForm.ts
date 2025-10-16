@@ -12,8 +12,8 @@ export interface IComponentFormAttributes extends Paperless.Interfaces.IComponen
 	puzzled?: Puzzled,
 	template?: IFormUITemplate
 
-	onSubmit?: (self?: Form) => Promise<void>,
-	onNoSubmit?: (self?: Form) => void,
+	onSubmit?: (self?: any) => Promise<void>,
+	onNoSubmit?: (self?: any) => void,
 }
 
 export interface IComponentFormEntity extends IComponentPuzzledEntity
